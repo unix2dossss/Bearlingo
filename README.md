@@ -3,7 +3,7 @@
 ## To run and set up react app locally run the following commands on terminal:
 
 1. Switch to develop branch using this command: ```git checkout develop```
-2. Navigate to the frontend directory ```cd frontend```
-3. Install dependencies ```npm install``` 
+2. Navigate to the frontend directory: ```cd frontend```
+3. Install dependencies: ```npm install``` 
 4. Start the development server: ```npm run dev```
 After step (4) a localhost link would be provided, just  copy and paste it into your browser of choice and you will see the app up and running!
