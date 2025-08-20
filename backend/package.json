@@ -10,7 +10,9 @@
   },
   "keywords": [],
   "author": "Debug Devas",
-  "contributors": ["Thamasha Rajakaruna"],
+  "contributors": [
+    "Thamasha Rajakaruna"
+  ],
   "license": "ISC",
   "description": "",
   "dependencies": {
