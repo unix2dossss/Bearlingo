@@ -14,7 +14,8 @@ const moduleSchema = new Schema({
             }
         ],
         default: []   // default is empty array for testing purposes
-    },
+    }
+}, {
     timestamps: true
 });
 

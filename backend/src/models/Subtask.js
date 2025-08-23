@@ -13,6 +13,7 @@ const subTaskSchema = new Schema({
         required: true,
     },
     xpReward: { type: Int32, required: true, default: 20 },
+}, {
     timestamps: true
 });
 
