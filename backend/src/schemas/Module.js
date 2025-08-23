@@ -7,10 +7,10 @@ const moduleSchema = new Schema({
     description: String,
     levels: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Level",
+            type: SchemaTypes.ObjectId,
+            ref: 'Level',
             required: true,
-        },
+        }
     ],
     timestamps: true
 });
