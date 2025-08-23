@@ -5,13 +5,16 @@ const { Schema, SchemaTypes, model } = mongoose;
 const moduleSchema = new Schema({
     name: { type: String, required: true },
     description: String,
-    levels: [
-        {
-            type: SchemaTypes.ObjectId,
-            ref: 'Level',
-            required: true,
-        }
-    ],
+    levels: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Level",
+                required: true,
+            }
+        ],
+        default: []   // default is empty array for testing purposes
+    },
     timestamps: true
 });
 
