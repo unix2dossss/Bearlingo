@@ -14,7 +14,7 @@ Examples:
 
 // Connect to MongoDB
 console.log("Connecting to MongoDB: ", process.env.MONGO_URI);
-  connectDB();
+connectDB();
 
 const PORT = process.env.PORT || 3000;
 
