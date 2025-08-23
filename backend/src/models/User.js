@@ -43,12 +43,6 @@ const userSchema = new mongoose.Schema({
       ref: "UserProgress"
     }
   ],
-  journalEntries: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "JournalEntry"
-    }
-  ],
   timestamp: true
 });
 
