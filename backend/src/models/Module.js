@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
 
 const moduleSchema = new Schema({
-    name: { type: String, required: true },
+    name: {
+        type: String,
+        required: true
+    },
     description: String,
     levels: {
         type: [

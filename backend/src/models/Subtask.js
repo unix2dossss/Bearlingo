@@ -3,16 +3,28 @@ import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
 
 const subTaskSchema = new Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    sequenceNumber: { type: Decimal128, required: true },
-    timestamps: true,
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    sequenceNumber: {
+        type: Number,
+        required: true
+    },
     level: {
         type: SchemaTypes.ObjectId,
         ref: 'Level',
         required: true,
     },
-    xpReward: { type: Int32, required: true, default: 20 },
+    xpReward: {
+        type: Number,
+        required: true,
+        default: 20
+    },
 }, {
     timestamps: true
 });

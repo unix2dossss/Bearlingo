@@ -3,17 +3,32 @@ import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
 
 const levelSchema = new Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    levelNumber: { type: Number, required: true },
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    levelNumber: {
+        type: Number,
+        required: true
+    },
     timestamps: true,
     module: {
         type: SchemaTypes.ObjectId,
         ref: 'Module',
         required: true,
     },
-    xpReward: { type: Number, required: true },
-    badge: { type: String, required: true },
+    xpReward: {
+        type: Number,
+        required: true
+    },
+    badge: {
+        type: String,
+        required: true
+    },
     subtasks: [
         {
             type: SchemaTypes.ObjectId,

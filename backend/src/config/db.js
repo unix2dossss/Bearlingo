@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-import Level from '../models/Level.js';
-import Module from '../models/Level.js';
-import Subtask from '../models/Level.js';
-
 
 
 export const connectDB = async () => {
@@ -15,9 +11,3 @@ export const connectDB = async () => {
   }
 };
 
-const module1 = await Module.create({
-  name: "CV Module",
-  description: "Welcome to the CV Module! Here you will learn how to tailor your CV and stand out to hiring managers etc...."
-})
-
-console.log('Created First Module!:', module1);
