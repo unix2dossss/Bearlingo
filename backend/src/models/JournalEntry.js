@@ -17,8 +17,11 @@ const journalEntrySchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-    },
-    timestamp: true
-});
+    }
+ },
+    {
+        timestamps: true
+    }
+);
 
 export default mongoose.model("JournalEntry", journalEntrySchema);
