@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import usersRoutes from "./routes/usersRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(cookieParser()); // Parse req.cookies into a JSON object
 
 // Routes
+app.use("/api/users", usersRoutes);
 
 // Connect to MongoDB and start the server
 console.log("Connecting to MongoDB: ", process.env.MONGO_URI);
