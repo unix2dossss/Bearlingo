@@ -50,3 +50,16 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Not fully implemented yet
+export const loginUserToken = async (req, res) => {
+  return res.send({ message: "Hello there - authorisation success!" });
+};
+
+
+export const getUserInfo = async (req, res) => {
+  const username = req.params.username;
+  const user = await User.findOne({ username });
+  return res.send(`Succesful! ${user}`).sendStatus(201);
+
+};
