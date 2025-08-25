@@ -5,19 +5,17 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 
-/*
-Register the routes
-Examples:
-    app.use("/api/users", usersRoutes);
-    app.use("/api/journals", journalsRoutes);
-*/
+// Middleware
+app.use(express.json());
 
-// Connect to MongoDB
+// Routes
+
+// Connect to MongoDB and start the server
 console.log("Connecting to MongoDB: ", process.env.MONGO_URI);
-connectDB();
+connectDB().then(() => {
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server is running on: http://localhost:" + PORT);
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log("Server is running on: http://localhost:" + PORT);
+  });
 });
