@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
+    linkedIn: {
+      type: String
+    },
     password: {
       type: String,
       required: true,
