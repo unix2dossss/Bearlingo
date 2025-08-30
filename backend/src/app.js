@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaS
 app.use(cookieParser()); // Parse req.cookies into a JSON object
 
 // Routes
+app.get('/test', (req, res) => {
+  res.send('Server is working!');
+});
 app.use("/api/users", usersRoutes);
 
 // Connect to MongoDB and start the server
