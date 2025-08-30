@@ -8,7 +8,9 @@ const journalEntrySchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 100,
+        default: "Untitled Entry"
     },
     content: {
         type: String,
