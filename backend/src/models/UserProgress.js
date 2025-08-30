@@ -30,7 +30,8 @@ const userProgressSchema = new mongoose.Schema(
         default: false
       },
       progress: {
-        type: Number
+        type: Number,
+        default: 33.3 // Default progress percentage when the user completes their first subtask in the level
       }
     }
   },

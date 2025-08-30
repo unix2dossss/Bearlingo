@@ -12,9 +12,16 @@ export const registerUser = async (req, res) => {
 
     // Additional validation (e.g., email format, password strength)
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+    // Check if username already exists
+    const usernameExists = await User.findOne({ username });
+    if (usernameExists) {
+      return res.status(400).json({ message: "This username is already taken." });
+    }
+
+    // Check if email already exists
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res.status(400).json({ message: "An account with this email already exists." });
     }
 
     // Hash the user password using bcrypt before saving
@@ -44,7 +51,12 @@ export const registerUser = async (req, res) => {
         }
       });
     } catch (error) {
-      res.status(400).json({ message: "User registration failed. Please check your details.", error: error.message });
+      res
+        .status(400)
+        .json({
+          message: "User registration failed. Please check your details.",
+          error: error.message
+        });
     }
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -56,18 +68,16 @@ export const loginUserToken = async (req, res) => {
   return res.send({ message: "Hello there - authorisation success!" });
 };
 
-
 export const getUserInfo = async (req, res) => {
   const id = req.params.id;
   const user = await User.findOne({ '_id': id });
   console.log("User: ", user);
   return res.send(`Succesful! ${user}`).sendStatus(201);
-
 };
+
+
 
 // export const getCompletedLevels = async(req, res) => {
   
 // }
-
-
 

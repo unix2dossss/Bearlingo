@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema(
       unique: true
     },
     linkedIn: {
-      type: String
+      type: String,
+      default: null
     },
     password: {
       type: String,
@@ -42,17 +43,20 @@ const userSchema = new mongoose.Schema(
         default: 0
       },
       lastActive: {
-        type: Date
+        type: Date,
+        default: null
       }
     },
     lastActiveProgress: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserProgress"
+      ref: "UserProgress",
+      default: null
     },
     progress: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserProgress"
+        ref: "UserProgress",
+        default: []
       }
     ]
   },
