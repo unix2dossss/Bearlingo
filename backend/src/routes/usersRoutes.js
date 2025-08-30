@@ -11,5 +11,6 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUserToken);
 router.get("/:id", getUserInfo);
-
+// router.get(":id/completed-levels");
+// router.get(":id")
 export default router;

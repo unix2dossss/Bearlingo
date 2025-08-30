@@ -58,8 +58,16 @@ export const loginUserToken = async (req, res) => {
 
 
 export const getUserInfo = async (req, res) => {
-  const username = req.params.username;
-  const user = await User.findOne({ username });
+  const id = req.params.id;
+  const user = await User.findOne({ '_id': id });
+  console.log("User: ", user);
   return res.send(`Succesful! ${user}`).sendStatus(201);
 
 };
+
+// export const getCompletedLevels = async(req, res) => {
+  
+// }
+
+
+
