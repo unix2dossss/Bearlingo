@@ -8,11 +8,26 @@ const journalEntrySchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 100,
+        default: "Untitled Entry"
     },
-    content: {
-        type: String,
-        required: true
+    goals: {
+      type: [
+        {
+          text: { type: String, required: true },
+          done: { type: Boolean, default: false }
+        }
+      ],
+      default: [{ text: "Update the LinkedIn", done: false }]
+    },
+    month: {
+      type: Number,
+      default: () => new Date().getMonth() + 1 // 1–12
+    },
+    date: {
+      type: Date,
+      default: Date.now
     },
     date: {
         type: Date,
