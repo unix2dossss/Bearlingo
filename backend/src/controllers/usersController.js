@@ -71,13 +71,42 @@ export const loginUserToken = async (req, res) => {
 
 export const getUserInfo = async (req, res) => {
   const id = req.params.id;
+  // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
   const user = await User.findById(id);
-  console.log("User: ", user);
   return res.status(201).send(`Succesful! ${user}`);
 };
+
+// Deleting a user's account
+export const deleteUser = async(req, res) => {
+  const id = req.params.id;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.deleteOne({_id : id});
+  return res.status(201).send(`${user} Sucessfully delelted`);
+}
+
+export const addUser = async(req, res) => {
+  const user = await User.create({
+    firstName: 'Alison',
+    lastName: 'Davidson',
+    username: 'ali123',
+    email: 'alison@gmail.com',
+    password: 'bearLingoI$C00l',
+    streak: { lastActive: '2023-01-15T10:30:00Z',
+      current: 10,
+      longest: 10
+    }
+  });
+  console.log('Created user:', user);
+  return res.status(201).send(`${user} created!`);
+}
+
+
 
 
 
