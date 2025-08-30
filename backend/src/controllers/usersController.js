@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
+import mongoose from 'mongoose';
 
 export const registerUser = async (req, res) => {
   try {
@@ -70,9 +71,12 @@ export const loginUserToken = async (req, res) => {
 
 export const getUserInfo = async (req, res) => {
   const id = req.params.id;
-  const user = await User.findOne({ '_id': id });
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(id);
   console.log("User: ", user);
-  return res.send(`Succesful! ${user}`).sendStatus(201);
+  return res.status(201).send(`Succesful! ${user}`);
 };
 
 
