@@ -124,6 +124,9 @@ export const getCompletedLevels = async (req, res) => {
   } const progress = user.progress;
   console.log(`Progress: ${progress}`);
   return res.status(200).send(`${progress} sucessfully sent`);
+}
+
+export const getStreak = async (req, res) => {
 
 }
 
