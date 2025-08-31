@@ -3,7 +3,7 @@ import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
-import User from "./models/User.js"
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -12,6 +12,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaScript object and store it in req.body
 app.use(cookieParser()); // Parse req.cookies into a JSON object
+// uses cors middleware package,  any frontend on any domain can access your API
+app.use(cors());
 
 // Routes
 app.get('/test', (req, res) => {

@@ -122,7 +122,7 @@ export const updateUserProfile = async (req, res) => {
 
 // Deleting a user's account
 export const deleteUser = async (req, res) => {
-  const id = req.user._id
+  const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
