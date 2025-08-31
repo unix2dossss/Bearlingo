@@ -113,6 +113,16 @@ export const addUser = async (req, res) => {
   return res.status(201).send(`${user} created!`);
 };
 
+// Get all users
+export const getAllUsers = async (_, res) => {
+  try {
+    const users = await User.find({});
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export const getCompletedLevels = async (req, res) => {
   const id = req.params.id;
   // Check if id is valid
@@ -140,5 +150,3 @@ const normalizeNames = (names) => {
     .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 };
-
-
