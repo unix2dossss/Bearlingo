@@ -23,10 +23,12 @@ const usernameValidator = body("username")
   .withMessage("Username must be 3–20 characters long.")
   .matches(/^[a-zA-Z0-9_]+$/)
   .withMessage("Username can only contain letters, numbers, and underscores.")
-  .custom(async (value) => {
+  .custom(async (value, { req }) => {
     // Check if username already exists in the database
     const usernameExists = await User.findOne({ username: value });
-    if (usernameExists) {
+
+    // If username exists but belongs to another user, throw error
+    if (usernameExists && usernameExists._id.toString() !== req.user.id) {
       throw new Error("This username is already taken.");
     }
   });
@@ -39,10 +41,12 @@ const emailValidator = body("email")
   .isEmail()
   .withMessage("Please provide a valid email address.")
   .normalizeEmail()
-  .custom(async (value) => {
+  .custom(async (value, { req }) => {
     // Check if email already exists in the database
     const emailExists = await User.findOne({ email: value });
-    if (emailExists) {
+
+    // If email exists but belongs to another user, throw error
+    if (emailExists && emailExists._id.toString() !== req.user.id) {
       throw new Error("An account with this email already exists.");
     }
   });
@@ -80,7 +84,6 @@ const linkedInValidator = body("linkedIn")
   .matches(/^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/)
   .withMessage("Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username).");
 
-
 // Input validation middleware for user registration
 export const validateRegisterInputs = [
   nameValidator("firstName"),
@@ -90,6 +93,15 @@ export const validateRegisterInputs = [
   passwordValidator,
   confirmPasswordValidator,
   linkedInValidator
+];
+
+// Input validation middleware for user profile updates
+export const validateProfileUpdateInputs = [
+  nameValidator("firstName").optional(),
+  nameValidator("lastName").optional(),
+  usernameValidator.optional(),
+  emailValidator.optional(),
+  linkedInValidator.optional()
 ];
 
 // Reusable validation error handler for all routes

@@ -82,6 +82,44 @@ export const logoutUser = (req, res) => {
   }
 };
 
+// Updating a user's profile
+export const updateUserProfile = async (req, res) => {
+  try {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.firstName = normalizeNames(req.body.firstName) || user.firstName;
+    user.lastName = normalizeNames(req.body.lastName) || user.lastName;
+    user.username = req.body.username || user.username;
+    user.email = req.body.email || user.email;
+    user.linkedIn = req.body.linkedIn || user.linkedIn;
+
+    // Updating password
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+      user.password = hashedPassword;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      linkedIn: updatedUser.linkedIn
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+} catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Deleting a user's account
 export const deleteUser = async (req, res) => {
   const id = req.params.id;
