@@ -81,3 +81,30 @@ const linkedInValidator = body("linkedIn")
   .withMessage("Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username).");
 
 
+// Input validation middleware for user registration
+export const validateRegisterInputs = [
+  nameValidator("firstName"),
+  nameValidator("lastName"),
+  usernameValidator,
+  emailValidator,
+  passwordValidator,
+  confirmPasswordValidator,
+  linkedInValidator
+];
+
+// Reusable validation error handler for all routes
+export const handleValidationErrors = (req, res, next) => {
+  // Get all the input validation errors as a list
+  const errors = validationResult(req);
+  // If there are validation errors, format and send them in the response
+  if (!errors.isEmpty()) {
+    const formattedErrors = {};
+    errors.array().forEach((err) => {
+      // Group errors by field name and accumulate just the messages in an array
+      if (!formattedErrors[err.path]) formattedErrors[err.path] = [];
+      formattedErrors[err.path].push(err.msg);
+    });
+    return res.status(400).json({ errors: formattedErrors });
+  }
+  next();
+};
