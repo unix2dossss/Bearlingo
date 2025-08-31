@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import UserProgress from "../models/UserProgress.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import mongoose from "mongoose";
@@ -176,7 +177,7 @@ export const getCompletedLevels = async (req, res) => {
   const progress = user.progress;
   console.log(`Progress: ${progress}`);
   return res.status(200).send(`${progress} sucessfully sent`);
-}
+};
 
 // Getting user's streak
 export const getStreak = async (req, res) => {
@@ -184,14 +185,44 @@ export const getStreak = async (req, res) => {
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
-  } const user = await User.findOne({ _id: id });
+  }
+  const user = await User.findOne({ _id: id });
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
-  } const progress = user.streaks;
+  }
+  const progress = user.streaks;
   console.log(`Progress: ${progress}`);
   return res.status(200).send(`${progress} sucessfully sent`);
+};
 
-}
+// Getting a user's progress in a specific module
+export const getUserModuleProgress = async (req, res) => {
+  const userId = req.user._id; // Authenticated user's ID
+  const moduleId = req.params.moduleId;
+
+  // Validate moduleId
+  if (!mongoose.isValidObjectId(moduleId)) {
+    return res.status(400).json({ message: "Invalid module ID" });
+  }
+  try {
+    const progressDocs = await UserProgress.find({
+      user: userId,
+      module: moduleId
+    });
+    if (!progressDocs.length) {
+      return { moduleProgress: 0 }; // No progress yet
+    }
+    // Add up all level progresses for the module
+    let totalProgress = 0;
+    for (const doc of progressDocs) {
+      totalProgress += doc.levelProgress.progress;
+    }
+    const moduleProgress = progressDocs.length ? total / progressDocs.length : 0;
+    return res.status(200).json({ "User module progress" : moduleProgress });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 // ------ Helper functions ------ / /
 
