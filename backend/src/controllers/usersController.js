@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import mongoose from "mongoose";
 
+// Register a new user
 export const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, username, email, password, linkedIn } = req.body;

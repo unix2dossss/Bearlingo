@@ -9,7 +9,7 @@ import { validateRegisterInputs, handleValidationErrors } from "../middlewares/i
 
 const router = express.Router();
 
-router.post("/register", validateRegisterInputs, handleValidationErrors, registerUser);
+router.post("/register", validateRegisterInputs, handleValidationErrors, usersController.registerUser);
 router.post("/login", usersController.loginUserToken);
 router.get("/add", usersController.addUser);
 router.get("/:id", usersController.getUserInfo);
