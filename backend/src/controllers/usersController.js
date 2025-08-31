@@ -178,8 +178,7 @@ export const getCompletedLevels = async (req, res) => {
   return res.status(200).send(`${progress} sucessfully sent`);
 }
 
-
-
+// Getting user's streak
 export const getStreak = async (req, res) => {
   const id = req.params.id;
   // Check if id is valid
@@ -194,7 +193,7 @@ export const getStreak = async (req, res) => {
 
 }
 
-/ ------ Helper functions ------ / /
+// ------ Helper functions ------ / /
 
 // Normalize names (handles multiple words, e.g., firstName: "Angel Milk")
 const normalizeNames = (names) => {
