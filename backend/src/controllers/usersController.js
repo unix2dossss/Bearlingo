@@ -50,7 +50,7 @@ export const registerUser = async (req, res) => {
 };
 
 // Not fully implemented yet
-export const loginUserToken = async (req, res) => {
+export const loginUser = async (req, res) => {
   return res.send({ message: "Hello there - authorisation success!" });
 };
 

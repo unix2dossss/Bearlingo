@@ -19,6 +19,5 @@ router.delete("/", authenticate, usersController.deleteUser);
 router.get("/", authenticate, usersController.getAllUsers);
 router.get("/completed-levels", authenticate, usersController.getCompletedLevels);
 router.get("/streaks", authenticate, usersController.getStreak);
-// router.get(":id")
 
 export default router;
