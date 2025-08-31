@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import mongoose from "mongoose";
 
-// Register a new user
+// Registering a new user
 export const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, username, email, password, linkedIn } = req.body;
@@ -96,6 +96,7 @@ export const deleteUser = async (req, res) => {
   return res.status(200).send(`${user} Sucessfully delelted`);
 };
 
+// Adding a user (for testing purposes)
 export const addUser = async (req, res) => {
   const user = await User.create({
     firstName: "Alison",
@@ -113,7 +114,7 @@ export const addUser = async (req, res) => {
   return res.status(201).send(`${user} created!`);
 };
 
-// Get all users
+// Getting all users
 export const getAllUsers = async (_, res) => {
   try {
     const users = await User.find({});
@@ -123,6 +124,7 @@ export const getAllUsers = async (_, res) => {
   }
 };
 
+// Getting a user's completed levels
 export const getCompletedLevels = async (req, res) => {
   const id = req.params.id;
   // Check if id is valid
@@ -138,7 +140,10 @@ export const getCompletedLevels = async (req, res) => {
   return res.status(200).send(`${progress} sucessfully sent`);
 };
 
+// Getting a user's streak information
 export const getStreak = async (req, res) => {};
+
+
 
 // ------ Helper functions ------ //
 
