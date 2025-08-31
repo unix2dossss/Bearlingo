@@ -55,7 +55,7 @@ export const loginUserToken = async (req, res) => {
 };
 
 export const getUserInfo = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -122,7 +122,7 @@ export const updateUserProfile = async (req, res) => {
 
 // Deleting a user's account
 export const deleteUser = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user._id
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -164,7 +164,7 @@ export const getAllUsers = async (_, res) => {
 
 // Getting a user's completed levels
 export const getCompletedLevels = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -180,7 +180,7 @@ export const getCompletedLevels = async (req, res) => {
 
 // Getting user's streak
 export const getStreak = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
