@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
 import cors from "cors";
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
@@ -12,8 +13,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaScript object and store it in req.body
 app.use(cookieParser()); // Parse req.cookies into a JSON object
-// uses cors middleware package,  any frontend on any domain can access your API
-app.use(cors());
+app.use(cors()); // uses cors middleware package,  any frontend on any domain can access your API
+// Logging info with morgan middleware
+app.use(morgan("dev"));
+
 
 // Routes
 app.get('/test', (req, res) => {
