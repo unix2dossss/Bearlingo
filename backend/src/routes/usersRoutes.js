@@ -15,7 +15,7 @@ router.post("/logout", usersController.logoutUser);
 router.get("/add", usersController.addUser);
 router.get("/:id", usersController.getUserInfo);
 router.delete("/:id", usersController.deleteUser);
-router.get("/", usersController.getAllUsers);
+router.get("/", authenticate, usersController.getAllUsers);
 router.get("/:id/completed-levels", usersController.getCompletedLevels);
 router.get("/:id/streaks", usersController.getStreak);
 // router.get(":id")
