@@ -1,16 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const journalEntrySchema = new mongoose.Schema({
+const journalEntrySchema = new mongoose.Schema(
+  {
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
     title: {
-        type: String,
-        required: true,
-        maxLength: 100,
-        default: "Untitled Entry"
+      type: String,
+      required: true,
+      maxLength: 100,
+      default: "Untitled Entry"
     },
     goals: {
       type: [
@@ -28,15 +29,11 @@ const journalEntrySchema = new mongoose.Schema({
     date: {
       type: Date,
       default: Date.now
-    },
-    date: {
-        type: Date,
-        default: Date.now
     }
- },
-    {
-        timestamps: true
-    }
+  },
+  {
+    timestamps: true
+  }
 );
 
 export default mongoose.model("JournalEntry", journalEntrySchema);
