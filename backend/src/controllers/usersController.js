@@ -1,8 +1,11 @@
 import User from "../models/User.js";
 import UserProgress from "../models/UserProgress.js";
+import JournalEntry from "../models/JournalEntry.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import mongoose from "mongoose";
+
+// ---------- Auth Controllers ----------
 
 // Registering a new user
 export const registerUser = async (req, res) => {
@@ -121,6 +124,8 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
+// ---------- User Management Controllers ----------
+
 // Deleting a user's account
 export const deleteUser = async (req, res) => {
   const id = req.user._id;
@@ -162,6 +167,8 @@ export const getAllUsers = async (_, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// ---------- Progress & Tracking Controllers ----------
 
 // Getting a user's completed levels
 export const getCompletedLevels = async (req, res) => {
@@ -218,15 +225,33 @@ export const getUserModuleProgress = async (req, res) => {
       totalProgress += doc.levelProgress.progress;
     }
     const moduleProgress = progressDocs.length ? total / progressDocs.length : 0;
-    return res.status(200).json({ "User module progress" : moduleProgress });
+    return res.status(200).json({ "User module progress": moduleProgress });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// ------ Helper functions ------ / /
+// ---------- Journal Controllers ----------
 
-// Normalize names (handles multiple words, e.g., firstName: "Angel Milk")
+// Getting all journal entries for a user
+export const getAllJournalEntries = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId, "_id firstName lastName username");
+    const journalEntries = await JournalEntry.find({ user: userId });
+    if (!journalEntries.length) {
+      return res.status(200).json({ message: "No journal entries found" });
+    }
+    return res.status(200).json({ user, journalEntries });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// ------ Helper functions ------ //
+
+// Normalize names (handles multiple words, e.g., firstName: "AnGel MILk" -> "Angel Milk")
 const normalizeNames = (names) => {
   if (!names) return "";
   return names

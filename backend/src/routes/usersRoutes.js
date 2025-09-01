@@ -29,5 +29,7 @@ router.get("/:id/streaks", usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 // router.get(":id")
 
+// ---------- Journal Routes ----------
+router.get("/journals", authenticate, usersController.getAllJournalEntries);
 
 export default router;
