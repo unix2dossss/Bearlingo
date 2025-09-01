@@ -247,9 +247,26 @@ export const getModules = async (req, res) => {
   const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
   const modules = progressModules.map(item => item.module); // Only obtaining the module objects as an array
   return res.status(200).json(modules);
+};
 
-
-}
+// Getting a module by ID
+export const getModuleById = async (req, res) => {
+  const userId = req.user._id;
+  const moduleId = req.params.moduleId;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(userId);
+  // Checking is user is in database
+  if (user === null) {
+    return res.status(404).send(`User with id ${id} not found`);
+  }
+  const progressIds = user.progress;  // Obtaining user's progress IDs
+  const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
+  const modules = progressModules.map(item => item.module); // Only obtaining the module objects as an array
+  return res.status(200).json(modules);
+};
 
 // ---------- Journal Controllers ----------
 
@@ -257,7 +274,6 @@ export const getModules = async (req, res) => {
 export const createJournalEntry = async (req, res) => {
   const userId = req.user._id;
   let { title, goals } = req.body || {};
-
   // Trim title
   title = title?.trim();
 
@@ -301,6 +317,7 @@ export const createJournalEntry = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {

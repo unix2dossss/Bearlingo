@@ -28,6 +28,7 @@ router.get("/completed-levels", authenticate, usersController.getCompletedLevels
 router.get("/streaks", usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 router.get("/modules", authenticate, usersController.getModules);
+router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
 
 
 // ---------- Journal Routes ----------
