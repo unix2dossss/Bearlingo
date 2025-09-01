@@ -236,17 +236,42 @@ export const getUserModuleProgress = async (req, res) => {
 // Creating a new journal entry
 export const createJournalEntry = async (req, res) => {
   const userId = req.user._id;
-  const { title, goals } = req.body || {};
+  let { title, goals } = req.body || {};
 
-  // Check that at least one is provided
-  if ((!title || title.trim() === "") && (!goals || goals.length === 0)) {
-    return res.status(400).json({ message: "Add a title or a goal to save." });
+  // Trim title
+  title = title?.trim();
+
+  // Check that both title and at least one goal are provided
+  if (!title && (!goals || goals.length === 0)) {
+    return res
+      .status(400)
+      .json({ message: "Please add a title and at least one goal to save your journal." });
   }
+  if (!title) {
+    return res.status(400).json({ message: "Please give your journal a title before saving." });
+  }
+
+  if (!goals || goals.length === 0) {
+    return res.status(400).json({ message: "Add at least one goal to save your journal." });
+  }
+
   try {
+    // Check if user already has a journal with the same title
+    const existing = await JournalEntry.findOne({
+      user: userId,
+      title: title
+    });
+
+    if (existing) {
+      return res
+        .status(400)
+        .json({ message: "You already have a journal with this title. Try another one." });
+    }
+
     const newEntry = new JournalEntry({
       user: userId,
-      title: title?.trim(), // will use schema default if undefined
-      goals: goals, // will use schema default if undefined
+      title,
+      goals,
       month: new Date().getMonth() + 1, // 1-12
       date: new Date() // current date
     });
