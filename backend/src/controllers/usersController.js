@@ -302,6 +302,37 @@ export const createJournalEntry = async (req, res) => {
   }
 };
 
+// Getting a specific journal entry by ID
+export const getJournalEntry = async (req, res) => {
+  const userId = req.user._id;
+  const journalId = req.params.id;
+
+  // Validate journalId
+  if (!mongoose.isValidObjectId(journalId)) {
+    return res.status(400).json({ message: "Invalid journal ID" });
+  }
+
+  try {
+    const journalEntry = await JournalEntry.findOne({
+      _id: journalId,
+      user: userId
+    });
+    if (!journalEntry) {
+      return res.status(404).json({ message: "Journal entry not found" });
+    }
+    // Format date + month
+    const formattedDate = formatDateAndMonth(journalEntry.date);
+
+    return res.status(200).json({
+      ...journalEntry.toObject(),
+      date: formattedDate.date,
+      month: formattedDate.month
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {
   const userId = req.user._id;
@@ -341,7 +372,7 @@ export const getJournalsByMonth = async (req, res) => {
   res.status(200).json(journals);
 }
 
-// Update a journal entry
+// Updating a journal entry
 export const updateJournalEntry = async (req, res) => {
   const journalId = req.params.id;
   const updatedText = req.body;
@@ -366,4 +397,20 @@ const normalizeNames = (names) => {
     .split(/\s+/) // split by one or more spaces
     .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
+};
+
+// Format a Date object into { date: "dd/mm/yyyy", month: "MonthName" }
+const formatDateAndMonth = (dateObj) => {
+  if (!(dateObj instanceof Date) || isNaN(dateObj)) return { date: "", month: "" };
+
+  const day = String(dateObj.getDate()).padStart(2, "0"); // dd
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // mm
+  const year = dateObj.getFullYear(); // yyyy
+
+  const monthName = dateObj.toLocaleString("en-US", { month: "long" }); // e.g. "January"
+
+  return {
+    date: `${day}/${month}/${year}`,
+    month: monthName
+  };
 };

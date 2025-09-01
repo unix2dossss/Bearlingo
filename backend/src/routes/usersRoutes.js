@@ -32,6 +32,7 @@ router.get("/modules", authenticate, usersController.getModules);
 
 // ---------- Journal Routes ----------
 router.post("/journals", authenticate, usersController.createJournalEntry);
+router.get("/journals/:id", authenticate, usersController.getJournalEntry);
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
