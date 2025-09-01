@@ -273,6 +273,31 @@ export const getAllJournalEntries = async (req, res) => {
   }
 };
 
+// Getting journals by month
+export const getJournalsByMonth = async (req, res) => {
+  const userId = req.user._id;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(userId);
+  // Checking is user is in database
+  if (user === null) {
+    return res.status(404).send(`User with id ${id} not found`);
+  }
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month) - 1; // JS Date months are 0-indexed so Jan is 0
+  const startOfMonth = new Date(year, month, 1); // The format of the constructor is Date(year, month, day)
+  const endOfMonth = new Date(year, month + 1, 1);
+  const journals = await JournalEntry.find({
+    "user": user,
+    date: { $gte: startDate, $lt: endDate } // $gte is greater than or equal to startDate and $lt is less than the endDate
+  });
+  res.status(200).json(journals);
+
+}
+
+
 // ------ Helper functions ------ //
 
 // Normalize names (handles multiple words, e.g., firstName: "AnGel MILk" -> "Angel Milk")

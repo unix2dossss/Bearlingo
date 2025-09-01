@@ -19,18 +19,19 @@ router.put("/profile", authenticate, validateProfileUpdateInputs, handleValidati
 
 // ---------- User Management Routes ----------
 router.get("/add", usersController.addUser);
-router.get("/:id", usersController.getUserInfo);
-router.delete("/:id", usersController.deleteUser);
+router.get("/", usersController.getUserInfo);
+router.delete("/", usersController.deleteUser);
 router.get("/", authenticate, usersController.getAllUsers);
 
 // ---------- Progress & Tracking Routes ----------
-router.get("/:id/completed-levels", authenticate, usersController.getCompletedLevels);
-router.get("/:id/streaks", usersController.getStreak);
+router.get("/completed-levels", authenticate, usersController.getCompletedLevels);
+router.get("/streaks", usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 // router.get(":id")
 
 // ---------- Journal Routes ----------
 router.post("/journals", authenticate, usersController.createJournalEntry);
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
+router.get("/journals//:year/:month", authenticate, usersController.getAllJournalEntries);
 
 export default router;
