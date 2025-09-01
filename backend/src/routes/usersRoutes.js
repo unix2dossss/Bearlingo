@@ -27,12 +27,13 @@ router.get("/", authenticate, usersController.getAllUsers);
 router.get("/completed-levels", authenticate, usersController.getCompletedLevels);
 router.get("/streaks", usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
-// router.get(":id")
+router.get("/modules", authenticate, usersController.getModules);
+
 
 // ---------- Journal Routes ----------
 router.post("/journals", authenticate, usersController.createJournalEntry);
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
-router.get("/journals/:year/:month", authenticate, usersController.getAllJournalEntries);
-router.put("/journals/:id", authenticate, updateJournal.getAllJournalEntries);
+router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
+router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
 
 export default router;

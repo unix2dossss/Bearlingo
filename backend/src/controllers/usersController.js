@@ -231,6 +231,26 @@ export const getUserModuleProgress = async (req, res) => {
   }
 };
 
+// Getting all modules of a user
+export const getModules = async (req, res) => {
+  const userId = req.user._id;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(userId);
+  // Checking is user is in database
+  if (user === null) {
+    return res.status(404).send(`User with id ${id} not found`);
+  }
+  const progressIds = user.progress;  // Obtaining user's progress IDs
+  const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
+  const modules = progressModules.map(item => item.module); // Only obtaining the module objects as an array
+  return res.status(200).json(modules);
+
+
+}
+
 // ---------- Journal Controllers ----------
 
 // Creating a new journal entry
@@ -273,7 +293,7 @@ export const getAllJournalEntries = async (req, res) => {
   }
 };
 
-// Getting journals by month
+// Getting all journals of a user by month
 export const getJournalsByMonth = async (req, res) => {
   const userId = req.user._id;
   // Check if id is valid
@@ -296,12 +316,11 @@ export const getJournalsByMonth = async (req, res) => {
   res.status(200).json(journals);
 }
 
-
 // Update a journal entry
 export const updateJournalEntry = async (req, res) => {
   const journalId = req.params.id;
   const updatedText = req.body;
-  const updatedJounral = await JournalEntry.findByIdAndUpdate(
+  const updatedJournal = await JournalEntry.findByIdAndUpdate(
     journalId,
     updatedText,
     { new: true } // Ensures that the updated journal is returned
@@ -309,6 +328,8 @@ export const updateJournalEntry = async (req, res) => {
 
   res.status(200).json(updatedJournal);
 }
+
+
 
 
 // ------ Helper functions ------ //
