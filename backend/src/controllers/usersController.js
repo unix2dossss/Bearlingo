@@ -294,7 +294,20 @@ export const getJournalsByMonth = async (req, res) => {
     date: { $gte: startDate, $lt: endDate } // $gte is greater than or equal to startDate and $lt is less than the endDate
   });
   res.status(200).json(journals);
+}
 
+
+// Update a journal entry
+export const updateJournalEntry = async (req, res) => {
+  const journalId = req.params.id;
+  const updatedText = req.body;
+  const updatedJounral = await JournalEntry.findByIdAndUpdate(
+    journalId,
+    updatedText,
+    { new: true } // Ensures that the updated journal is returned
+  );
+
+  res.status(200).json(updatedJournal);
 }
 
 
