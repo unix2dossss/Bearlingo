@@ -233,6 +233,30 @@ export const getUserModuleProgress = async (req, res) => {
 
 // ---------- Journal Controllers ----------
 
+// Creating a new journal entry
+export const createJournalEntry = async (req, res) => {
+  const userId = req.user._id;
+  const { title, goals } = req.body || {};
+
+  // Check that at least one is provided
+  if ((!title || title.trim() === "") && (!goals || goals.length === 0)) {
+    return res.status(400).json({ message: "Add a title or a goal to save." });
+  }
+  try {
+    const newEntry = new JournalEntry({
+      user: userId,
+      title: title?.trim(), // will use schema default if undefined
+      goals: goals, // will use schema default if undefined
+      month: new Date().getMonth() + 1, // 1-12
+      date: new Date() // current date
+    });
+    const savedEntry = await newEntry.save();
+    return res.status(201).json(savedEntry);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {
   const userId = req.user._id;

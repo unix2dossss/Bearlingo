@@ -30,6 +30,7 @@ router.get("/progress/module/:moduleId", authenticate, usersController.getUserMo
 // router.get(":id")
 
 // ---------- Journal Routes ----------
+router.post("/journals", authenticate, usersController.createJournalEntry);
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 
 export default router;
