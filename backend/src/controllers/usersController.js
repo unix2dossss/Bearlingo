@@ -3,6 +3,7 @@ import UserProgress from "../models/UserProgress.js";
 import JournalEntry from "../models/JournalEntry.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
+import { normalizeNames, formatDateAndMonth } from "../utils/helpers.js";
 import mongoose from "mongoose";
 
 // ---------- Auth Controllers ----------
@@ -384,33 +385,3 @@ export const updateJournalEntry = async (req, res) => {
 
   res.status(200).json(updatedJournal);
 }
-
-
-
-
-// ------ Helper functions ------ //
-
-// Normalize names (handles multiple words, e.g., firstName: "AnGel MILk" -> "Angel Milk")
-const normalizeNames = (names) => {
-  if (!names) return "";
-  return names
-    .split(/\s+/) // split by one or more spaces
-    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-};
-
-// Format a Date object into { date: "dd/mm/yyyy", month: "MonthName" }
-const formatDateAndMonth = (dateObj) => {
-  if (!(dateObj instanceof Date) || isNaN(dateObj)) return { date: "", month: "" };
-
-  const day = String(dateObj.getDate()).padStart(2, "0"); // dd
-  const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // mm
-  const year = dateObj.getFullYear(); // yyyy
-
-  const monthName = dateObj.toLocaleString("en-US", { month: "long" }); // e.g. "January"
-
-  return {
-    date: `${day}/${month}/${year}`,
-    month: monthName
-  };
-};
