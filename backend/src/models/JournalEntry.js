@@ -20,7 +20,7 @@ const journalEntrySchema = new mongoose.Schema(
           done: { type: Boolean, default: false }
         }
       ],
-      default: [{ text: "Update the LinkedIn", done: false }]
+      default: []
     },
     month: {
       type: Number,
