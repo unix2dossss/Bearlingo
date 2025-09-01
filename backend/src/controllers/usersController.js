@@ -334,6 +334,30 @@ export const getJournalEntry = async (req, res) => {
   }
 };
 
+// Deleting a journal entry
+export const deleteJournalEntry = async (req, res) => {
+  const userId = req.user._id;
+  const journalId = req.params.id;
+
+  // Validate journalId
+  if (!mongoose.isValidObjectId(journalId)) {
+    return res.status(400).json({ message: "Invalid journal ID" });
+  }
+
+  try {
+    const deletedEntry = await JournalEntry.findOneAndDelete({
+      _id: journalId,
+      user: userId
+    });
+    if (!deletedEntry) {
+      return res.status(404).json({ message: "Journal entry not found or already deleted" });
+    }
+    return res.status(200).json({ message: "Journal entry deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {
   const userId = req.user._id;
