@@ -15,7 +15,6 @@ const levelSchema = new Schema({
         type: Number,
         required: true
     },
-    timestamps: true,
     module: {
         type: SchemaTypes.ObjectId,
         ref: 'Module',

@@ -3,6 +3,7 @@ import UserProgress from "../models/UserProgress.js";
 import JournalEntry from "../models/JournalEntry.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
+import { normalizeNames, formatDateAndMonth } from "../utils/helpers.js";
 import mongoose from "mongoose";
 
 // ---------- Auth Controllers ----------
@@ -318,7 +319,60 @@ export const createJournalEntry = async (req, res) => {
   }
 };
 
+// Getting a specific journal entry by ID
+export const getJournalEntry = async (req, res) => {
+  const userId = req.user._id;
+  const journalId = req.params.id;
 
+  // Validate journalId
+  if (!mongoose.isValidObjectId(journalId)) {
+    return res.status(400).json({ message: "Invalid journal ID" });
+  }
+
+  try {
+    const journalEntry = await JournalEntry.findOne({
+      _id: journalId,
+      user: userId
+    });
+    if (!journalEntry) {
+      return res.status(404).json({ message: "Journal entry not found" });
+    }
+    // Format date + month
+    const formattedDate = formatDateAndMonth(journalEntry.date);
+
+    return res.status(200).json({
+      ...journalEntry.toObject(),
+      date: formattedDate.date,
+      month: formattedDate.month
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Deleting a journal entry
+export const deleteJournalEntry = async (req, res) => {
+  const userId = req.user._id;
+  const journalId = req.params.id;
+
+  // Validate journalId
+  if (!mongoose.isValidObjectId(journalId)) {
+    return res.status(400).json({ message: "Invalid journal ID" });
+  }
+
+  try {
+    const deletedEntry = await JournalEntry.findOneAndDelete({
+      _id: journalId,
+      user: userId
+    });
+    if (!deletedEntry) {
+      return res.status(404).json({ message: "Journal entry not found or already deleted" });
+    }
+    return res.status(200).json({ message: "Journal entry deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {
   const userId = req.user._id;
@@ -358,7 +412,7 @@ export const getJournalsByMonth = async (req, res) => {
   res.status(200).json(journals);
 }
 
-// Update a journal entry
+// Updating a journal entry
 export const updateJournalEntry = async (req, res) => {
   const journalId = req.params.id;
   const updatedText = req.body;
@@ -370,17 +424,3 @@ export const updateJournalEntry = async (req, res) => {
 
   res.status(200).json(updatedJournal);
 }
-
-
-
-
-// ------ Helper functions ------ //
-
-// Normalize names (handles multiple words, e.g., firstName: "AnGel MILk" -> "Angel Milk")
-const normalizeNames = (names) => {
-  if (!names) return "";
-  return names
-    .split(/\s+/) // split by one or more spaces
-    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-};

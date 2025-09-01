@@ -3,6 +3,7 @@ import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
+import modulesRoutes from "./routes/modulesRoutes.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -23,6 +24,7 @@ app.get('/test', (req, res) => {
   res.send('Server is working!');
 });
 app.use("/api/users", usersRoutes);
+app.use("/api/modules", modulesRoutes);
 
 // Connect to MongoDB and start the server
 console.log("Connecting to MongoDB: ", process.env.MONGO_URI);

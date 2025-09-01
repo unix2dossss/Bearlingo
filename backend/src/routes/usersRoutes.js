@@ -33,6 +33,8 @@ router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
 
 // ---------- Journal Routes ----------
 router.post("/journals", authenticate, usersController.createJournalEntry);
+router.get("/journals/:id", authenticate, usersController.getJournalEntry);
+router.delete("/journals/:id", authenticate, usersController.deleteJournalEntry);
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
