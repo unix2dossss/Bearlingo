@@ -1,12 +1,14 @@
 import User from "../models/User.js";
 import UserProgress from "../models/UserProgress.js";
 import JournalEntry from "../models/JournalEntry.js";
+import Subtask from "../models/Subtask.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import { normalizeNames, formatDateAndMonth } from "../utils/helpers.js";
 import mongoose from "mongoose";
 
-// ---------- Auth Controllers ----------
+
+// -------------------- Auth Controllers --------------------
 
 // Registering a new user
 export const registerUser = async (req, res) => {
@@ -125,7 +127,9 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
-// ---------- User Management Controllers ----------
+
+
+// -------------------- User Management Controllers --------------------
 
 // Deleting a user's account
 export const deleteUser = async (req, res) => {
@@ -169,7 +173,9 @@ export const getAllUsers = async (_, res) => {
   }
 };
 
-// ---------- Progress & Tracking Controllers ----------
+
+
+// -------------------- Progress & Tracking Controllers --------------------
 
 // Getting a user's completed levels
 export const getCompletedLevels = async (req, res) => {
@@ -276,7 +282,23 @@ export const getModuleById = async (req, res) => {
     return res.status(404).json({ message: `Module with id ${moduleId} not found for this user` });
   } return res.status(200).json(moduleProgress);
 };
-// ---------- Journal Controllers ----------
+
+// Getting a subtask by id
+export const getSubtaskById = async (req, res) => {
+  const subtaskId = req.params.subtaskId;
+  // Validate subtaskId
+  if (!mongoose.isValidObjectId(subtaskId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  // Retrieve the subtask by Id
+  const subtask = await Subtask.findById(subtaskId);
+  if (!subtask) {
+    return res.status(404).json({ message: `Subtask with id ${subtaskId} not found` });
+  } return res.status(200).json(subtask);
+};
+
+
+// -------------------- Journal Controllers --------------------
 
 // Creating a new journal entry
 export const createJournalEntry = async (req, res) => {
@@ -380,6 +402,7 @@ export const deleteJournalEntry = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 // Getting all journal entries for a user
 export const getAllJournalEntries = async (req, res) => {
   const userId = req.user._id;
