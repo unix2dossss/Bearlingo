@@ -19,13 +19,13 @@ router.put("/profile", authenticate, validateProfileUpdateInputs, handleValidati
 
 // ---------- User Management Routes ----------
 router.get("/add", usersController.addUser);
-router.get("/", usersController.getUserInfo);
-router.delete("/", usersController.deleteUser);
+router.get("/", authenticate, usersController.getUserInfo);
+router.delete("/", authenticate, usersController.deleteUser);
 router.get("/", authenticate, usersController.getAllUsers);
 
 // ---------- Progress & Tracking Routes ----------
 router.get("/completed-levels", authenticate, usersController.getCompletedLevels);
-router.get("/streaks", usersController.getStreak);
+router.get("/streaks", authenticate, usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 router.get("/modules", authenticate, usersController.getModules);
 router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
@@ -41,6 +41,6 @@ router.get("/journals/:year/:month", authenticate, usersController.getJournalsBy
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
 
 // ---------- Leaderboard Routes ----------
-router.get("/leaderboard", usersController.getLeaderboard);
+router.get("/leaderboard", authenticate, usersController.getLeaderboard);
 
 export default router;
