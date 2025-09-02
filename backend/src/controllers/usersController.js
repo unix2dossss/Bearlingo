@@ -453,4 +453,24 @@ export const updateJournalEntry = async (req, res) => {
   );
 
   res.status(200).json(updatedJournal);
-}
+};
+
+
+// -------------------- Leaderboard --------------------
+export const getLeaderboard = async (req, res) => {
+  const userId = req.user._id;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(id);
+  if (user === null) {
+    return res.status(404).send(`Not a valid user - you must be logged in to access the leaderboard`);
+  }
+  try {
+    const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }); // Retrieving all users
+    return res.status(200).json({ users });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

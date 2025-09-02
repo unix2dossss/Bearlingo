@@ -29,7 +29,7 @@ router.get("/streaks", usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 router.get("/modules", authenticate, usersController.getModules);
 router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
-router.get("/modules/level-subtasks/:subtaskId", authenticate, userController.getSubtaskById);
+router.get("/modules/level-subtasks/:subtaskId", authenticate, usersController.getSubtaskById);
 
 
 // ---------- Journal Routes ----------
@@ -39,5 +39,8 @@ router.delete("/journals/:id", authenticate, usersController.deleteJournalEntry)
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
+
+// ---------- Leaderboard Routes ----------
+router.get("/leaderboard", usersController.getLeaderboard);
 
 export default router;
