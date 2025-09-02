@@ -55,11 +55,36 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Not fully implemented yet
+
+// Logging in a user 
 export const loginUser = async (req, res) => {
-  return res.send({ message: "Hello there - authorisation success!" });
+  const { email, password } = req.body;
+
+  const existingUser = await User.findOne({ email }).select("+password");
+
+  if (existingUser) {
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+
+    if (isPasswordValid) {
+      generateToken(res, existingUser._id);
+
+      res.status(201).json({
+        message: "Hello there - authorisation success!",
+        user: {
+          id: existingUser._id,
+          username: existingUser.username,
+          email: existingUser.email
+        }
+      });
+    } else {
+      res.status(401).json({ message: "Incorrect password" });
+    }
+  } else {
+    res.status(401).json({ message: "User not found" });
+  }
 };
 
+// Getting user infomation
 export const getUserInfo = async (req, res) => {
   const id = req.user._id;
   // Check if id is valid
