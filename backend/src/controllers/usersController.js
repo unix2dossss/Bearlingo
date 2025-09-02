@@ -371,6 +371,12 @@ export const completeSubtask = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // Update user xp
+    user.xp += subtask.xpReward || 0; 
+    if (userProgress.levelProgress.badgeEarned) {
+      user.xp += subtask.level.xpReward; // Bonus XP for earning badge
+    }
+
     // Update streak data of a user
     updateUserStreak(user);
 
