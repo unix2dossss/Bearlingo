@@ -1,9 +1,9 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 
-import Module from "../models/module.js";
-import Level from "../models/level.js";
-import Subtask from "../models/subtask.js";
+import Module from "../models/Module.js";
+import Level from "../models/Level.js";
+import Subtask from "../models/Subtask.js";
 
 await mongoose.connect(process.env.MONGO_URI);
 console.log("Connected to database!");

@@ -30,6 +30,7 @@ router.get("/progress/module/:moduleId", authenticate, usersController.getUserMo
 router.get("/modules", authenticate, usersController.getModules);
 router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
 router.get("/modules/level-subtasks/:subtaskId", authenticate, usersController.getSubtaskById);
+router.get("/complete/level-subtasks/:subtaskId", authenticate, usersController.completeSubtask);
 
 
 // ---------- Journal Routes ----------

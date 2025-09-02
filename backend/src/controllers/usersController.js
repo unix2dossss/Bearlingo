@@ -7,7 +7,6 @@ import generateToken from "../utils/createToken.js";
 import { normalizeNames, formatDateAndMonth } from "../utils/helpers.js";
 import mongoose from "mongoose";
 
-
 // -------------------- Auth Controllers --------------------
 
 // Registering a new user
@@ -127,8 +126,6 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
-
-
 // -------------------- User Management Controllers --------------------
 
 // Deleting a user's account
@@ -172,8 +169,6 @@ export const getAllUsers = async (_, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-
 
 // -------------------- Progress & Tracking Controllers --------------------
 
@@ -250,9 +245,9 @@ export const getModules = async (req, res) => {
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  const progressIds = user.progress;  // Obtaining user's progress IDs
+  const progressIds = user.progress; // Obtaining user's progress IDs
   const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
-  const modules = progressModules.map(item => item.module); // Only obtaining the module objects as an array
+  const modules = progressModules.map((item) => item.module); // Only obtaining the module objects as an array
   return res.status(200).json(modules);
 };
 
@@ -263,14 +258,16 @@ export const getModuleById = async (req, res) => {
   // Validate IDs
   if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
-  } if (!mongoose.isValidObjectId(moduleId)) {
+  }
+  if (!mongoose.isValidObjectId(moduleId)) {
     return res.status(400).json({ message: "Invalid module ID" });
   }
   // Get user
   const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ message: `User with id ${userId} not found` });
-  } const progressIds = user.progress; // Array of UserProgress IDs
+  }
+  const progressIds = user.progress; // Array of UserProgress IDs
 
   // Get module from user's progress
   const moduleProgress = await UserProgress.findOne({
@@ -280,7 +277,8 @@ export const getModuleById = async (req, res) => {
 
   if (!moduleProgress) {
     return res.status(404).json({ message: `Module with id ${moduleId} not found for this user` });
-  } return res.status(200).json(moduleProgress);
+  }
+  return res.status(200).json(moduleProgress);
 };
 
 // Getting a subtask by id
@@ -294,9 +292,96 @@ export const getSubtaskById = async (req, res) => {
   const subtask = await Subtask.findById(subtaskId);
   if (!subtask) {
     return res.status(404).json({ message: `Subtask with id ${subtaskId} not found` });
-  } return res.status(200).json(subtask);
+  }
+  return res.status(200).json(subtask);
 };
 
+// Completing a subtask
+export const completeSubtask = async (req, res) => {
+  const userId = req.user._id;
+  const subtaskId = req.params.subtaskId;
+
+  if (!mongoose.isValidObjectId(subtaskId)) {
+    return res.status(400).json({ message: "Invalid subtask ID" });
+  }
+
+  try {
+    const subtask = await Subtask.findById(subtaskId).populate("level");
+    if (!subtask)
+      return res.status(404).json({ message: `Subtask with id ${subtaskId} not found` });
+
+    const levelId = subtask.level;
+    let userProgress = await UserProgress.findOne({
+      user: userId,
+      "levelProgress.level": levelId
+    });
+
+    let progressDocId;
+
+    if (userProgress) {
+      // Check if already completed
+      const completedSubtasks = userProgress.levelProgress.completedSubtasks || [];
+      if (completedSubtasks.includes(subtaskId)) {
+        return res.status(400).json({ message: "Subtask already completed" });
+      }
+
+      // Update completed subtasks
+      completedSubtasks.push(subtaskId);
+      userProgress.levelProgress.completedSubtasks = completedSubtasks;
+
+      // Update progress percentage
+      const totalSubtasks = await Subtask.countDocuments({ level: levelId });
+      userProgress.levelProgress.progress = Number(
+        ((completedSubtasks.length / totalSubtasks) * 100).toFixed(2)
+      );
+
+      // Check badge
+      userProgress.levelProgress.badgeEarned = completedSubtasks.length === totalSubtasks;
+
+      await userProgress.save();
+      progressDocId = userProgress._id;
+    } else {
+      // Create new UserProgress
+      const newUserProgress = new UserProgress({
+        user: userId,
+        module: subtask.level.module,
+        levelProgress: {
+          level: levelId,
+          completedSubtasks: [subtaskId],
+          badgeEarned: false,
+          progress: Number((100 / (await Subtask.countDocuments({ level: levelId }))).toFixed(2))
+        }
+      });
+      await newUserProgress.save();
+      progressDocId = newUserProgress._id;
+      userProgress = newUserProgress;
+    }
+
+    // Update User document
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Update streak data of a user
+    updateUserStreak(user);
+
+    // Update lastActiveProgress
+    user.lastActiveProgress = progressDocId;
+
+    // Add to progress array if not already present
+    if (!user.progress.includes(progressDocId)) {
+      user.progress.push(progressDocId);
+    }
+
+    await user.save();
+
+    return res.status(userProgress.isNew ? 201 : 200).json({
+      message: "Well Done! You completed the subtask",
+      userProgress
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 // -------------------- Journal Controllers --------------------
 
@@ -436,11 +521,11 @@ export const getJournalsByMonth = async (req, res) => {
   const startOfMonth = new Date(year, month, 1); // The format of the constructor is Date(year, month, day)
   const endOfMonth = new Date(year, month + 1, 1);
   const journals = await JournalEntry.find({
-    "user": user,
+    user: user,
     date: { $gte: startDate, $lt: endDate } // $gte is greater than or equal to startDate and $lt is less than the endDate
   });
   res.status(200).json(journals);
-}
+};
 
 // Updating a journal entry
 export const updateJournalEntry = async (req, res) => {
@@ -455,7 +540,6 @@ export const updateJournalEntry = async (req, res) => {
   res.status(200).json(updatedJournal);
 };
 
-
 // -------------------- Leaderboard --------------------
 export const getLeaderboard = async (req, res) => {
   const userId = req.user._id;
@@ -465,7 +549,9 @@ export const getLeaderboard = async (req, res) => {
   }
   const user = await User.findById(id);
   if (user === null) {
-    return res.status(404).send(`Not a valid user - you must be logged in to access the leaderboard`);
+    return res
+      .status(404)
+      .send(`Not a valid user - you must be logged in to access the leaderboard`);
   }
   try {
     const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }); // Retrieving all users
@@ -473,4 +559,38 @@ export const getLeaderboard = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
+};
+
+// --------- Helper functions --------- //
+
+// Updating user's streak
+const updateUserStreak = (user) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+
+  const lastActive = user.streak.lastActive ? new Date(user.streak.lastActive) : null;
+  if (lastActive) lastActive.setHours(0, 0, 0, 0);
+
+  if (lastActive) {
+    const diffDays = (today - lastActive) / (1000 * 60 * 60 * 24);
+    if (diffDays === 1) {
+      // Consecutive day
+      user.streak.current += 1;
+    } else if (diffDays > 1) {
+      // Streak broken
+      user.streak.current = 1;
+    }
+    // diffDays === 0 -> same day, do nothing
+  } else {
+    // First activity
+    user.streak.current = 1;
+  }
+
+  // Update longest streak
+  if (user.streak.current > user.streak.longest) {
+    user.streak.longest = user.streak.current;
+  }
+
+  // Update lastActive
+  user.streak.lastActive = new Date();
 };
