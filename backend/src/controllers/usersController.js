@@ -84,20 +84,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Getting user infomation
-export const getUserInfo = async (req, res) => {
-  const id = req.user._id;
-  // Check if id is valid
-  if (!mongoose.isValidObjectId(id)) {
-    return res.status(400).json({ message: "Invalid user ID" });
-  }
-  const user = await User.findById(id);
-  if (user === null) {
-    return res.status(404).send(`User with id ${id} not found`);
-  }
-  return res.status(200).send(`Succesful! ${user}`);
-};
-
 // Logging out a user
 export const logoutUser = (req, res) => {
   try {
@@ -111,6 +97,20 @@ export const logoutUser = (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
+};
+
+// Getting a user's profile
+export const getUserProfile = async (req, res) => {
+  const id = req.user._id;
+  // Check if id is valid
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  const user = await User.findById(id);
+  if (user === null) {
+    return res.status(404).send(`User with id ${id} not found`);
+  }
+  return res.status(200).send(`Succesful! ${user}`);
 };
 
 // Updating a user's profile
@@ -197,8 +197,8 @@ export const getAllUsers = async (_, res) => {
 
 // -------------------- Progress & Tracking Controllers --------------------
 
-// Getting a user's completed levels
-export const getCompletedLevels = async (req, res) => {
+// Getting a user's progress for levels
+export const getUserLevelProgresses = async (req, res) => {
   const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
@@ -224,7 +224,7 @@ export const getStreak = async (req, res) => {
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  const progress = user.streaks;
+  const progress = user.streak;
   console.log(`Progress: ${progress}`);
   return res.status(200).send(`${progress} sucessfully sent`);
 };
@@ -306,22 +306,7 @@ export const getModuleById = async (req, res) => {
   return res.status(200).json(moduleProgress);
 };
 
-// Getting a subtask by id
-export const getSubtaskById = async (req, res) => {
-  const subtaskId = req.params.subtaskId;
-  // Validate subtaskId
-  if (!mongoose.isValidObjectId(subtaskId)) {
-    return res.status(400).json({ message: "Invalid user ID" });
-  }
-  // Retrieve the subtask by Id
-  const subtask = await Subtask.findById(subtaskId);
-  if (!subtask) {
-    return res.status(404).json({ message: `Subtask with id ${subtaskId} not found` });
-  }
-  return res.status(200).json(subtask);
-};
-
-// Completing a subtask
+// Completing a subtask, updating progress and streak
 export const completeSubtask = async (req, res) => {
   const userId = req.user._id;
   const subtaskId = req.params.subtaskId;
@@ -566,13 +551,15 @@ export const updateJournalEntry = async (req, res) => {
 };
 
 // -------------------- Leaderboard --------------------
+
+// Getting the leaderboard
 export const getLeaderboard = async (req, res) => {
   const userId = req.user._id;
   // Check if id is valid
-  if (!mongoose.isValidObjectId(id)) {
+  if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
-  const user = await User.findById(id);
+  const user = await User.findById(userId);
   if (user === null) {
     return res
       .status(404)

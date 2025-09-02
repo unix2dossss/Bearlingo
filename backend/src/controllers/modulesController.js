@@ -3,7 +3,7 @@ import Module from "../models/Module.js";
 import Level from "../models/Level.js";
 import Subtask from "../models/Subtask.js";
 
-// Get all modules with their levels
+// Getting all modules with their levels
 export const getAllModules = async (req, res) => {
   try {
     const modules = await Module.find().populate("levels");
@@ -20,7 +20,7 @@ export const getAllModules = async (req, res) => {
   }
 };
 
-// Get subtasks by level ID
+// Getting subtasks by level ID
 export const getSubtasksByLevelId = async (req, res) => {
   const levelId = req.params.levelId;
 
@@ -41,4 +41,19 @@ export const getSubtasksByLevelId = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+// Getting a subtask by id
+export const getSubtaskById = async (req, res) => {
+  const subtaskId = req.params.subtaskId;
+  // Validate subtaskId
+  if (!mongoose.isValidObjectId(subtaskId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+  // Retrieve the subtask by Id
+  const subtask = await Subtask.findById(subtaskId);
+  if (!subtask) {
+    return res.status(404).json({ message: `Subtask with id ${subtaskId} not found` });
+  }
+  return res.status(200).json(subtask);
 };

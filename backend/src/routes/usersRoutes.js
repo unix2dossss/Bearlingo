@@ -15,21 +15,21 @@ router.post("/login", usersController.loginUser);
 router.post("/logout", usersController.logoutUser);
 
 // ---------- Profile Routes ----------
+router.get("/profile", authenticate, usersController.getUserProfile);
 router.put("/profile", authenticate, validateProfileUpdateInputs, handleValidationErrors, usersController.updateUserProfile);
 
 // ---------- User Management Routes ----------
 router.get("/add", usersController.addUser);
-router.get("/", authenticate, usersController.getUserInfo);
 router.delete("/", authenticate, usersController.deleteUser);
 router.get("/", authenticate, usersController.getAllUsers);
 
 // ---------- Progress & Tracking Routes ----------
-router.get("/completed-levels", authenticate, usersController.getCompletedLevels);
+router.get("/progress/levels", authenticate, usersController.getUserLevelProgresses);
 router.get("/streaks", authenticate, usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 router.get("/modules", authenticate, usersController.getModules);
 router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
-router.get("/modules/level-subtasks/:subtaskId", authenticate, usersController.getSubtaskById);
+
 router.get("/complete/level-subtasks/:subtaskId", authenticate, usersController.completeSubtask);
 
 
