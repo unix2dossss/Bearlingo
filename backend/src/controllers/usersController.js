@@ -254,21 +254,28 @@ export const getModules = async (req, res) => {
 export const getModuleById = async (req, res) => {
   const userId = req.user._id;
   const moduleId = req.params.moduleId;
-  // Check if id is valid
-  if (!mongoose.isValidObjectId(id)) {
+  // Validate IDs
+  if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
+  } if (!mongoose.isValidObjectId(moduleId)) {
+    return res.status(400).json({ message: "Invalid module ID" });
   }
+  // Get user
   const user = await User.findById(userId);
-  // Checking is user is in database
-  if (user === null) {
-    return res.status(404).send(`User with id ${id} not found`);
-  }
-  const progressIds = user.progress;  // Obtaining user's progress IDs
-  const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
-  const modules = progressModules.map(item => item.module); // Only obtaining the module objects as an array
-  return res.status(200).json(modules);
-};
+  if (!user) {
+    return res.status(404).json({ message: `User with id ${userId} not found` });
+  } const progressIds = user.progress; // Array of UserProgress IDs
 
+  // Get module from user's progress
+  const moduleProgress = await UserProgress.findOne({
+    _id: { $in: progressIds },
+    module: moduleId
+  }).select("module"); // Retrieve all UserProgress documents with relevant ids for the User and then match it by the moduleID
+
+  if (!moduleProgress) {
+    return res.status(404).json({ message: `Module with id ${moduleId} not found for this user` });
+  } return res.status(200).json(moduleProgress);
+};
 // ---------- Journal Controllers ----------
 
 // Creating a new journal entry
