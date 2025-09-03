@@ -21,8 +21,8 @@ const usernameValidator = body("username")
   .bail()
   .isLength({ min: 3, max: 20 })
   .withMessage("Username must be 3–20 characters long.")
-  .matches(/^[a-zA-Z0-9_]+$/)
-  .withMessage("Username can only contain letters, numbers, and underscores.")
+  .matches(/^[\w\s-]+$/)
+  .withMessage("Username can only contain letters, numbers, underscores, spaces, and hyphens")
   .custom(async (value, { req }) => {
     // Check if username already exists in the database
     const usernameExists = await User.findOne({ username: value });

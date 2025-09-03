@@ -156,11 +156,18 @@ export const deleteUser = async (req, res) => {
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
-  const user = User.findOne({ _id: id });
-  await User.deleteOne({ _id: id });
+  const user = await User.findById(id);
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
+  await User.deleteOne({ _id: id });
+  // Clear JWT cookie
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+  });
   return res.status(200).send({
     message: "User deleted successfully!",
     deletedUser: user
@@ -274,8 +281,8 @@ export const getUserModuleProgress = async (req, res) => {
       totalProgress += doc.levelProgress.progress;
     }
     const moduleProgressPercentage = progressDocs.length ? totalProgress / progressDocs.length : 0;
-    return res.status(200).json({ 
-      moduleProgressPercentage: moduleProgressPercentage + "%" ,
+    return res.status(200).json({
+      moduleProgressPercentage: moduleProgressPercentage + "%",
       levelProgresses: progressDocs
     });
   } catch (error) {
@@ -298,7 +305,7 @@ export const getModules = async (req, res) => {
   const progressIds = user.progress; // Obtaining user's progress IDs
   const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).populate("module"); // Retriving all of the modules of each progress id object
   const modules = progressModules.map((item) => item.module); // Only obtaining the module objects as an array
-  return res.status(200).json({modules : modules });
+  return res.status(200).json({ modules: modules });
 };
 
 // Getting a module by ID
@@ -595,10 +602,9 @@ export const getLeaderboard = async (req, res) => {
     return res.status(400).json({ message: "Invalid user ID" });
   }
   try {
-    const users = await User.find({}, 
-      { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }) // Retrieving all users
-      .sort({ xp: -1, "streak.current": -1 }); // -1 for descending order. Sorting by xp first, then by current streak 
-    
+    const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }) // Retrieving all users
+      .sort({ xp: -1, "streak.current": -1 }); // -1 for descending order. Sorting by xp first, then by current streak
+
     return res.status(200).json({ users });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
