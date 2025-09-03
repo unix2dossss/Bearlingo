@@ -54,7 +54,7 @@ const emailValidator = body("email")
     if (domain.toLowerCase() !== "gmail.com") {
       throw new Error("Please use a Gmail account.");
     }
-    
+
     // Check if email already exists in the database
     const emailExists = await User.findOne({ email: value });
 
@@ -113,6 +113,12 @@ export const validateRegisterInputs = [
   passwordValidator,
   confirmPasswordValidator,
   linkedInValidator
+];
+
+// Input validation middleware for user login
+export const validateLoginInputs = [
+  body("email").trim().notEmpty().withMessage("Please fill all the fields."),
+  body("password").trim().notEmpty().withMessage("Please fill all the fields.")
 ];
 
 // Input validation middleware for user profile updates

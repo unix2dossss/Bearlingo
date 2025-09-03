@@ -5,13 +5,13 @@ import * as usersController from "../controllers/usersController.js";
 
 //middlewares
 import { authenticate } from "../middlewares/authMiddleware.js";
-import { validateRegisterInputs, validateProfileUpdateInputs, handleValidationErrors } from "../middlewares/inputValidators.js";
+import { validateRegisterInputs, validateLoginInputs, validateProfileUpdateInputs, handleValidationErrors } from "../middlewares/inputValidators.js";
 
 const router = express.Router();
 
 // ---------- Auth Routes ----------
 router.post("/register", validateRegisterInputs, handleValidationErrors, usersController.registerUser);
-router.post("/login", usersController.loginUser);
+router.post("/login", validateLoginInputs, handleValidationErrors, usersController.loginUser);
 router.post("/logout", usersController.logoutUser);
 
 // ---------- Profile Routes ----------
