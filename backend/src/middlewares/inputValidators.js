@@ -27,9 +27,16 @@ const usernameValidator = body("username")
     // Check if username already exists in the database
     const usernameExists = await User.findOne({ username: value });
 
-    // If username exists but belongs to another user, throw error
-    if (usernameExists && usernameExists._id.toString() !== req.user.id) {
-      throw new Error("This username is already taken.");
+    if (!req.user) {
+      // First-time registration
+      if (usernameExists) {
+        throw new Error("This username is already taken.");
+      }
+    } else {
+      // Updating profile
+      if (usernameExists && usernameExists._id.toString() !== req.user.id) {
+        throw new Error("This username is already taken.");
+      }
     }
   });
 
@@ -42,12 +49,25 @@ const emailValidator = body("email")
   .withMessage("Please provide a valid email address.")
   .normalizeEmail()
   .custom(async (value, { req }) => {
+    // Restrict to gmail.com
+    const domain = value.split("@")[1];
+    if (domain.toLowerCase() !== "gmail.com") {
+      throw new Error("Please use a Gmail account.");
+    }
+    
     // Check if email already exists in the database
     const emailExists = await User.findOne({ email: value });
 
-    // If email exists but belongs to another user, throw error
-    if (emailExists && emailExists._id.toString() !== req.user.id) {
-      throw new Error("An account with this email already exists.");
+    if (!req.user) {
+      // First-time registration
+      if (emailExists) {
+        throw new Error("An account with this email already exists.");
+      }
+    } else {
+      // Updating profile
+      if (emailExists && emailExists._id.toString() !== req.user.id) {
+        throw new Error("An account with this email already exists.");
+      }
     }
   });
 
