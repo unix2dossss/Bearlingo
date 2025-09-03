@@ -216,19 +216,19 @@ export const getUserLevelProgresses = async (req, res) => {
     return res.status(404).send(`User with id ${id} not found`);
   }
   // Build object keyed by level number, Ex: { "Level 1": {...}, "Level 2": {...} }
-    const AllLevelProgresses = {};
-    user.progress.forEach(userProgress => {
-      const levelTitle = userProgress.levelProgress.level.title;
-      AllLevelProgresses[`Level ${levelTitle}`] = userProgress;
-    });
-    if (Object.keys(AllLevelProgresses).length === 0) {
-      return res.status(200).json({ message: "No level progresses found for this user" });
-    }
+  const AllLevelProgresses = {};
+  user.progress.forEach((userProgress) => {
+    const levelTitle = userProgress.levelProgress.level.title;
+    AllLevelProgresses[`Level ${levelTitle}`] = userProgress;
+  });
+  if (Object.keys(AllLevelProgresses).length === 0) {
+    return res.status(200).json({ message: "No level progresses found for this user" });
+  }
 
-    return res.status(200).json({
-      message: "All level progresses for the user were successfully retrieved",
-      AllLevelProgresses
-    });
+  return res.status(200).json({
+    message: "All level progresses for the user were successfully retrieved",
+    AllLevelProgresses
+  });
 };
 
 // Getting user's streak
@@ -242,9 +242,12 @@ export const getStreak = async (req, res) => {
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  const progress = user.streak;
-  console.log(`Progress: ${progress}`);
-  return res.status(200).send(`${progress} sucessfully sent`);
+  const streak = user.streak;
+  console.log(`Streak: ${streak}`);
+  return res.status(200).json({
+    message: "Streak retrieved successfully",
+    streak: streak
+  });
 };
 
 // Getting a user's progress in a specific module
@@ -257,20 +260,24 @@ export const getUserModuleProgress = async (req, res) => {
     return res.status(400).json({ message: "Invalid module ID" });
   }
   try {
+    // Find all UserProgress documents for the module
     const progressDocs = await UserProgress.find({
       user: userId,
       module: moduleId
     });
     if (!progressDocs.length) {
-      return { moduleProgress: 0 }; // No progress yet
+      return { moduleProgressPercentage: "0%" }; // No progress yet
     }
     // Add up all level progresses for the module
     let totalProgress = 0;
     for (const doc of progressDocs) {
       totalProgress += doc.levelProgress.progress;
     }
-    const moduleProgress = progressDocs.length ? total / progressDocs.length : 0;
-    return res.status(200).json({ "User module progress": moduleProgress });
+    const moduleProgressPercentage = progressDocs.length ? totalProgress / progressDocs.length : 0;
+    return res.status(200).json({ 
+      moduleProgressPercentage: moduleProgressPercentage + "%" ,
+      levelProgresses: progressDocs
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
