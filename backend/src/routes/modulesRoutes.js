@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.get("/", authenticate, modulesController.getAllModules);
 router.get("/level-subtasks/:levelId", authenticate, modulesController.getSubtasksByLevelId);
-router.get("/level-subtasks/:subtaskId", authenticate, modulesController.getSubtaskById);
+router.get("/subtasks/:subtaskId", authenticate, modulesController.getSubtaskById);
 
 export default router;
