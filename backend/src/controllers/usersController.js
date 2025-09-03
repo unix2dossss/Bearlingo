@@ -197,20 +197,38 @@ export const getAllUsers = async (_, res) => {
 
 // -------------------- Progress & Tracking Controllers --------------------
 
-// Getting a user's progress for levels
+// Getting a user's progresses for all levels
 export const getUserLevelProgresses = async (req, res) => {
   const id = req.user._id;
   // Check if id is valid
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
-  const user = await User.findOne({ _id: id });
+  // Populate progress with Level info
+  const user = await User.findById(id).populate({
+    path: "progress",
+    populate: {
+      path: "levelProgress.level",
+      model: "Level"
+    }
+  });
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  const progress = user.progress;
-  console.log(`Progress: ${progress}`);
-  return res.status(200).send(`${progress} sucessfully sent`);
+  // Build object keyed by level number, Ex: { "Level 1": {...}, "Level 2": {...} }
+    const AllLevelProgresses = {};
+    user.progress.forEach(userProgress => {
+      const levelTitle = userProgress.levelProgress.level.title;
+      AllLevelProgresses[`Level ${levelTitle}`] = userProgress;
+    });
+    if (Object.keys(AllLevelProgresses).length === 0) {
+      return res.status(200).json({ message: "No level progresses found for this user" });
+    }
+
+    return res.status(200).json({
+      message: "All level progresses for the user were successfully retrieved",
+      AllLevelProgresses
+    });
 };
 
 // Getting user's streak
