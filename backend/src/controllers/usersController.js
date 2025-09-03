@@ -287,7 +287,7 @@ export const getUserModuleProgress = async (req, res) => {
 export const getModules = async (req, res) => {
   const userId = req.user._id;
   // Check if id is valid
-  if (!mongoose.isValidObjectId(id)) {
+  if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
   const user = await User.findById(userId);
@@ -296,9 +296,9 @@ export const getModules = async (req, res) => {
     return res.status(404).send(`User with id ${id} not found`);
   }
   const progressIds = user.progress; // Obtaining user's progress IDs
-  const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).select("module"); // Retriving all of the modules of each progress id object
+  const progressModules = await UserProgress.find({ _id: { $in: progressIds } }).populate("module"); // Retriving all of the modules of each progress id object
   const modules = progressModules.map((item) => item.module); // Only obtaining the module objects as an array
-  return res.status(200).json(modules);
+  return res.status(200).json({modules : modules });
 };
 
 // Getting a module by ID
@@ -549,18 +549,18 @@ export const getAllJournalEntries = async (req, res) => {
 export const getJournalsByMonth = async (req, res) => {
   const userId = req.user._id;
   // Check if id is valid
-  if (!mongoose.isValidObjectId(id)) {
+  if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
   const user = await User.findById(userId);
   // Checking is user is in database
   if (user === null) {
-    return res.status(404).send(`User with id ${id} not found`);
+    return res.status(404).send(`User with id ${userId} not found`);
   }
   const year = parseInt(req.params.year);
   const month = parseInt(req.params.month) - 1; // JS Date months are 0-indexed so Jan is 0
-  const startOfMonth = new Date(year, month, 1); // The format of the constructor is Date(year, month, day)
-  const endOfMonth = new Date(year, month + 1, 1);
+  const startDate = new Date(year, month, 1); // The format of the constructor is Date(year, month, day)
+  const endDate = new Date(year, month + 1, 1);
   const journals = await JournalEntry.find({
     user: user,
     date: { $gte: startDate, $lt: endDate } // $gte is greater than or equal to startDate and $lt is less than the endDate
