@@ -55,8 +55,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
-// Logging in a user 
+// Logging in a user
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -110,7 +109,7 @@ export const getUserProfile = async (req, res) => {
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  return res.status(200).send(`Succesful! ${user}`);
+  return res.status(200).send({ message: "Succesful!", user: user });
 };
 
 // Updating a user's profile
@@ -132,15 +131,12 @@ export const updateUserProfile = async (req, res) => {
         user.password = hashedPassword;
       }
 
-      const updatedUser = await user.save();
+      let updatedUser = await user.save();
+      updatedUser = await User.findById(updatedUser._id).select("-password");
 
       res.json({
-        _id: updatedUser._id,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        linkedIn: updatedUser.linkedIn
+        message: "Profile updated successfully",
+        user: updatedUser
       });
     } else {
       res.status(404);
@@ -372,7 +368,7 @@ export const completeSubtask = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Update user xp
-    user.xp += subtask.xpReward || 0; 
+    user.xp += subtask.xpReward || 0;
     if (userProgress.levelProgress.badgeEarned) {
       user.xp += subtask.level.xpReward; // Bonus XP for earning badge
     }
