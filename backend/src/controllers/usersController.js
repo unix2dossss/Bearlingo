@@ -590,14 +590,11 @@ export const getLeaderboard = async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
-  const user = await User.findById(userId);
-  if (user === null) {
-    return res
-      .status(404)
-      .send(`Not a valid user - you must be logged in to access the leaderboard`);
-  }
   try {
-    const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }); // Retrieving all users
+    const users = await User.find({}, 
+      { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }) // Retrieving all users
+      .sort({ xp: -1, "streak.current": -1 }); // -1 for descending order. Sorting by xp first, then by current streak 
+    
     return res.status(200).json({ users });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
