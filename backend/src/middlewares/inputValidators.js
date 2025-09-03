@@ -117,7 +117,7 @@ export const validateRegisterInputs = [
 
 // Input validation middleware for user login
 export const validateLoginInputs = [
-  body("email").trim().notEmpty().withMessage("Please fill all the fields."),
+  body("username").trim().notEmpty().withMessage("Please fill all the fields."),
   body("password").trim().notEmpty().withMessage("Please fill all the fields.")
 ];
 
