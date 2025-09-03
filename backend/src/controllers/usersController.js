@@ -156,11 +156,15 @@ export const deleteUser = async (req, res) => {
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
-  const user = await User.deleteOne({ _id: id });
+  const user = User.findOne({ _id: id });
+  await User.deleteOne({ _id: id });
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  return res.status(200).send(`${user} Sucessfully delelted`);
+  return res.status(200).send({
+    message: "User deleted successfully!",
+    deletedUser: user
+  });
 };
 
 // Adding a user (for testing purposes)
