@@ -535,7 +535,7 @@ export const getAllJournalEntries = async (req, res) => {
 
   try {
     const user = await User.findById(userId, "_id firstName lastName username");
-    const journalEntries = await JournalEntry.find({ user: userId });
+    const journalEntries = await JournalEntry.find({ user: userId }).sort({ createdAt: -1 }); // Sorting by most recent first
     if (!journalEntries.length) {
       return res.status(200).json({ message: "No journal entries found" });
     }
@@ -564,8 +564,12 @@ export const getJournalsByMonth = async (req, res) => {
   const journals = await JournalEntry.find({
     user: user,
     date: { $gte: startDate, $lt: endDate } // $gte is greater than or equal to startDate and $lt is less than the endDate
-  });
-  res.status(200).json(journals);
+  }).sort({ createdAt: -1 }); // Sorting by most recent first
+
+  if (journals.length === 0) {
+    return res.status(200).json({ message: "No journal entries found for this month." });
+  }
+  return res.status(200).json(journals);
 };
 
 // Updating a journal entry
