@@ -12,5 +12,6 @@ router.post("/personal-information", authenticate, cvController.addPersonalInfor
 router.post("/skills", authenticate, cvController.addSkills);
 router.post("/projects", authenticate, cvController.addProjects);
 router.post("/work-experience", authenticate, cvController.addWorkExperience);
+router.get("/", authenticate, cvController.getCV);
 
 export default router;

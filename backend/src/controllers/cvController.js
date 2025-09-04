@@ -132,3 +132,19 @@ export const addWorkExperience = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Fetching the complete CV for the logged-in user
+export const getCV = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const cv = await CV.findOne({ userId });
+
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found. Please create one first." });
+    }
+    res.status(200).json(cv);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
