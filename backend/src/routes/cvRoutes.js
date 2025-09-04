@@ -9,5 +9,6 @@ import * as cvController from "../controllers/cvController.js";
 const router = express.Router();
 
 router.post("/personal-information", authenticate, cvController.addPersonalInformation);
+router.post("/skills", authenticate, cvController.addSkills);
 
 export default router;

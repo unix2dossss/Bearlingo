@@ -2,15 +2,9 @@ import CV from "../models/CV.js";
 
 // Saving or updating personal information in CV
 export const addPersonalInformation = async (req, res) => {
-    const userId = req.user._id; 
+  const userId = req.user._id;
   try {
-    const {
-      firstName,
-      lastName,
-      contact,
-      education,
-      aboutMe,
-    } = req.body;
+    const { firstName, lastName, contact, education, aboutMe } = req.body;
 
     // Check if CV document exists for the user
     let cv = await CV.findOne({ userId });
@@ -23,12 +17,12 @@ export const addPersonalInformation = async (req, res) => {
         lastName,
         contact,
         education,
-        aboutMe,
+        aboutMe
       });
       await cv.save();
       return res.status(201).json({
         message: "CV created with personal information.",
-        cv,
+        cv
       });
     } else {
       // Update existing CV
@@ -41,9 +35,38 @@ export const addPersonalInformation = async (req, res) => {
       await cv.save();
       return res.status(200).json({
         message: "Personal information updated successfully.",
-        cv,
+        cv
       });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Saving or updating skills in CV
+export const addSkills = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const { skills } = req.body;
+
+    if (!skills || !Array.isArray(skills)) {
+      return res.status(400).json({ message: "Skills must be an array!" });
+    }
+
+    if (skills.length > 8) {
+      return res.status(400).json({ message: "You can add up to 8 skills only!" });
+    }
+
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found. Complete personal info first!" });
+    }
+
+    cv.skills = skills;
+    await cv.save();
+
+    res.status(200).json({ message: "Skills saved successfully!", skills: cv.skills });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
