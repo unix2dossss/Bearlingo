@@ -72,3 +72,32 @@ export const addSkills = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Saving or updating projects in CV
+export const addProjects = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const { projects } = req.body;
+
+    if (!projects || !Array.isArray(projects)) {
+      return res.status(400).json({ message: "Projects must be an array." });
+    }
+
+    if (projects.length > 3) {
+      return res.status(400).json({ message: "You can add up to 3 projects only." });
+    }
+
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found. Complete personal info first." });
+    }
+
+    cv.projects = projects;
+    await cv.save();
+
+    res.status(200).json({ message: "Projects saved successfully.", projects: cv.projects });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

@@ -10,5 +10,7 @@ const router = express.Router();
 
 router.post("/personal-information", authenticate, cvController.addPersonalInformation);
 router.post("/skills", authenticate, cvController.addSkills);
+router.post("/projects", authenticate, cvController.addProjects);
+
 
 export default router;
