@@ -1,5 +1,7 @@
 import CV from "../models/CV.js";
 import { buildCVHtml } from "../utils/buildCVHtml.js";
+import { isWithinMaxSentences } from "../utils/helpers.js";
+import puppeteer from "puppeteer";
 
 // Saving or updating personal information in CV
 export const addPersonalInformation = async (req, res) => {
@@ -192,5 +194,48 @@ export const getPreviewCV = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
+  }
+};
+
+// Handling download requests and returning CV as a PDF
+export const downloadCV = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const cv = await CV.findOne({ userId });
+    if (!cv) return res.status(404).send("CV not found");
+
+    // Turn the CV data into HTML (using buildCVHtml helper function)
+    const html = buildCVHtml(cv);
+
+    // Start a new invisible (headless) browser
+    const browser = await puppeteer.launch();
+    // Open a blank page in that browser
+    const page = await browser.newPage();
+    // Put the HTML content into the page
+    // waitUntil: "networkidle0" = wait until the page has finished loading things (like CSS/images)
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    // Make a PDF from the page
+    // format: "A4" = standard page size
+    // printBackground: true = include background colors/styles in PDF
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true
+    });
+
+    // Close the invisible browser
+    await browser.close();
+
+    // Tell the browser this is a PDF file and should be downloaded
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=cv.pdf"
+    });
+
+    // Send the actual PDF file to the browser
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generating CV PDF");
   }
 };

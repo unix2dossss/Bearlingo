@@ -14,5 +14,6 @@ router.post("/projects", authenticate, cvController.addProjects);
 router.post("/work-experience", authenticate, cvController.addWorkExperience);
 router.get("/", authenticate, cvController.getCV);
 router.get("/preview", authenticate, cvController.getPreviewCV);
+router.get("/download", authenticate, cvController.downloadCV);
 
 export default router;
