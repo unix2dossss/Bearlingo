@@ -57,7 +57,7 @@ const cvSchema = new mongoose.Schema({
   },
 
   // About Me
-  about: {
+  aboutMe: {
     type: String,
     maxlength: 500, // keep it short, ~1 paragraph
   },
