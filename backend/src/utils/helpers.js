@@ -22,3 +22,15 @@ export const formatDateAndMonth = (dateObj) => {
     month: monthName
   };
 };
+
+// Check if text is within max sentences (e.g., maxSentences=3 allows up to 3 sentences)
+export const isWithinMaxSentences = (text, maxSentences) => {
+  if (!text) return true; // empty is fine
+
+  // Split text into sentences
+  const sentences = text
+    .split(/(?<=[.?!])\s+/) // look for ., ?, ! followed by space(s)
+    .filter((s) => s.trim().length > 0); // remove empty strings
+
+  return sentences.length <= maxSentences;
+};

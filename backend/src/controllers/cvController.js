@@ -6,6 +6,11 @@ export const addPersonalInformation = async (req, res) => {
   try {
     const { firstName, lastName, contact, education, aboutMe } = req.body;
 
+    // Validate aboutMe paragraph: max 5 sentences
+    if (!isWithinMaxSentences(aboutMe, 5)) {
+      return res.status(400).json({ message: "About me section must be at most 5 sentences." });
+    }
+
     // Check if CV document exists for the user
     let cv = await CV.findOne({ userId });
 
@@ -87,6 +92,20 @@ export const addProjects = async (req, res) => {
       return res.status(400).json({ message: "You can add up to 3 projects only." });
     }
 
+    // Validate outcome and roleContribution sentences
+    for (const project of projects) {
+      if (!isWithinMaxSentences(project.outcome, 2)) {
+        return res.status(400).json({
+          message: `Project "${project.name}" outcome must be at most 2 sentences.`
+        });
+      }
+      if (!isWithinMaxSentences(project.roleContribution, 2)) {
+        return res.status(400).json({
+          message: `Project "${project.name}" roleContribution must be at most 2 sentences.`
+        });
+      }
+    }
+
     const cv = await CV.findOne({ userId });
     if (!cv) {
       return res.status(404).json({ message: "CV not found. Complete personal info first." });
@@ -114,6 +133,15 @@ export const addWorkExperience = async (req, res) => {
 
     if (experiences.length > 4) {
       return res.status(400).json({ message: "You can add up to 4 experiences only." });
+    }
+
+    // Validate contribution sentences
+    for (const exp of experiences) {
+      if (!isWithinMaxSentences(exp.contribution, 3)) {
+        return res.status(400).json({
+          message: `Experience at "${exp.company}" contribution must be at most 3 sentences.`
+        });
+      }
     }
 
     const cv = await CV.findOne({ userId });
