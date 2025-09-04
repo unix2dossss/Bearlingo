@@ -1,4 +1,5 @@
 import CV from "../models/CV.js";
+import { buildCVHtml } from "../utils/buildCVHtml.js";
 
 // Saving or updating personal information in CV
 export const addPersonalInformation = async (req, res) => {
@@ -174,5 +175,22 @@ export const getCV = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Getting CV preview
+export const getPreviewCV = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const cv = await CV.findOne({ userId });
+    if (!cv) return res.status(404).send("CV not found");
+
+    const html = buildCVHtml(cv);
+
+    res.setHeader("Content-Type", "text/html");
+    res.send(html);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
   }
 };
