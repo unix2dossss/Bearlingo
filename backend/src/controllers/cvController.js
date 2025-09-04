@@ -101,3 +101,34 @@ export const addProjects = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Saving or updating work experience in CV
+export const addWorkExperience = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const { experiences } = req.body;
+
+    if (!experiences || !Array.isArray(experiences)) {
+      return res.status(400).json({ message: "Experiences must be an array." });
+    }
+
+    if (experiences.length > 4) {
+      return res.status(400).json({ message: "You can add up to 4 experiences only." });
+    }
+
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found. Complete personal info first." });
+    }
+
+    cv.experiences = experiences;
+    await cv.save();
+
+    res
+      .status(200)
+      .json({ message: "Experiences updated successfully.", experiences: cv.experiences });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
