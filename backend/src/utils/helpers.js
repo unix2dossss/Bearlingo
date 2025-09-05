@@ -34,3 +34,40 @@ export const isWithinMaxSentences = (text, maxSentences) => {
 
   return sentences.length <= maxSentences;
 };
+
+// Updating user's streak
+export const updateUserStreak = (user) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+
+  const lastActive = user.streak.lastActive ? new Date(user.streak.lastActive) : null;
+  if (lastActive) lastActive.setHours(0, 0, 0, 0);
+
+  if (lastActive) {
+    const diffDays = (today - lastActive) / (1000 * 60 * 60 * 24);
+    if (diffDays === 1) {
+      // Consecutive day
+      user.streak.current += 1;
+    } else if (diffDays > 1) {
+      // Streak broken
+      user.streak.current = 1;
+    }
+    // diffDays === 0 -> same day, do nothing
+  } else {
+    // First activity
+    user.streak.current = 1;
+  }
+
+  // Update longest streak
+  if (user.streak.current > user.streak.longest) {
+    user.streak.longest = user.streak.current;
+  }
+
+  // Update lastActive
+  user.streak.lastActive = new Date();
+};
+
+// Checking if a task data given is different from the one in the database
+export const hasChanged = (oldValue, newValue) => {
+  return JSON.stringify(oldValue) !== JSON.stringify(newValue);
+};
