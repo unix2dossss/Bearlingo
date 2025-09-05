@@ -220,7 +220,13 @@ export const downloadCV = async (req, res) => {
     // printBackground: true = include background colors/styles in PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
-      printBackground: true
+      printBackground: true,
+      margin: {
+        top: "0.4in",
+        bottom: "0.2in",
+        left: "0.2in",
+        right: "0.2in"
+      }
     });
 
     // Close the invisible browser

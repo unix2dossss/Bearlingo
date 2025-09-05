@@ -1,199 +1,173 @@
 // Converting a CV document into HTML
 export const buildCVHtml = (cv) => {
   return `
-  <!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${cv.firstName} ${cv.lastName} - CV</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6;
-      color: #1f2937;
-      padding: 2rem;
-    }
-
-    @page {
-      size: A4;
-      margin: 0.5cm;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: #1f2937;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: #374151;
-    }
-
-    .section {
-      background-color: #fff;
-      /* border-radius: 0.5rem; */
-      padding: 1rem 1.5rem;
-      margin-bottom: 1.5rem;
-      /* box-shadow: 0 1px 3px rgba(0,0,0,0.1); */
-      break-inside: auto; /* allow section to break across pages */
-    }
-
-    .badge {
-      display: inline-block;
-      background-color: #f3f4f6;
-      color: #4b5563;
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
-      margin-right: 0.25rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .date-badge {
-      background-color: #f3f4f6;
-      color: #6b7280;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.125rem 0.5rem;
-      border-radius: 0.25rem;
-    }
-
-    .separator {
-      border-top: 1px solid #e5e7eb;
-      margin: 1.5rem 0;
-    }
-  </style>
-</head>
-<body class="bg-gray-50 text-gray-800 print:bg-white">
-  <div class="container mx-auto max-w-4xl space-y-6">
-
-    <!-- Header Section -->
-    <div class="section text-center">
-      <h1>${cv.firstName} ${cv.lastName}</h1>
-      <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-sm text-gray-600 mt-2">
-        <div>${cv.contact.email}</div>
-        <div>${cv.contact.phone}</div>
-        <div>${cv.contact.linkedin || ""}</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${cv.firstName} ${cv.lastName} - CV</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: Calibri, sans-serif;
+        background-color: white;
+        color: #1f2937;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      .container { max-width: 56rem; margin: 0 auto; padding: 1.5rem 1rem; }
+      .header { margin-bottom: 1.5rem; }
+      .name {
+        font-family: "Trebuchet MS","Lucida Sans Unicode","Lucida Grande","Lucida Sans",Arial,sans-serif;
+        font-size: 1.875rem; font-weight: bold; margin-bottom: 0.5rem; color: black;
+      }
+      .contact-info { display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem; color: #4b5563; }
+      .contact-item { display: flex; align-items: center; gap: 0.5rem; }
+      .contact-item svg { width: 1rem; height: 1rem; color: #3b82f6; flex-shrink: 0; }
+      .contact-item a { color: #4b5563; text-decoration: none; word-break: break-all; transition: color 0.2s; }
+      .contact-item a:hover { color: #3b82f6; }
+      .section { margin-bottom: 1.5rem; }
+      .section-title {
+        font-family: "Trebuchet MS","Lucida Sans Unicode","Lucida Grande","Lucida Sans",Arial,sans-serif;
+        font-size: 1.125rem; font-weight: bold; color: black;
+        border-bottom: 2px solid #333333; padding-bottom: 0.25rem; margin-bottom: 0.75rem;
+      }
+      .section-content { font-size: 0.875rem; color: #1f2937; line-height: 1.625; }
+      .skills-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .skill-tag {
+        background-color: #eff6ff; color: #3b82f6; border: 1px solid #3b82f6;
+        padding: 0.25rem 0.5rem; border-radius: 0.9rem; font-size: 0.875rem;
+      }
+      .experience-container,.projects-container,.education-container { display: flex; flex-direction: column; gap: 1rem; }
+      .experience-item,.project-item,.education-item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .item-separator { border-top: 1px solid #e5e7eb; padding-top: 1rem; }
+      .item-title { font-size: 1rem; font-weight: 600; color: #1f2937; }
+      .item-subtitle { font-size: 0.875rem; color: #4b5563; }
+      .company-name,.education-degree { font-weight: bold; color: #3b82f6; }
+      .item-description { font-size: 0.875rem; color: #1f2937; line-height: 1.625; }
+      .project-link { color: #4b5563; text-decoration: underline; word-break: break-all; margin-left: 0.25rem; transition: color 0.2s; }
+      .project-link:hover { color: #3b82f6; }
+      @media (min-width: 640px) {
+        .container { padding: 2rem 1.5rem; }
+        .header { margin-bottom: 2rem; }
+        .name { font-size: 2.25rem; }
+        .contact-info { flex-direction: row; flex-wrap: wrap; gap: 1rem; font-size: 1rem; }
+        .section { margin-bottom: 2rem; }
+        .section-title { font-size: 1.25rem; margin-bottom: 1rem; }
+        .section-content { font-size: 1rem; }
+        .skills-container { gap: 0.75rem; }
+        .skill-tag { padding: 0.5rem 0.75rem; font-size: 1rem; }
+        .experience-container,.projects-container,.education-container { gap: 1.5rem; }
+        .item-separator { padding-top: 1.5rem; }
+        .item-title { font-size: 1.125rem; }
+        .item-subtitle { font-size: 1rem; }
+        .item-description { font-size: 1rem; }
+        .project-link { font-size: 1rem; }
+      }
+      @media (min-width: 1024px) {
+        .container { padding: 3rem 2rem; }
+        .name { font-size: 3rem; }
+        .contact-info { gap: 1.5rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1 class="name">${cv.firstName} ${cv.lastName}</h1>
+        <div class="contact-info">
+          ${cv.contact.phone ? `
+          <div class="contact-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            <span>${cv.contact.phone}</span>
+          </div>` : ""}
+          ${cv.contact.email ? `
+          <div class="contact-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>${cv.contact.email}</span>
+          </div>` : ""}
+          ${cv.contact.linkedin ? `
+          <div class="contact-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <a href="${cv.contact.linkedin}">${cv.contact.linkedin}</a>
+          </div>` : ""}
+        </div>
       </div>
-    </div>
 
-    <!-- About Me -->
-    <div class="section">
-      <h2>About Me</h2>
-      <p class="text-sm leading-relaxed text-gray-600">${cv.aboutMe}</p>
-    </div>
+      <!-- About Me -->
+      ${cv.aboutMe ? `
+      <section class="section">
+        <h2 class="section-title">OBJECTIVES</h2>
+        <p class="section-content">${cv.aboutMe}</p>
+      </section>` : ""}
 
-    <!-- Skills -->
-    <div class="section">
-      <h2>Skills</h2>
-      <div class="flex flex-wrap gap-2">
-        ${cv.skills.map((skill) => `<span class="badge">${skill}</span>`).join("")}
-      </div>
-    </div>
+      <!-- Skills -->
+      ${cv.skills?.length ? `
+      <section class="section">
+        <h2 class="section-title">SKILLS</h2>
+        <div class="skills-container">
+          ${cv.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join("")}
+        </div>
+      </section>` : ""}
 
-    <!-- Work Experience -->
-    <div class="section">
-      <h2>Work Experience</h2>
-      <div class="space-y-4">
-        ${cv.experiences
-          .map(
-            (exp) => `
-          <div>
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1">
-              <div>
-                <h3 class="font-semibold text-gray-800">${exp.role}</h3>
-                <p class="text-sm text-gray-700 font-medium">${exp.company}</p>
+      <!-- Work Experience -->
+      ${cv.experiences?.length ? `
+      <section class="section">
+        <h2 class="section-title">WORK EXPERIENCE</h2>
+        <div class="experience-container">
+          ${cv.experiences.map((exp, idx) => `
+            <div class="experience-item ${idx > 0 ? "item-separator" : ""}">
+              <h3 class="item-title">${exp.role}</h3>
+              <div class="item-subtitle">
+                <span class="company-name">${exp.company}</span> | ${exp.startYear} - ${exp.endYear}
               </div>
-              <span class="date-badge mt-1 sm:mt-0">${exp.startYear} - ${exp.endYear}</span>
-            </div>
-            <p class="text-sm leading-relaxed text-gray-600">${exp.contribution}</p>
-          </div>
-        `
-          )
-          .join('<div class="separator"></div>')}
-      </div>
-    </div>
-
-    <!-- Projects -->
-    <div class="section">
-      <h2>Projects</h2>
-      <div class="space-y-4">
-        ${cv.projects
-          .map(
-            (p) => `
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <h3 class="font-semibold text-gray-800">${p.name}</h3>
-              ${p.link ? `<a href="${p.link}" class="text-blue-500 hover:text-blue-700" target="_blank">GitHub</a>` : ""}
-            </div>
-            <p class="text-sm text-gray-600"><strong>Outcome:</strong> ${p.outcome}</p>
-            <p class="text-sm text-gray-600"><strong>Role:</strong> ${p.roleContribution}</p>
-          </div>
-        `
-          )
-          .join('<div class="separator"></div>')}
-      </div>
-    </div>
-
-    <!-- Education -->
-    <div class="section">
-      <h2>Education</h2>
-
-      <!-- Tertiary -->
-      <div class="mb-4">
-        <h3 class="font-semibold text-gray-800 mb-2">Higher Education</h3>
-        ${cv.education.tertiary
-          .map(
-            (ed) => `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1">
-            <div>
-              <p class="font-medium">${ed.degree}</p>
-              <p class="text-sm text-gray-600">${ed.university}</p>
-            </div>
-            <span class="date-badge mt-1 sm:mt-0">${ed.startYear} - ${ed.endYear}</span>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-
-      <div class="separator"></div>
-
-      <!-- Secondary -->
-      <div>
-        <h3 class="font-semibold text-gray-800 mb-2">Secondary Education</h3>
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
-          <div><p class="font-medium">${cv.education.secondary.schoolName}</p></div>
-          <span class="date-badge mt-1 sm:mt-0">${cv.education.secondary.startYear} - ${cv.education.secondary.endYear}</span>
+              <p class="item-description">• ${exp.contribution}</p>
+            </div>`).join("")}
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p class="font-medium mb-1 text-gray-700">Key Subjects:</p>
-            <div class="text-gray-600 space-y-1">
-              ${cv.education.secondary.subjects.map((s) => `<div>• ${s}</div>`).join("")}
+      </section>` : ""}
+
+      <!-- Projects -->
+      ${cv.projects?.length ? `
+      <section class="section">
+        <h2 class="section-title">PROJECTS</h2>
+        <div class="projects-container">
+          ${cv.projects.map((p, idx) => `
+            <div class="project-item ${idx > 0 ? "item-separator" : ""}">
+              <div class="item-title">
+                ${p.name}${p.link ? ` - <a href="${p.link}" class="project-link">[${p.link}]</a>` : ""}
+              </div>
+              <p class="item-description">${p.outcome}</p>
+              <p class="item-description">• ${p.roleContribution}</p>
+            </div>`).join("")}
+        </div>
+      </section>` : ""}
+
+      <!-- Education -->
+      <section class="section">
+        <h2 class="section-title">EDUCATION</h2>
+        <div class="education-container">
+          ${cv.education.tertiary.map((ed, idx) => `
+            <div class="education-item ${idx > 0 ? "item-separator" : ""}">
+              <h3 class="item-title">${ed.university}</h3>
+              <div class="item-subtitle">
+                <span class="education-degree">${ed.degree}</span> | ${ed.startYear} - ${ed.endYear}
+              </div>
+            </div>`).join("")}
+
+          <div class="education-item item-separator">
+            <h3 class="item-title">${cv.education.secondary.schoolName}</h3>
+            <div class="item-subtitle">
+              <span class="education-degree">${cv.education.secondary.subjects.join(", ")}</span> | ${cv.education.secondary.startYear} - ${cv.education.secondary.endYear}
             </div>
-          </div>
-          <div>
-            <p class="font-medium mb-1 text-gray-700">Achievements:</p>
-            <div class="text-gray-600 space-y-1">
-              ${cv.education.secondary.achievements.map((a) => `<div>• ${a}</div>`).join("")}
-            </div>
+            ${cv.education.secondary.achievements?.length ? `
+            <p class="item-description"><strong>Achievements:</strong> ${cv.education.secondary.achievements.join(", ")}</p>` : ""}
           </div>
         </div>
-      </div>
-
+      </section>
     </div>
-  </div>
-</body>
+  </body>
 </html>
   `;
 };
