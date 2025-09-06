@@ -16,9 +16,9 @@ const InterviewPrepRecordSchema = new mongoose.Schema(
     ],
 
     reflection: {
-      whatWentWell: { type: String, required: true },
-      whatWasDifficult: { type: String, required: true },
-      improvementPlan: { type: String, required: true }
+      whatWentWell: { type: String },
+      whatWasDifficult: { type: String },
+      improvementPlan: { type: String }
     }
   },
   {
