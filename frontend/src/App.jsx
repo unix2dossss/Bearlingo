@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 const App = () => {
   return (
-    <div>
+    <div data-theme="lemonade">
       <button onClick={() => toast.success("yay toast works - frontend branch")} className="btn btn-outline">Click me</button>
       <Routes>
         <Route path="/" element={<Home />} />
