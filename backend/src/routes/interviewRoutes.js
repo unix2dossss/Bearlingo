@@ -12,5 +12,7 @@ router.post("/company-research", authenticate, interviewController.addCompanyRes
 router.get("/company-researches", authenticate, interviewController.getCompanyResearches);
 router.delete("/company-research/:id", authenticate, interviewController.deleteCompanyResearch);
 router.post("/reflection-journal", authenticate, interviewController.addReflectionJournal);
+router.get("/reflection-journal", authenticate, interviewController.getReflectionJournal);
+router.get("/preparation-record", authenticate, interviewController.getInterviewPrepRecord);
 
 export default router;

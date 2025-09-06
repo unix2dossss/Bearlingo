@@ -102,3 +102,36 @@ export const addReflectionJournal = async (req, res) => {
     res.status(500).json({ message: "Error saving reflection journal", error: error.message });
   }
 };
+
+// Getting the reflection journal for a user
+export const getReflectionJournal = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const record = await InterviewPrepRecord.findOne({ user: userId }).select("reflection");
+    if (!record) {
+      return res.status(404).json({ message: "Interview prep record not found" });
+    }
+
+    res.status(200).json(record.reflection);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching reflection journal", error: error.message });
+  }
+};
+
+// Getting a user's InterviewPrepRecord document
+export const getInterviewPrepRecord = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const record = await InterviewPrepRecord.findOne({ user: userId }).populate(
+      "companyResearches"
+    ); // populate company research details
+
+    if (!record) {
+      return res.status(404).json({ message: "No interview prep record found for this user" });
+    }
+
+    res.status(200).json(record);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching interview prep record", error: error.message });
+  }
+};
