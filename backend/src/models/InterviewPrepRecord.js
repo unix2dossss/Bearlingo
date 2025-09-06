@@ -8,13 +8,12 @@ const InterviewPrepRecordSchema = new mongoose.Schema(
       required: true
     },
 
-    companyResearch: {
-      companyName: { type: String, required: true },
-      industry: { type: String, required: true },
-      products: { type: String, required: true },
-      competitors: { type: String, required: true },
-      questions: [{ type: String, required: true }] // questions to ask interviewer
-    },
+    companyResearches: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyResearch"
+      }
+    ],
 
     reflection: {
       whatWentWell: { type: String, required: true },
