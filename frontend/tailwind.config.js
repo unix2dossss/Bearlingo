@@ -1,3 +1,5 @@
+import daisyui from "diasyui'";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
