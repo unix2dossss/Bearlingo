@@ -11,5 +11,6 @@ const router = express.Router();
 router.post("/company-research", authenticate, interviewController.addCompanyResearch);
 router.get("/company-researches", authenticate, interviewController.getCompanyResearches);
 router.delete("/company-research/:id", authenticate, interviewController.deleteCompanyResearch);
+router.post("/reflection-journal", authenticate, interviewController.addReflectionJournal);
 
 export default router;

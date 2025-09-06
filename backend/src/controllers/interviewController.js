@@ -82,3 +82,23 @@ export const deleteCompanyResearch = async (req, res) => {
     res.status(500).json({ message: "Error deleting company research", error: error.message });
   }
 };
+
+// Adding or updating reflection journal details in user's InterviewPrepRecord document
+export const addReflectionJournal = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const { whatWentWell, whatWasDifficult, improvementPlan } = req.body;
+
+    const record = await InterviewPrepRecord.findOne({ user: userId });
+    if (!record) {
+      return res.status(404).json({ message: "Interview prep record not found" });
+    }
+
+    record.reflection = { whatWentWell, whatWasDifficult, improvementPlan };
+    await record.save();
+
+    res.status(200).json({ message: "Reflection journal saved successfully", record });
+  } catch (error) {
+    res.status(500).json({ message: "Error saving reflection journal", error: error.message });
+  }
+};
