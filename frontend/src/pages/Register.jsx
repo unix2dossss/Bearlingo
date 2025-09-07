@@ -17,7 +17,7 @@ const Register = () => {
     const handleSubmit = (e) => {
         e.preventDefault() // prevents the values inside the input from changing to default values when register button is pressed
         if (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-            toast.error("All red fields that are  marked with * required to be filled"); // Checks if there are not fields or an empty value in the input then an error occurs 
+            toast.error("All red fields that are  marked with * required to be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error 
         }
 
     }
