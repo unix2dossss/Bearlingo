@@ -9,9 +9,10 @@
     "init-db": "node ./src/scripts/init-db.js"
   },
   "keywords": [],
-  "author": "Debug Devas",
+  "author": "Debug Divas",
   "contributors": [
-    "Thamasha Rajakaruna"
+    "Thamasha Rajakaruna",
+    "Venus Chandra"
   ],
   "license": "ISC",
   "description": "",

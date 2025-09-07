@@ -15,7 +15,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaScript object and store it in req.body
 app.use(cookieParser()); // Parse req.cookies into a JSON object
-app.use(cors()); // uses cors middleware package,  any frontend on any domain can access your API
+app.use(cors({
+  origin: "http://localhost:5173"
+})); // uses cors middleware package,  any frontend on any domain can access your API
 // Logging info with morgan middleware
 app.use(morgan("dev"));
 
