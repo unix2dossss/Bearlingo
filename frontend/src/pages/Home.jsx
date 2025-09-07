@@ -11,7 +11,8 @@ const Home = () => {
 
                 <button onClick={() => toast.success("yay toast notification works - frontend branch")} className="btn btn-outline border-red-400">Click me</button>
             </div>
-            <p>HI FROM HOME</p>
+
+
 
 
             <div className="carousel w-full">
