@@ -1,14 +1,13 @@
 import React from 'react'
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { Routes, Route } from 'react-router-dom';
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"; // @ 2:08:00 mern video
 
 const App = () => {
   return (
     <div data-theme="lemonade">
-      <button onClick={() => toast.success("yay toast works - frontend branch")} className="btn btn-outline">Click me</button>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -18,4 +17,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App;
