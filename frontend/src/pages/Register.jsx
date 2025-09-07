@@ -1,10 +1,14 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
 
 const Register = () => {
     return (
-        <div> Hiii - from Register page
+        <>
+            <Navbar />
+            <div> Hiii - from Register page
 
-        </div>
+            </div>
+        </>
     )
 }
 

@@ -5,17 +5,23 @@ import { PlusIcon } from 'lucide-react';
 const Navbar = () => {
     return <header className="bg-base-300 border-b border-base-content/10">
         <div className="mx-auto max-w-6xl px-4 py-4">
-            <div className="flex items-center justify-between">
+            <div className=" flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-primary font-mono tracking-tight">
                     BearLingo
                 </h1>
-                <Link to={"/register"} className="btn btn-primary">
-                    <PlusIcon className="size-5" />
-                    <span>Register</span>
-                </Link>
+                <div className=" flex gap-2">
+                    <Link to={"/register"} className="btn btn-primary">
+                        <PlusIcon className="size-5" />
+                        <span>Register</span>
+                    </Link>
+                    <Link to={"/login"} className="btn btn-primary">
+                        <PlusIcon className="size-5" />
+                        <span>Login</span>
+                    </Link>
+                </div>
             </div>
         </div>
-    </header>
+    </header >
 }
 
 export default Navbar;
