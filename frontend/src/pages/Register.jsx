@@ -5,8 +5,8 @@ const Register = () => {
     return (
         <>
             <Navbar />
-            <div> Hiii - from Register page
-
+            <div className=" min-h-screen">
+                <p>HI FROM Register</p>
             </div>
         </>
     )
