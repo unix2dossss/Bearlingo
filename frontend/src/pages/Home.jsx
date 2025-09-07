@@ -7,9 +7,10 @@ const Home = () => {
         <>
             <Navbar />
             <div className="flex justify-center items-center">
-                <button onClick={() => toast.success("yay toast works - frontend branch")} className="btn btn-outline border-red-400">Click me</button>
+                <button onClick={() => toast.success("yay toast notification works - frontend branch")} className="btn btn-outline border-red-400">Click me</button>
             </div>
             <div className="min-h-screen text-white">
+                <br></br>
                 HI FROM HOME
             </div>
         </>

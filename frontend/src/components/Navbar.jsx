@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router';
-import { PlusIcon } from 'lucide-react';
+import { Home, PlusIcon, Login, UserPlus } from 'lucide-react';
 
 const Navbar = () => {
     return <header className="bg-base-300 border-b border-base-content/10">
@@ -11,12 +11,16 @@ const Navbar = () => {
                 </h1>
                 <div className=" flex gap-2">
                     <Link to={"/register"} className="btn btn-primary">
-                        <PlusIcon className="size-5" />
+                        <UserPlus className="size-5" />
                         <span>Register</span>
                     </Link>
                     <Link to={"/login"} className="btn btn-primary">
-                        <PlusIcon className="size-5" />
+                        <Lofin className="size-5" />
                         <span>Login</span>
+                    </Link>
+                    <Link to={"/"} className="btn btn-primary">
+                        <Home className="size-5" />
+                        <span>Home</span>
                     </Link>
                 </div>
             </div>
