@@ -29,7 +29,7 @@ router.get("/streaks", authenticate, usersController.getStreak);
 router.get("/progress/module/:moduleId", authenticate, usersController.getUserModuleProgress);
 router.get("/modules", authenticate, usersController.getModules);
 router.get("/modules/:moduleId", authenticate, usersController.getModuleById);
-router.get("/complete/level-subtasks/:subtaskId", authenticate, usersController.completeSubtask);
+router.post("/complete/level-subtasks/:subtaskId", authenticate, usersController.completeSubtask);
 
 
 // ---------- Journal Routes ----------
