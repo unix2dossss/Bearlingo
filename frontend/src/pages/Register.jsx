@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon } from 'lucide-react';
 
 const Register = () => {
@@ -14,10 +14,30 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault() // prevents the values inside the input from changing to default values when register button is pressed
+    const navigate = useNavigate();
+    const handleSubmit = async (e) => {
+        e.preventDefault() // prevents the values inside the input from changing to default/empty values when register button is pressed
         if (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
             toast.error("All red fields that are  marked with * required to be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error 
+            return
+        }
+
+        setLoading(true);
+        try {
+            await axios.post("http://localhost:5001/api/users/register", {
+                firstName,
+                lastName,
+                username,
+                email,
+                password,
+                linkedIn
+            })
+            toast.success("You registered sucessfully!");
+            navigate("/login"); // This should navigate to login pagr
+        } catch (error) {
+
+        } finally {
+            setLoading(false);
         }
 
     }
