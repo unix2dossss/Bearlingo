@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon } from 'lucide-react';
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Register = () => {
     const [firstName, setFirstName] = useState("");
@@ -24,17 +26,20 @@ const Register = () => {
 
         setLoading(true);
         try {
-            await axios.post("http://localhost:5001/api/users/register", {
+            await axios.post("http://localhost:8080/api/users/register", {
                 firstName,
                 lastName,
                 username,
                 email,
                 password,
+                confirmPassword,
                 linkedIn
             })
             toast.success("You registered sucessfully!");
             navigate("/login"); // This should navigate to login pagr
         } catch (error) {
+            console.log("Error in registering", error);
+            toast.error("Failed to register! Please try again");
 
         } finally {
             setLoading(false);
@@ -132,7 +137,7 @@ const Register = () => {
                                             onChange={(e) => setConfirmPassword(e.target.value)}></input>
                                     </div>
                                     <div className="card-actions justify-center mb-2 h-20">
-                                        <button type="submit" className="btn btn-primary w-40 h-18" diasble={loading}>
+                                        <button type="submit" className="btn btn-primary w-40 h-18" disable={loading}>
                                             {loading ? "Registering ..." : "Register"}
                                         </button>
                                     </div>
