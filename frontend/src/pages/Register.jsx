@@ -17,6 +17,64 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    // ---- Regex helpers ----
+    const nameRegex = /^[A-Za-z\s]{2,30}$/;
+    const usernameRegex = /^[\w\s-]{3,20}$/;
+    const emailRegex = /^[^\s@]+@gmail\.com$/;
+    const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
+
+    const validateInputs = () => {
+        if (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+            toast.error("All fields marked with * are required.");
+            return false;
+        }
+
+        if (!nameRegex.test(firstName)) {
+            toast.error("First Name must be 2–30 letters only.");
+            return false;
+        }
+        if (!nameRegex.test(lastName)) {
+            toast.error("Last Name must be 2–30 letters only.");
+            return false;
+        }
+
+        if (!usernameRegex.test(username)) {
+            toast.error("Username must be 3–20 characters (letters, numbers, _, -, space).");
+            return false;
+        }
+
+        if (!emailRegex.test(email)) {
+            toast.error("Please use a valid Gmail address.");
+            return false;
+        }
+
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long.");
+            return false;
+        }
+        if (!/[a-z]/.test(password)) {
+            toast.error("Password must contain at least one lowercase letter.");
+            return false;
+        }
+        if (!/[A-Z]/.test(password)) {
+            toast.error("Password must contain at least one uppercase letter.");
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match!");
+            return false;
+        }
+
+        if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
+            toast.error("Please enter a valid LinkedIn URL.");
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault() // prevents the values inside the input from changing to default/empty values when register button is pressed
         if (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
@@ -24,20 +82,22 @@ const Register = () => {
             return
         }
 
+        if (!validateInputs()) return; // stop if validation fails
+
         setLoading(true);
         console.log("LinkedIn-->", linkedIn, "<--");
         console.log("linkedIn === no space", linkedIn === "");            // true -> empty string
         console.log("linkedIn === space ", linkedIn === " ");            // false -> not empty
         console.log(linkedIn.trim() === "");     // true -> only whitespac
         try {
-            await axios.post("http://localhost:8080/api/users/register", {
+            await axios.post("http://localhost:3000/api/users/register", {
                 firstName,
                 lastName,
                 username,
                 email,
                 password,
                 confirmPassword,
-                linkedIn
+                linkedIn: linkedIn.trim() === "" ? undefined : linkedIn.trim()
             })
             toast.success("You registered sucessfully!");
             navigate("/login"); // This should navigate to login pagr
