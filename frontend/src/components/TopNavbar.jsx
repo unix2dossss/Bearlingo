@@ -5,10 +5,9 @@ import { Flame, Star, User } from "lucide-react";
 const TopNavbar = () => {
   const { user, fetchUser } = useUserStore();
 
-  // Fetch user once when Navbar loads
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    if (!user) fetchUser(); // only fetch if user not already loaded in store
+  }, [user, fetchUser]);
 
   return (
     <nav className="w-full bg-gray-200 p-4 flex justify-between items-center border border-black">
