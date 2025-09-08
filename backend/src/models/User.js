@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import UserProgress from "./UserProgress.js";
+import JournalEntry from "./JournalEntry.js";
+import CV from "./CV.js";
+import InterviewPrepRecord from "./InterviewPrepRecord.js";
+import CompanyResearch from "./CompanyResearch.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -64,5 +69,17 @@ const userSchema = new mongoose.Schema(
     timestamp: true
   }
 );
+
+// Delete associated data when user is deleted
+userSchema.pre("deleteOne", { document: true, query: false }, async function(next) {
+  const userId = this._id;
+  await UserProgress.deleteMany({ user: userId });
+  await JournalEntry.deleteMany({ user: userId });
+  await CV.deleteMany({ userId });
+  await InterviewPrepRecord.deleteMany({ user: userId });
+  await CompanyResearch.deleteMany({ user: userId });
+  next();
+});
+
 
 export default mongoose.model("User", userSchema);

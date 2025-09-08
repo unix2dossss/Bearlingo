@@ -160,7 +160,9 @@ export const deleteUser = async (req, res) => {
   if (user === null) {
     return res.status(404).send(`User with id ${id} not found`);
   }
-  await User.deleteOne({ _id: id });
+  // triggers pre("deleteOne") hook in User model to delete every collection data associated with the user in the database
+  await user.deleteOne();
+
   // Clear JWT cookie
   res.cookie("jwt", "", {
     httpOnly: true,
@@ -603,7 +605,7 @@ export const getLeaderboard = async (req, res) => {
   }
   try {
     const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }) // Retrieving all users
-      .sort({ xp: -1, "streak.current": -1 }); // -1 for descending order. Sorting by xp first, then by current streak
+      .sort({ xp: -1 }); // -1 for descending order. Sorting by xp
 
     return res.status(200).json({ users });
   } catch (error) {
