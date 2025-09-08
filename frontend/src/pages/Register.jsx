@@ -17,6 +17,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [focused, setFocused] = useState(false);
     const [focused2, setFocused2] = useState(false);
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
 
 
@@ -36,15 +37,12 @@ const Register = () => {
             !email.trim() ||
             !password.trim() ||
             !confirmPassword.trim()
-        ) {
-            toast.error("All fields marked with * are required.");
-            return false;
-        }
+        )
 
-        if (!nameRegex.test(firstName)) {
-            toast.error("First Name must be 2–30 letters only.");
-            return false;
-        }
+            if (!nameRegex.test(firstName)) {
+                toast.error("First Name must be 2–30 letters only.");
+                return false;
+            }
         if (!nameRegex.test(lastName)) {
             toast.error("Last Name must be 2–30 letters only.");
             return false;
@@ -96,7 +94,7 @@ const Register = () => {
             !password.trim() ||
             !confirmPassword.trim()
         ) {
-            toast.error("All red fields that are  marked with * required to be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error
+            toast.error("All fields that are marked with * must be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error
             return;
         }
 
@@ -124,7 +122,7 @@ const Register = () => {
                 }
             );
             toast.success("You registered sucessfully!");
-            navigate("/login"); // This should navigate to login pagr
+            navigate("/login"); // This should navigate to login page
         } catch (error) {
             console.log("Error in registering", error);
             toast.error("Failed to register! Please try again");
@@ -225,10 +223,11 @@ const Register = () => {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                         ></input>
-                                        <p className="validator-hint text-sm text-red-600">
+                                        {focused && !passwordPattern.test(password) && (<p className="validator-hint text-sm text-red-600">
                                             Must be more than 8 characters, including
                                             <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                         </p>
+                                        )}
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
@@ -246,10 +245,11 @@ const Register = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                         ></input>
-                                        <p className="validator-hint text-sm text-red-600">
+                                        {focused2 && !passwordPattern.test(confirmPassword) && (<p className="validator-hint text-sm text-red-600">
                                             Must be more than 8 characters, including
                                             <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                         </p>
+                                        )}
                                     </div>
                                     <div className="card-actions justify-center mb-2 h-20">
                                         <button type="submit" className="btn btn-primary w-40 h-18" disable={loading}>
