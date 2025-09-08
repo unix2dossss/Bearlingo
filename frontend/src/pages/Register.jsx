@@ -90,7 +90,7 @@ const Register = () => {
         console.log("linkedIn === space ", linkedIn === " ");            // false -> not empty
         console.log(linkedIn.trim() === "");     // true -> only whitespac
         try {
-            await axios.post("http://localhost:3000/api/users/register", {
+            await axios.post("http://localhost:8080/api/users/register", {
                 firstName,
                 lastName,
                 username,
