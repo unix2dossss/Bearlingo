@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
 import modulesRoutes from "./routes/modulesRoutes.js";
 import cvRoutes from "./routes/cvRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -28,6 +29,7 @@ app.get('/test', (req, res) => {
 });
 app.use("/api/users", usersRoutes);
 app.use("/api/users/me/cv", cvRoutes);
+app.use("/api/users/me/interview", interviewRoutes);
 app.use("/api/modules", modulesRoutes);
 
 // Connect to MongoDB and start the server
