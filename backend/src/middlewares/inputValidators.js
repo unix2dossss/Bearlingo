@@ -96,7 +96,7 @@ const confirmPasswordValidator = body("confirmPassword")
   });
 
 const linkedInValidator = body("linkedIn")
-  .optional()
+  .optional({ checkFalsy: true })// ignores "", null, undefined
   .trim()
   .isURL()
   .withMessage("Please provide a valid URL.")

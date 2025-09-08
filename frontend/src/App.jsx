@@ -3,7 +3,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Routes, Route } from 'react-router-dom';
-// @ 2:41:19 mern video
 
 const App = () => {
   return (

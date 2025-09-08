@@ -30,6 +30,9 @@ export const registerUser = async (req, res) => {
       linkedIn
     });
 
+    console.log("=====Body of request:  ", req.body, "=====");
+    console.log("Hii this is running as expected in /registers");
+
     try {
       const savedUser = await newUser.save();
       generateToken(res, savedUser._id);
