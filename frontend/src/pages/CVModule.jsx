@@ -1,9 +1,10 @@
 import React from 'react'
+import TopNavbar from '../components/TopNavbar'
 
 const CvModule = () => {
     return (
         <div>
-            CV component
+            <TopNavbar />
         </div>
     )
 }
