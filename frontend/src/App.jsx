@@ -2,7 +2,7 @@ import React from 'react'
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import CvModule from './pages/CVModule';
+import CvModule from './pages/CVmodulePages/CVModule';
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
