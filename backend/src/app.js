@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
 import modulesRoutes from "./routes/modulesRoutes.js";
 import cvRoutes from "./routes/cvRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -16,7 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaScript object and store it in req.body
 app.use(cookieParser()); // Parse req.cookies into a JSON object
 app.use(cors({
-  origin: "http://localhost:5173"
+  origin: "http://localhost:5173",
+  credentials: true
 })); // uses cors middleware package,  any frontend on any domain can access your API
 // Logging info with morgan middleware
 app.use(morgan("dev"));
@@ -28,6 +30,7 @@ app.get('/test', (req, res) => {
 });
 app.use("/api/users", usersRoutes);
 app.use("/api/users/me/cv", cvRoutes);
+app.use("/api/users/me/interview", interviewRoutes);
 app.use("/api/modules", modulesRoutes);
 
 // Connect to MongoDB and start the server

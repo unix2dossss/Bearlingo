@@ -1,8 +1,10 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { ArrowLeftIcon } from 'lucide-react';
+import React from "react";
+import Navbar from "../components/Navbar";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { ArrowLeftIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../lib/axios";
 
 const Register = () => {
     const [firstName, setFirstName] = useState("");
@@ -13,19 +15,125 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [focused, setFocused] = useState(false);
+    const [focused2, setFocused2] = useState(false);
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
-    const handleSubmit = (e) => {
-        e.preventDefault() // prevents the values inside the input from changing to default values when register button is pressed
-        if (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-            toast.error("All red fields that are  marked with * required to be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error 
+
+
+    const navigate = useNavigate();
+
+    // ---- Regex helpers ----
+    const nameRegex = /^[A-Za-z\s]{2,30}$/;
+    const usernameRegex = /^[\w\s-]{3,20}$/;
+    const emailRegex = /^[^\s@]+@gmail\.com$/;
+    const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
+
+    const validateInputs = () => {
+        if (
+            !firstName.trim() ||
+            !lastName.trim() ||
+            !username.trim() ||
+            !email.trim() ||
+            !password.trim() ||
+            !confirmPassword.trim()
+        )
+
+            if (!nameRegex.test(firstName)) {
+                toast.error("First Name must be 2–30 letters only.");
+                return false;
+            }
+        if (!nameRegex.test(lastName)) {
+            toast.error("Last Name must be 2–30 letters only.");
+            return false;
         }
 
-    }
+        if (!usernameRegex.test(username)) {
+            toast.error("Username must be 3–20 characters (letters, numbers, _, -, space).");
+            return false;
+        }
 
+        if (!emailRegex.test(email)) {
+            toast.error("Please use a valid Gmail address.");
+            return false;
+        }
+
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long.");
+            return false;
+        }
+        if (!/[a-z]/.test(password)) {
+            toast.error("Password must contain at least one lowercase letter.");
+            return false;
+        }
+        if (!/[A-Z]/.test(password)) {
+            toast.error("Password must contain at least one uppercase letter.");
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match!");
+            return false;
+        }
+
+        if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
+            toast.error("Please enter a valid LinkedIn URL.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // prevents the values inside the input from changing to default/empty values when register button is pressed
+        if (
+            !firstName.trim() ||
+            !lastName.trim() ||
+            !username.trim() ||
+            !email.trim() ||
+            !password.trim() ||
+            !confirmPassword.trim()
+        ) {
+            toast.error("All fields that are marked with * must be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error
+            return;
+        }
+
+        if (!validateInputs()) return; // stop if validation fails
+
+        setLoading(true);
+        console.log("LinkedIn-->", linkedIn, "<--");
+        console.log("linkedIn === no space", linkedIn === ""); // true -> empty string
+        console.log("linkedIn === space ", linkedIn === " "); // false -> not empty
+        console.log(linkedIn.trim() === ""); // true -> only whitespac
+        try {
+            await api.post(
+                "/users/register",
+                {
+                    firstName,
+                    lastName,
+                    username,
+                    email,
+                    password,
+                    confirmPassword,
+                    linkedIn: linkedIn.trim() === "" ? undefined : linkedIn.trim()
+                },
+                {
+                    withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
+                }
+            );
+            toast.success("You registered sucessfully!");
+            navigate("/login"); // This should navigate to login page
+        } catch (error) {
+            console.log("Error in registering", error);
+            toast.error("Failed to register! Please try again");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
-            <div className=" min-h-screen bg-register-bg bg-cover bg-center">
+            <div className=" min-h-screen bg-base-300">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-2xl, mx-auto">
                         <Link to={"/"} className="btn btn-ghost mb-6">
@@ -33,101 +141,129 @@ const Register = () => {
                             Back to Home
                         </Link>
 
-                        <div className="card bg-base-100 max-w-90 mx-auto">
-                            <div className="card-body p-6">
-                                <h2 className="card-title text-2xl mb flex justify-center">
-                                    Register
-                                </h2>
+                        <div className="card bg-base-100">
+                            <div className="card-body">
+                                <h2 className="card-title text-2xl mb flex justify-center">Register</h2>
                                 <form onSubmit={handleSubmit}>
                                     <div className="flex gap-4">
                                         <div className="form-control mb-4 w-full">
                                             <label className="label">
-                                                <span className="label-text">First Name</span>
+                                                <span className="label-text">First Name  <span className="label-text text-red-600">*</span></span>
                                             </label>
-                                            <input type="text"
+                                            <input
+                                                type="text"
                                                 placeholder="First Name"
                                                 className="input input-bordered"
                                                 value={firstName}
-                                                onChange={(e) => setFirstName(e.target.value)}></input>
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                            ></input>
                                         </div>
                                         <div className="form-control mb-4  w-full">
                                             <label className="label">
-                                                <span className="label-text">Last Name</span>
+                                                <span className="label-text">Last Name <span className="label-text text-red-600">*</span></span>
                                             </label>
-                                            <input type="text"
+                                            <input
+                                                type="text"
                                                 placeholder="Last Name"
                                                 className="input input-bordered"
                                                 value={lastName}
-                                                onChange={(e) => setLastName(e.target.value)}></input>
+                                                onChange={(e) => setLastName(e.target.value)}
+                                            ></input>
                                         </div>
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
-                                            <span className="label-text">Username</span>
+                                            <span className="label-text">Username <span className="label-text text-red-600">*</span></span>
                                         </label>
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             placeholder="Username"
                                             className="input input-bordered"
                                             value={username}
-                                            onChange={(e) => setUsername(e.target.value)}></input>
+                                            onChange={(e) => setUsername(e.target.value)}
+                                        ></input>
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
                                             <span className="label-text">LinkedIn (Optional)</span>
                                         </label>
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             placeholder="LinkedIn"
                                             className="input input-bordered"
                                             value={linkedIn}
-                                            onChange={(e) => setLinkedIn(e.target.value)}></input>
+                                            onChange={(e) => setLinkedIn(e.target.value)}
+                                        ></input>
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
-                                            <span className="label-text">Email</span>
+                                            <span className="label-text">Email <span className="label-text text-red-600">*</span></span>
                                         </label>
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             placeholder="Email"
                                             className="input input-bordered"
                                             value={email}
-                                            onChange={(e) => setEmail(e.target.value)}></input>
+                                            onChange={(e) => setEmail(e.target.value)}
+                                        ></input>
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
-                                            <span className="label-text">Password</span>
+                                            <span className="label-text">Password <span className="label-text text-red-600">*</span></span>
                                         </label>
-                                        <input type="text"
+                                        <input
+                                            type="password"
                                             placeholder="Password"
-                                            className="input input-bordered"
+                                            className="input validator input-bordered"
+                                            minlength="8"
+                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                            title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                                            onFocus={() => setFocused(true)}   // show hint on focus
+                                            onBlur={() => setFocused(false)}   // hide hint on blur
                                             value={password}
-                                            onChange={(e) => setPassword(e.target.value)}></input>
+                                            onChange={(e) => setPassword(e.target.value)}
+                                        ></input>
+                                        {focused && !passwordPattern.test(password) && (<p className="validator-hint text-sm text-red-600">
+                                            Must be more than 8 characters, including
+                                            <br />At least one number. At least one lowercase letter. At least one uppercase letter
+                                        </p>
+                                        )}
                                     </div>
                                     <div className="form-control mb-4">
                                         <label className="label">
-                                            <span className="label-text">Confirm Password</span>
+                                            <span className="label-text">Confirm Password <span className="label-text text-red-600">*</span></span>
                                         </label>
-                                        <input type="text"
+                                        <input
+                                            type="password"
                                             placeholder="Confirm Password"
-                                            className="input input-bordered"
+                                            className="input validator input-bordered"
+                                            minlength="8"
+                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                            title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                                            onFocus={() => setFocused2(true)}   // show hint on focus
+                                            onBlur={() => setFocused2(false)}   // hide hint on blur
                                             value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}></input>
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                        ></input>
+                                        {focused2 && !passwordPattern.test(confirmPassword) && (<p className="validator-hint text-sm text-red-600">
+                                            Must be more than 8 characters, including
+                                            <br />At least one number. At least one lowercase letter. At least one uppercase letter
+                                        </p>
+                                        )}
                                     </div>
-                                    <div className="card-actions justify-center mb-2 h-10">
-                                        <button type="submit" className="btn btn-primary w-40 h-18" diasble={loading}>
+                                    <div className="card-actions justify-center mb-2 h-20">
+                                        <button type="submit" className="btn btn-primary w-40 h-18" disable={loading}>
                                             {loading ? "Registering ..." : "Register"}
                                         </button>
                                     </div>
                                 </form>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
-
-            </div >
-
+            </div>
         </>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;

@@ -1,6 +1,7 @@
 import CV from "../models/CV.js";
+import User from "../models/User.js";
 import { buildCVHtml } from "../utils/buildCVHtml.js";
-import { isWithinMaxSentences } from "../utils/helpers.js";
+import { isWithinMaxSentences, hasChanged, updateUserStreak } from "../utils/helpers.js";
 import puppeteer from "puppeteer";
 
 // Saving or updating personal information in CV
@@ -14,6 +15,7 @@ export const addPersonalInformation = async (req, res) => {
       return res.status(400).json({ message: "About me section must be at most 5 sentences." });
     }
 
+    const user = await User.findById(userId);
     // Check if CV document exists for the user
     let cv = await CV.findOne({ userId });
 
@@ -28,19 +30,34 @@ export const addPersonalInformation = async (req, res) => {
         aboutMe
       });
       await cv.save();
+
       return res.status(201).json({
         message: "CV created with personal information.",
         cv
       });
     } else {
+      // // Determine if any meaningful change was made to aboutMe
+      // const aboutMeChanged = cv.aboutMe && hasChanged(cv.aboutMe, aboutMe);
+
       // Update existing CV
       cv.firstName = firstName || cv.firstName;
       cv.lastName = lastName || cv.lastName;
       cv.contact = contact || cv.contact;
       cv.education = education || cv.education;
       cv.aboutMe = aboutMe || cv.aboutMe;
-
       await cv.save();
+
+      // // Update streak + give +5xp only if aboutMe actually changed
+      // if (aboutMeChanged) {
+      //   updateUserStreak(user);
+      //   user.xp += 5;
+      //   await user.save();
+      // }
+
+      // return res.status(200).json({
+      //   message: `Personal information updated successfully.${aboutMeChanged ? " +5 XP awarded for updating aboutMe." : ""}`,
+      //   cv
+      // });
       return res.status(200).json({
         message: "Personal information updated successfully.",
         cv
@@ -66,15 +83,43 @@ export const addSkills = async (req, res) => {
       return res.status(400).json({ message: "You can add up to 8 skills only!" });
     }
 
+    const user = await User.findById(userId);
     const cv = await CV.findOne({ userId });
     if (!cv) {
       return res.status(404).json({ message: "CV not found. Complete personal info first!" });
     }
 
+    // // Track if user had skills before
+    // const hadSkills = cv.skills && cv.skills.length > 0;
+    // const skillsChanged = hasChanged(cv.skills, skills);
+
+    // Update skills in CV
     cv.skills = skills;
     await cv.save();
 
-    res.status(200).json({ message: "Skills saved successfully!", skills: cv.skills });
+    // let xpAwarded = false;
+
+    // // Case 1: First time adding skills → streak only
+    // if (!hadSkills && skills.length > 0) {
+    //   updateUserStreak(user);
+    //   await user.save();
+    // }
+    // // Case 2: Updating existing skills with changes → streak + XP
+    // else if (hadSkills && skillsChanged) {
+    //   updateUserStreak(user);
+    //   user.xp += 5;
+    //   xpAwarded = true;
+    //   await user.save();
+    // }
+
+    // res.status(200).json({
+    //   message: `Skills saved successfully!${xpAwarded ? " +5 XP awarded for updating skills." : ""}`,
+    //   skills: cv.skills
+    // });
+    res.status(200).json({
+      message: "Skills saved successfully!",
+      skills: cv.skills
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -109,15 +154,43 @@ export const addProjects = async (req, res) => {
       }
     }
 
+    const user = await User.findById(userId);
     const cv = await CV.findOne({ userId });
     if (!cv) {
       return res.status(404).json({ message: "CV not found. Complete personal info first." });
     }
 
+    // // Track if user had projects before
+    // const hadProjects = cv.projects && cv.projects.length > 0;
+    // const projectsChanged = hasChanged(cv.projects, projects);
+
+    // Update projects in CV
     cv.projects = projects;
     await cv.save();
 
-    res.status(200).json({ message: "Projects saved successfully.", projects: cv.projects });
+    // let xpAwarded = false;
+
+    // // Case 1: First time adding projects → streak only
+    // if (!hadProjects && projects.length > 0) {
+    //   updateUserStreak(user);
+    //   await user.save();
+    // }
+    // // Case 2: Updating existing projects with changes → streak + XP
+    // else if (hadProjects && projectsChanged) {
+    //   updateUserStreak(user);
+    //   user.xp += 5;
+    //   xpAwarded = true;
+    //   await user.save();
+    // }
+
+    // res.status(200).json({
+    //   message: `Projects saved successfully.${xpAwarded ? " +5 XP awarded for updating projects." : ""}`,
+    //   projects: cv.projects
+    // });
+    res.status(200).json({
+      message: "Projects saved successfully.",
+      projects: cv.projects
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -147,17 +220,43 @@ export const addWorkExperience = async (req, res) => {
       }
     }
 
+    const user = await User.findById(userId);
     const cv = await CV.findOne({ userId });
     if (!cv) {
       return res.status(404).json({ message: "CV not found. Complete personal info first." });
     }
 
+    // // Track if user had experiences before
+    // const hadExperiences = cv.experiences && cv.experiences.length > 0;
+    // const experiencesChanged = hasChanged(cv.experiences, experiences);
+
+    // Update experiences in CV
     cv.experiences = experiences;
     await cv.save();
 
-    res
-      .status(200)
-      .json({ message: "Experiences updated successfully.", experiences: cv.experiences });
+    // let xpAwarded = false;
+
+    // // Case 1: First time adding experiences → streak only
+    // if (!hadExperiences && experiences.length > 0) {
+    //   updateUserStreak(user);
+    //   await user.save();
+    // }
+    // // Case 2: Updating existing experiences with changes → streak + XP
+    // else if (hadExperiences && experiencesChanged) {
+    //   updateUserStreak(user);
+    //   user.xp += 5;
+    //   xpAwarded = true;
+    //   await user.save();
+    // }
+
+    // res.status(200).json({
+    //   message: `Experiences updated successfully.${xpAwarded ? " +5 XP awarded for updating experiences." : ""}`,
+    //   experiences: cv.experiences
+    // });
+    res.status(200).json({
+      message: "Experiences updated successfully.",
+      experiences: cv.experiences
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
