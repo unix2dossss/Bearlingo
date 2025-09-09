@@ -7,10 +7,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'register-bg': "url('/src/assets/login-page1.jpg')", // adjust path
+      }
+    },
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ["forest", "lemonade", "autumn"]
+    themes: ["winter"]
   }
 }

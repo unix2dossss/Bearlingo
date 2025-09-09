@@ -25,7 +25,7 @@ const Register = () => {
 
     return (
         <>
-            <div className=" min-h-screen bg-base-300">
+            <div className=" min-h-screen bg-register-bg bg-cover bg-center">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-2xl, mx-auto">
                         <Link to={"/"} className="btn btn-ghost mb-6">
@@ -33,8 +33,8 @@ const Register = () => {
                             Back to Home
                         </Link>
 
-                        <div className="card bg-base-100">
-                            <div className="card-body">
+                        <div className="card bg-base-100 max-w-90 mx-auto">
+                            <div className="card-body p-6">
                                 <h2 className="card-title text-2xl mb flex justify-center">
                                     Register
                                 </h2>
@@ -111,7 +111,7 @@ const Register = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}></input>
                                     </div>
-                                    <div className="card-actions justify-center mb-2 h-20">
+                                    <div className="card-actions justify-center mb-2 h-10">
                                         <button type="submit" className="btn btn-primary w-40 h-18" diasble={loading}>
                                             {loading ? "Registering ..." : "Register"}
                                         </button>
