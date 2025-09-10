@@ -190,7 +190,7 @@ const Register = () => {
                                                 onBlur={() => setUsernameFocus(false)}
                                                 onChange={(e) => setUsername(e.target.value)}
                                             ></input>
-                                            {usernameFocus && !usernameRegex.test(username) && (<p className="validator-hint text-sm text-red-600">
+                                            {usernameFocus && !usernameRegex.test(username) && (<p className="validator-hint text-sm text-red-600 mt-1">
                                                 Username must be 3–20 characters (letters, numbers, _, -, space)
                                             </p>
                                             )}
@@ -220,7 +220,7 @@ const Register = () => {
                                                 onBlur={() => setEmailFocus(false)}
                                                 onChange={(e) => setEmail(e.target.value)}
                                             ></input>
-                                            {emailFocus && !emailRegex.test(email) && (<p className="validator-hint text-sm text-red-600">
+                                            {emailFocus && !emailRegex.test(email) && (<p className="validator-hint text-sm text-red-600 mt-1">
                                                 Please use a valid email address
                                             </p>
                                             )}
@@ -241,7 +241,7 @@ const Register = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                             ></input>
-                                            {focused && !passwordPattern.test(password) && (<p className="validator-hint text-sm text-red-600">
+                                            {focused && !passwordPattern.test(password) && (<p className="validator-hint text-sm text-red-600 mt-1">
                                                 Must be more than 8 characters, including
                                                 <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                             </p>
@@ -263,7 +263,7 @@ const Register = () => {
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             ></input>
-                                            {focused2 && !passwordPattern.test(confirmPassword) && (<p className="validator-hint text-sm text-red-600">
+                                            {focused2 && !passwordPattern.test(confirmPassword) && (<p className="validator-hint text-sm text-red-600 mt-1">
                                                 Must be more than 8 characters, including
                                                 <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                             </p>
