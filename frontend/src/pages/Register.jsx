@@ -17,6 +17,8 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [focused, setFocused] = useState(false);
     const [focused2, setFocused2] = useState(false);
+    const [usernameFocus, setUsernameFocus] = useState(false);
+    const [emailFocus, setEmailFocus] = useState(false);
     const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
 
@@ -26,7 +28,7 @@ const Register = () => {
     // ---- Regex helpers ----
     const nameRegex = /^[A-Za-z\s]{2,30}$/;
     const usernameRegex = /^[\w\s-]{3,20}$/;
-    const emailRegex = /^[^\s@]+@gmail\.com$/;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i; ///^[^\s@]+@gmail\.com$/;
     const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
 
     const validateInputs = () => {
@@ -184,12 +186,18 @@ const Register = () => {
                                                 placeholder="Username"
                                                 className="input input-bordered"
                                                 value={username}
+                                                onFocus={() => setUsernameFocus(true)}
+                                                onBlur={() => setUsernameFocus(false)}
                                                 onChange={(e) => setUsername(e.target.value)}
                                             ></input>
+                                            {usernameFocus && !usernameRegex.test(username) && (<p className="validator-hint text-sm text-red-600">
+                                                Username must be 3–20 characters (letters, numbers, _, -, space)
+                                            </p>
+                                            )}
                                         </div>
                                         <div className="form-control mb-4">
                                             <label className="label">
-                                                <span className="label-text">LinkedIn (Optional)</span>
+                                                <span className="label-text">LinkedIn URL (Optional)</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -204,12 +212,18 @@ const Register = () => {
                                                 <span className="label-text">Email <span className="label-text text-red-600">*</span></span>
                                             </label>
                                             <input
-                                                type="text"
+                                                type="email"
                                                 placeholder="Email"
                                                 className="input input-bordered"
                                                 value={email}
+                                                onFocus={() => setEmailFocus(true)}
+                                                onBlur={() => setEmailFocus(false)}
                                                 onChange={(e) => setEmail(e.target.value)}
                                             ></input>
+                                            {emailFocus && !emailRegex.test(email) && (<p className="validator-hint text-sm text-red-600">
+                                                Please use a valid email address
+                                            </p>
+                                            )}
                                         </div>
                                         <div className="form-control mb-4">
                                             <label className="label">
@@ -244,8 +258,8 @@ const Register = () => {
                                                 minlength="8"
                                                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                                                 title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                                                onFocus={() => setFocused2(true)}   // show hint on focus
-                                                onBlur={() => setFocused2(false)}   // hide hint on blur
+                                                onFocus={() => setFocused2(true)}
+                                                onBlur={() => setFocused2(false)}
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             ></input>
