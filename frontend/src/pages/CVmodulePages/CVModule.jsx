@@ -2,23 +2,19 @@ import { React, useState } from "react";
 import TopNavbar from "../../components/TopNavbar";
 import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
 import CVSubtask1 from "./CVSubtask1";
+import CVSubtask3 from "./CVSubtask3";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 
 const CVModule = () => {
   const [showSubtask, setShowSubtask] = useState(false);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
-
-  // Lifted states
-  const [personal, setPersonal] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    linkedin: ""
-  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
 
+  const handleSubtaskClick = (task) => {
+    setSelectedSubtask(task);
+    setShowSubtask(true);
+  };
   const handleClose = (force = false) => {
     // Check if user hasn't typed anything yet
     const isEmpty =
@@ -37,20 +33,28 @@ const CVModule = () => {
     if (!isSubmitted) {
       // show confirm popup
       setShowConfirmLeave(true);
-    }
-    else {
+    } else {
       setShowSubtask(false);
       setSelectedSubtask(null);
     }
   };
 
-  // User clicked "Leave" so allow them to leave
+  // Lifted states from CVSubtask1 to clear the personal info state on close
+  const [personal, setPersonal] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    linkedin: ""
+  });
+
+  // If user clicked "Leave", allow them to leave
   const confirmLeave = () => {
     setShowConfirmLeave(false);
     setShowSubtask(false);
     setSelectedSubtask(null);
 
-    // Reset personal info
+    // Reset personal info state
     setPersonal({
       firstName: "",
       lastName: "",
@@ -63,9 +67,32 @@ const CVModule = () => {
     setIsSubmitted(false);
   };
 
-  const handleSubtaskClick = (task) => {
-    setSelectedSubtask(task);
-    setShowSubtask(true);
+  // Render the selected subtask
+  const renderSubtask = () => {
+    switch (selectedSubtask) {
+      case "subtask1":
+        return (
+          <CVSubtask1
+            task={selectedSubtask}
+            personal={personal}
+            setPersonal={setPersonal}
+            isSubmitted={isSubmitted}
+            setIsSubmitted={setIsSubmitted}
+            onClose={handleClose}
+          />
+        );
+      case "subtask2":
+        return <p className="text-center">Subtask 2 coming soon 🚧</p>;
+      case "subtask3":
+        return (
+          <CVSubtask3
+            onClose={handleClose}
+            setIsSubmitted={setIsSubmitted}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -131,10 +158,16 @@ const CVModule = () => {
               >
                 Task 1
               </button>
-              <button className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition">
+              <button
+                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask2")}
+              >
                 Task 2
               </button>
-              <button className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition">
+              <button
+                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask3")}
+              >
                 Task 3
               </button>
             </div>
@@ -153,18 +186,7 @@ const CVModule = () => {
             >
               ✖
             </button>
-
-            {/* Content Wrapper with Scroll */}
-            <div className="overflow-y-auto pr-2">
-              <CVSubtask1
-                task={selectedSubtask}
-                personal={personal}
-                setPersonal={setPersonal}
-                isSubmitted={isSubmitted}
-                setIsSubmitted={setIsSubmitted}
-                onClose={handleClose}
-              />
-            </div>
+            <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>
         </div>
       )}

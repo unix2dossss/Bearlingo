@@ -158,7 +158,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
       const res = await api.post("/users/me/cv/personal-information", payload, {
         withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
       });
-      toast.success("Data saved successfully!");
+      toast.success(res.data.message);
       console.log(res.data);
       setIsSubmitted(true); // allow closing/leaving
       onClose(true); // force close, bypass ConfirmLeave check
@@ -171,14 +171,17 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
         toast.error("Could not find subtask");
         return;
       }
-       // Mark subtask as completed
+      // Mark subtask as completed
       try {
         await completeTask(subtaskId);
+        // Check if subtask is completed and display appropriate message
+        if (res.data.message === "Well Done! You completed the subtask") {
+          toast.success("Task 1 completed!");
+        }
       } catch (err) {
         console.error("Failed to complete task", err);
         toast.error("Could not mark task complete");
       }
-      
     } catch (err) {
       console.error(err);
       toast.error("Error saving data!");
