@@ -5,7 +5,6 @@ import word from "../../assets/Welcome to Bearlingo.svg";
 const FirstTimePg1 = () => {
   return (
     <>
-      <TopNavBar />
       <div className="relative w-full h-screen bg-[#D0EAFB] flex items-center justify-center">
         {/* SVG background */}
         <img

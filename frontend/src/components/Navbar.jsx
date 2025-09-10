@@ -10,15 +10,11 @@ const Navbar = () => {
 
         {/* Logo on the left */}
         <Link to="/">
-          <img src={Logo} alt="Logo" className="h-10 w-auto" />
+          <img src={Logo} alt="Logo" className="h-13 w-auto" />
         </Link>
 
         {/* Buttons on the right */}
         <div className=" flex gap-2">
-          <Link to={"/"} className="btn btn-ghost">
-            <Home className="size-5" />
-            <span>Home</span>
-          </Link>
           <Link to={"/login"} className="btn btn-primary btn-outline">
             <LogIn className="size-5" />
             <span>Login</span>
