@@ -6,24 +6,19 @@ import TerEdu from "../../components/CVModuleComponent/TerEdu";
 import SecEdu from "../../components/CVModuleComponent/SecEdu";
 import Aboutme from "../../components/CVModuleComponent/Aboutme";
 
-const CVSubtask1 = () => {
+const CVSubtask1 = ({
+  personal,
+  setPersonal,
+  isSubmitted,
+  setIsSubmitted,
+}) => {
   const [step, setStep] = useState(0);
-
-  // form states
-  const [personal, setPersonal] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    linkedin: ""
-  });
-
   const [secondary, setSecondary] = useState({
     school: "",
     subjects: "",
     achievements: "",
     startYear: "",
-    endYear: ""
+    endYear: "",
   });
 
   const [tertiary, setTertiary] = useState({
@@ -31,40 +26,105 @@ const CVSubtask1 = () => {
     degree: "",
     startYear: "",
     endYear: "",
-    studying: false
+    studying: false,
   });
 
   const [aboutMe, setAboutMe] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Load saved state from localStorage
+  // Fetch existing data from database
   useEffect(() => {
-    const saved = localStorage.getItem("cvTask1");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setStep(parsed.step || 0);
-      setPersonal(parsed.personal || personal);
-      setSecondary(parsed.secondary || secondary);
-      setTertiary(parsed.tertiary || tertiary);
-      setAboutMe(parsed.aboutMe || "");
-    }
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await api.get("/users/me/cv");
+        const data = res.data;
 
-  // Save progress to localStorage when user clicks Save & Continue
+        if (data) {
+          setPersonal({
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            phone: data.contact?.phone || "",
+            email: data.contact?.email || "",
+            linkedin: data.contact?.linkedin || "",
+          });
+
+          setSecondary({
+            school: data.education?.secondary?.schoolName || "",
+            subjects: data.education?.secondary?.subjects || "",
+            achievements: data.education?.secondary?.achievements || "",
+            startYear: data.education?.secondary?.startYear || "",
+            endYear: data.education?.secondary?.endYear || "",
+          });
+
+          const tertiaryData = data.education?.tertiary?.[0] || {};
+          setTertiary({
+            university: tertiaryData.university || "",
+            degree: tertiaryData.degree || "",
+            startYear: tertiaryData.startYear || "",
+            endYear:
+              tertiaryData.endYear === "Present" ? "" : tertiaryData.endYear || "",
+            studying: tertiaryData.endYear === "Present",
+          });
+
+          setAboutMe(data.aboutMe || "");
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [setPersonal]);
+
+  // Warn before reload/close browser
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (!isSubmitted) {
+        e.preventDefault();
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave this page?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isSubmitted]);
+
   const handleSaveAndContinue = () => {
-    const stateToSave = { step: step + 1, personal, secondary, tertiary, aboutMe };
-    localStorage.setItem("cvTask1", JSON.stringify(stateToSave));
     setStep(step + 1);
   };
 
-  // clear current section
   const handleClear = () => {
     if (step === 0)
-      setPersonal({ firstName: "", lastName: "", phone: "", email: "", linkedin: "" });
-    else if (step === 1)
-      setSecondary({ school: "", subjects: "", achievements: "", startYear: "", endYear: "" });
-    else if (step === 2)
-      setTertiary({ university: "", degree: "", startYear: "", endYear: "", studying: false });
-    else if (step === 3) setAboutMe("");
+      setPersonal({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        linkedin: "",
+      });
+    if (step === 1)
+      setSecondary({
+        school: "",
+        subjects: "",
+        achievements: "",
+        startYear: "",
+        endYear: "",
+      });
+    if (step === 2)
+      setTertiary({
+        university: "",
+        degree: "",
+        startYear: "",
+        endYear: "",
+        studying: false,
+      });
+    if (step === 3) setAboutMe("");
   };
 
   // Sending data to backend after form submission
@@ -76,7 +136,7 @@ const CVSubtask1 = () => {
         lastName: personal.lastName,
         phone: personal.phone,
         email: personal.email,
-        linkedin: personal.linkedin
+        linkedin: personal.linkedin,
       },
       education: {
         secondary: {
@@ -84,101 +144,129 @@ const CVSubtask1 = () => {
           subjects: secondary.subjects,
           achievements: secondary.achievements,
           startYear: secondary.startYear,
-          endYear: secondary.endYear
+          endYear: secondary.endYear,
         },
         tertiary: [
           {
             university: tertiary.university,
             degree: tertiary.degree,
             startYear: tertiary.startYear,
-            endYear: tertiary.studying ? "Present" : tertiary.endYear
-          }
-        ]
+            endYear: tertiary.studying ? "Present" : tertiary.endYear,
+          },
+        ],
       },
-      aboutMe: aboutMe
+      aboutMe: aboutMe,
     };
+
     try {
       const res = await api.post("/users/me/cv/personal-information", payload);
       toast.success("Data saved successfully!");
       console.log(res.data);
-      // Save latest state locally
-      localStorage.setItem(
-        "cvTask1",
-        JSON.stringify({ step, personal, secondary, tertiary, aboutMe })
-      );
+      setIsSubmitted(true); // allow closing/leaving
     } catch (err) {
       console.error(err);
       toast.error("Error saving data!");
     }
   };
 
-  // step content
+  // Check if step is valid
+  const isStepValid = () => {
+    if (step === 0) return personal.firstName && personal.lastName && personal.email;
+    if (step === 1)
+      return (
+        secondary.school &&
+        secondary.subjects &&
+        secondary.startYear &&
+        secondary.endYear
+      );
+    if (step === 2)
+      return (
+        tertiary.university &&
+        tertiary.degree &&
+        tertiary.startYear &&
+        (tertiary.studying || tertiary.endYear)
+      );
+    if (step === 3) return aboutMe.trim().length > 0;
+    return false;
+  };
+
+  // Render step
   const renderStep = () => {
+    if (loading) return <p>Loading...</p>;
+
     switch (step) {
       case 0:
-        return (
-         <><PerInfo></PerInfo></>
-        );
+        return <PerInfo personal={personal} setPersonal={setPersonal} />;
       case 1:
-        return (
-          <><SecEdu></SecEdu></>
-        );
+        return <SecEdu secondary={secondary} setSecondary={setSecondary} />;
       case 2:
-        return (
-          //<TerEdu form={terßiary} setForm={setTertiary}></TerEdu>
-          <><TerEdu></TerEdu></>
-        );
+        return <TerEdu tertiary={tertiary} setTertiary={setTertiary} />;
       case 3:
-        return (
-          <><Aboutme></Aboutme></>
-        );
+        return <Aboutme aboutMe={aboutMe} setAboutMe={setAboutMe} />;
       default:
-        return <p className="text-center">All sections completed 🎉</p>;
+        return <p>All done 🎉</p>;
     }
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div className="w-full p-6 space-y-6 flex-1">
-        {/* ✅ Back button */}
-        {step > 0 && (
-          <button
-            onClick={() => setStep(step - 1)}
-            className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
-          >
-            ← Back
-          </button>
-        )}
-        {renderStep()}
+    <div className="flex flex-col h-full overflow-y-auto relative">
+      {step > 0 && (
+        <button
+          onClick={() => setStep(step - 1)}
+          className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
+        >
+          ← Back
+        </button>
+      )}
+
+      {/* Removed close button - parent handles it */}
+      {renderStep()}
+
+      <div className="flex justify-between p-4">
         <div className="flex justify-between mt-6">
-          <button className="inline-flex items-center justify-center
+          <button
+            className="inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
              bg-white border-2 border-[#4f9cf9]
              text-[#4f9cf9] font-extrabold
              hover:bg-[#4f9cf9]/5
              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-             min-w-[300px] " onClick={handleClear}>
+             min-w-[300px] "
+            onClick={handleClear}
+          >
             Clear
           </button>
           {step < 3 && (
-            <button className="inline-flex items-center justify-center
+            <button
+              className={`inline-flex items-center justify-center
                  h-12 md:h-14 px-8 md:px-10 rounded-full
                  bg-[#4f9cf9] text-white 
                  font-extrabold text-base md:text-lg
                  shadow-sm hover:bg-[#4f9cf9]/90
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px]"onClick={handleSaveAndContinue}>
+                 min-w-[300px] ${
+                   !isStepValid() ? "opacity-50 cursor-not-allowed" : ""
+                 }`}
+              onClick={handleSaveAndContinue}
+              disabled={!isStepValid()}
+            >
               Save & Continue
             </button>
           )}
           {step === 3 && (
-            <button className="inline-flex items-center justify-center
+            <button
+              className={`inline-flex items-center justify-center
                  h-12 md:h-14 px-8 md:px-10 rounded-full
                  bg-[#4f9cf9] text-white
                  font-extrabold text-base md:text-lg
                  shadow-sm hover:bg-[#4f9cf9]/90
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px]" onClick={handleSubmit}>
+                 min-w-[300px] ${
+                   !isStepValid() ? "opacity-50 cursor-not-allowed" : ""
+                 }`}
+              onClick={handleSubmit}
+              disabled={!isStepValid()}
+            >
               Save & Submit
             </button>
           )}

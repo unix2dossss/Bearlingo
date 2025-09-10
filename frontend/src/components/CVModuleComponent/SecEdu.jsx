@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 /** Section 2: Secondary Education — same style as your Tertiary card */
-export default function SecondaryEducationCard() {
-  const [form, setForm] = useState({
-    school: "",
-    subjects: "",
-    achievements: "",
-    startYear: "",
-    endYear: "",
-  });
+export default function SecondaryEducationCard({ secondary, setSecondary }) {
 
   return (
     <section className="max-w-3xl mx-auto p-6">
@@ -29,8 +22,8 @@ export default function SecondaryEducationCard() {
         <input
           className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="Enter your school name"
-          value={form.school}
-          onChange={(e) => setForm({ ...form, school: e.target.value })}
+          value={secondary.school}
+          onChange={(e) => setSecondary({ ...secondary, school: e.target.value })}
         />
 
         {/* Subjects */}
@@ -38,8 +31,8 @@ export default function SecondaryEducationCard() {
         <textarea
           className="w-full h-24 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="List the main subjects you studied"
-          value={form.subjects}
-          onChange={(e) => setForm({ ...form, subjects: e.target.value })}
+          value={secondary.subjects}
+          onChange={(e) => setSecondary({ ...secondary, subjects: e.target.value })}
         />
 
         {/* Achievements */}
@@ -49,8 +42,8 @@ export default function SecondaryEducationCard() {
         <textarea
           className="w-full h-28 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-6 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="Any notable achievements, awards, or recognition"
-          value={form.achievements}
-          onChange={(e) => setForm({ ...form, achievements: e.target.value })}
+          value={secondary.achievements}
+          onChange={(e) => setSecondary({ ...secondary, achievements: e.target.value })}
         />
 
         {/* Years */}
@@ -60,8 +53,8 @@ export default function SecondaryEducationCard() {
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="2018"
-              value={form.startYear}
-              onChange={(e) => setForm({ ...form, startYear: e.target.value })}
+              value={secondary.startYear}
+              onChange={(e) => setSecondary({ ...secondary, startYear: e.target.value })}
             />
           </div>
           <div>
@@ -69,8 +62,8 @@ export default function SecondaryEducationCard() {
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="2022"
-              value={form.endYear}
-              onChange={(e) => setForm({ ...form, endYear: e.target.value })}
+              value={secondary.endYear}
+              onChange={(e) => setSecondary({ ...secondary, endYear: e.target.value })}
             />
           </div>
         </div>

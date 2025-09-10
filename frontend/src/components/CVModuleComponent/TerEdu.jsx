@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 /** Section 3: Tertiary Education — Tailwind only */
-export default function TertiaryEducationCard() {
-  const [form, setForm] = useState({
-    university: "",
-    degrees: "",
-    startYear: "",
-    endYear: "",
-    current: false,
-  });
+export default function TertiaryEducationCard({ tertiary, setTertiary }) {
 
   return (
     <section className="max-w-3xl mx-auto p-6">
@@ -31,8 +24,8 @@ export default function TertiaryEducationCard() {
         <input
           className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="Enter your university name"
-          value={form.university}
-          onChange={(e) => setForm({ ...form, university: e.target.value })}
+          value={tertiary.university}
+          onChange={(e) => setTertiary({ ...tertiary, university: e.target.value })}
         />
 
         {/* Degrees */}
@@ -42,8 +35,8 @@ export default function TertiaryEducationCard() {
         <textarea
           className="w-full h-28 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="e.g., Bachelor of Science in Computer Science, Master of Business Administration"
-          value={form.degrees}
-          onChange={(e) => setForm({ ...form, degrees: e.target.value })}
+          value={tertiary.degree}
+          onChange={(e) => setTertiary({ ...tertiary, degree: e.target.value })}
         />
 
         {/* Years */}
@@ -55,8 +48,8 @@ export default function TertiaryEducationCard() {
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="2018"
-              value={form.startYear}
-              onChange={(e) => setForm({ ...form, startYear: e.target.value })}
+              value={tertiary.startYear}
+              onChange={(e) => setTertiary({ ...tertiary, startYear: e.target.value })}
             />
           </div>
 
@@ -66,12 +59,12 @@ export default function TertiaryEducationCard() {
             </label>
             <input
               className={`w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9] ${
-                form.current ? "opacity-50 cursor-not-allowed" : ""
+                tertiary.studying ? "opacity-50 cursor-not-allowed" : ""
               }`}
               placeholder="2022"
-              value={form.endYear}
-              onChange={(e) => setForm({ ...form, endYear: e.target.value })}
-              disabled={form.current}
+              value={tertiary.endYear}
+              onChange={(e) => setTertiary({ ...tertiary, endYear: e.target.value })}
+              disabled={tertiary.studying}
             />
           </div>
         </div>
@@ -81,14 +74,8 @@ export default function TertiaryEducationCard() {
           <input
             type="checkbox"
             className="h-4 w-4"
-            checked={form.current}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                current: e.target.checked,
-                endYear: e.target.checked ? "" : form.endYear,
-              })
-            }
+            checked={tertiary.studying}
+            onChange={(e) => setTertiary({ ...tertiary, studying: e.target.checked })}
           />
           Currently studying
         </label>
