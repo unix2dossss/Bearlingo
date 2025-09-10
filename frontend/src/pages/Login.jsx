@@ -1,22 +1,51 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
-import { ArrowLeftIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
+import { ArrowLeftIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../lib/axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usernameFocus, setUsernameFocus] = useState(false);
+  const usernameRegex = /^[\w\s-]{3,20}$/;
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      toast.error("Email and Password are required");
+    if (!username.trim() || !password.trim()) {
+      toast.error("Username and Password are required");
       return;
     }
     setLoading(true);
     // fake submit
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      await api.post(
+        "/users/login",
+        {
+          username,
+          password
+        },
+        {
+          withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
+        }
+      );
+      toast.success("Logged in succesfully!");
+      navigate("../FirstTimePg1"); // This should navigate to login page
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        toast.error("Incorrect password! Please try again");
+      } else if (error.response && error.response.data.message == 'User not found') {
+        toast.error("User not found");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+  setTimeout(() => setLoading(false), 1500);
+
 
   return (
     <div className="min-h-screen bg-register-bg bg-cover bg-center flex items-center justify-center">
@@ -35,15 +64,22 @@ const Login = () => {
               <form onSubmit={handleSubmit}>
                 <div className="form-control mb-4">
                   <label className="label">
-                    <span className="label-text">Email</span>
+                    <span className="label-text">Username</span>
                   </label>
                   <input
                     type="text"
-                    placeholder="Email"
+                    placeholder="Username"
                     className="input input-bordered"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onFocus={() => setUsernameFocus(true)}
+                    onBlur={() => setUsernameFocus(false)}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
+
+                  {usernameFocus && !usernameRegex.test(username) && (<p className="validator-hint text-sm text-red-600 mt-1">
+                    Username must be 3–20 characters
+                  </p>
+                  )}
                 </div>
 
                 <div className="form-control mb-4">
@@ -71,7 +107,7 @@ const Login = () => {
               </form>
 
               <p className="text-center text-sm">
-                Don’t have an account?{" "}
+                Don't have an account?{" "}
                 <Link to="/register" className="text-primary">
                   Sign up here
                 </Link>
@@ -81,7 +117,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default Login;

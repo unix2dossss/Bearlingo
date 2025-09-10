@@ -21,15 +21,13 @@ const Register = () => {
     const [emailFocus, setEmailFocus] = useState(false);
     const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
-
-
-    const navigate = useNavigate();
-
     // ---- Regex helpers ----
     const nameRegex = /^[A-Za-z\s]{2,30}$/;
     const usernameRegex = /^[\w\s-]{3,20}$/;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i; ///^[^\s@]+@gmail\.com$/;
     const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
+
+    const navigate = useNavigate();
 
     const validateInputs = () => {
         if (
@@ -274,6 +272,12 @@ const Register = () => {
                                                 {loading ? "Registering ..." : "Register"}
                                             </button>
                                         </div>
+                                        <p className="text-center text-sm">
+                                            Already have an account?{" "}
+                                            <Link to="/login" className="text-primary">
+                                                Login here
+                                            </Link>
+                                        </p>
                                     </form>
                                 </div>
                             </div>

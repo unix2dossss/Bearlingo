@@ -6,6 +6,7 @@ import slide2 from '../assets/Slide2.svg';
 import { Carousel } from "flowbite-react";
 
 
+
 const Home = () => {
     return (
         <>
