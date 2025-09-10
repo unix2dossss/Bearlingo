@@ -5,20 +5,17 @@ import PerInfo from "../../components/CVModuleComponent/PerInfo";
 import TerEdu from "../../components/CVModuleComponent/TerEdu";
 import SecEdu from "../../components/CVModuleComponent/SecEdu";
 import Aboutme from "../../components/CVModuleComponent/Aboutme";
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
 
-const CVSubtask1 = ({
-  personal,
-  setPersonal,
-  isSubmitted,
-  setIsSubmitted,
-}) => {
+const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose }) => {
   const [step, setStep] = useState(0);
   const [secondary, setSecondary] = useState({
     school: "",
     subjects: "",
     achievements: "",
     startYear: "",
-    endYear: "",
+    endYear: ""
   });
 
   const [tertiary, setTertiary] = useState({
@@ -26,7 +23,7 @@ const CVSubtask1 = ({
     degree: "",
     startYear: "",
     endYear: "",
-    studying: false,
+    studying: false
   });
 
   const [aboutMe, setAboutMe] = useState("");
@@ -36,7 +33,7 @@ const CVSubtask1 = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await api.get("/users/me/cv");
+        const res = await api.get("/users/me/cv", { withCredentials: true });
         const data = res.data;
 
         if (data) {
@@ -45,7 +42,7 @@ const CVSubtask1 = ({
             lastName: data.lastName || "",
             phone: data.contact?.phone || "",
             email: data.contact?.email || "",
-            linkedin: data.contact?.linkedin || "",
+            linkedin: data.contact?.linkedin || ""
           });
 
           setSecondary({
@@ -53,7 +50,7 @@ const CVSubtask1 = ({
             subjects: data.education?.secondary?.subjects || "",
             achievements: data.education?.secondary?.achievements || "",
             startYear: data.education?.secondary?.startYear || "",
-            endYear: data.education?.secondary?.endYear || "",
+            endYear: data.education?.secondary?.endYear || ""
           });
 
           const tertiaryData = data.education?.tertiary?.[0] || {};
@@ -61,9 +58,8 @@ const CVSubtask1 = ({
             university: tertiaryData.university || "",
             degree: tertiaryData.degree || "",
             startYear: tertiaryData.startYear || "",
-            endYear:
-              tertiaryData.endYear === "Present" ? "" : tertiaryData.endYear || "",
-            studying: tertiaryData.endYear === "Present",
+            endYear: tertiaryData.endYear === "Present" ? "" : tertiaryData.endYear || "",
+            studying: tertiaryData.endYear === "Present"
           });
 
           setAboutMe(data.aboutMe || "");
@@ -84,8 +80,7 @@ const CVSubtask1 = ({
     const handleBeforeUnload = (e) => {
       if (!isSubmitted) {
         e.preventDefault();
-        e.returnValue =
-          "You have unsaved changes. Are you sure you want to leave this page?";
+        e.returnValue = "You have unsaved changes. Are you sure you want to leave this page?";
         return e.returnValue;
       }
     };
@@ -106,7 +101,7 @@ const CVSubtask1 = ({
         lastName: "",
         phone: "",
         email: "",
-        linkedin: "",
+        linkedin: ""
       });
     if (step === 1)
       setSecondary({
@@ -114,7 +109,7 @@ const CVSubtask1 = ({
         subjects: "",
         achievements: "",
         startYear: "",
-        endYear: "",
+        endYear: ""
       });
     if (step === 2)
       setTertiary({
@@ -122,21 +117,22 @@ const CVSubtask1 = ({
         degree: "",
         startYear: "",
         endYear: "",
-        studying: false,
+        studying: false
       });
     if (step === 3) setAboutMe("");
   };
 
   // Sending data to backend after form submission
+  const { completeTask } = useUserStore();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
+      firstName: personal.firstName,
+      lastName: personal.lastName,
       contact: {
-        firstName: personal.firstName,
-        lastName: personal.lastName,
         phone: personal.phone,
         email: personal.email,
-        linkedin: personal.linkedin,
+        linkedin: personal.linkedin
       },
       education: {
         secondary: {
@@ -144,25 +140,45 @@ const CVSubtask1 = ({
           subjects: secondary.subjects,
           achievements: secondary.achievements,
           startYear: secondary.startYear,
-          endYear: secondary.endYear,
+          endYear: secondary.endYear
         },
         tertiary: [
           {
             university: tertiary.university,
             degree: tertiary.degree,
             startYear: tertiary.startYear,
-            endYear: tertiary.studying ? "Present" : tertiary.endYear,
-          },
-        ],
+            endYear: tertiary.studying ? "Present" : tertiary.endYear
+          }
+        ]
       },
-      aboutMe: aboutMe,
+      aboutMe: aboutMe
     };
 
     try {
-      const res = await api.post("/users/me/cv/personal-information", payload);
+      const res = await api.post("/users/me/cv/personal-information", payload, {
+        withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
+      });
       toast.success("Data saved successfully!");
       console.log(res.data);
       setIsSubmitted(true); // allow closing/leaving
+      onClose(true); // force close, bypass ConfirmLeave check
+      // Get subtaskId by module name, level number and subtask sequence number
+      let subtaskId;
+      try {
+        subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 1);
+      } catch (err) {
+        console.error("Failed to get subtask ID", err);
+        toast.error("Could not find subtask");
+        return;
+      }
+       // Mark subtask as completed
+      try {
+        await completeTask(subtaskId);
+      } catch (err) {
+        console.error("Failed to complete task", err);
+        toast.error("Could not mark task complete");
+      }
+      
     } catch (err) {
       console.error(err);
       toast.error("Error saving data!");
@@ -173,12 +189,7 @@ const CVSubtask1 = ({
   const isStepValid = () => {
     if (step === 0) return personal.firstName && personal.lastName && personal.email;
     if (step === 1)
-      return (
-        secondary.school &&
-        secondary.subjects &&
-        secondary.startYear &&
-        secondary.endYear
-      );
+      return secondary.school && secondary.subjects && secondary.startYear && secondary.endYear;
     if (step === 2)
       return (
         tertiary.university &&
@@ -244,9 +255,7 @@ const CVSubtask1 = ({
                  font-extrabold text-base md:text-lg
                  shadow-sm hover:bg-[#4f9cf9]/90
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px] ${
-                   !isStepValid() ? "opacity-50 cursor-not-allowed" : ""
-                 }`}
+                 min-w-[300px] ${!isStepValid() ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleSaveAndContinue}
               disabled={!isStepValid()}
             >
@@ -261,9 +270,7 @@ const CVSubtask1 = ({
                  font-extrabold text-base md:text-lg
                  shadow-sm hover:bg-[#4f9cf9]/90
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px] ${
-                   !isStepValid() ? "opacity-50 cursor-not-allowed" : ""
-                 }`}
+                 min-w-[300px] ${!isStepValid() ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleSubmit}
               disabled={!isStepValid()}
             >

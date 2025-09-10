@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import axios from "axios";
 import api from "../lib/axios";
 
 // Zustand store
@@ -31,7 +30,7 @@ export const useUserStore = create((set) => ({
         { withCredentials: true }
       );
       // after backend updates streak + xp, re-fetch user
-      const res = await axios.api("/users/profile", {
+      const res = await api("/users/profile", {
         withCredentials: true,
       });
       set({ user: res.data.user, loading: false });

@@ -19,7 +19,7 @@ const CVModule = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = (force = false) => {
     // Check if user hasn't typed anything yet
     const isEmpty =
       personal.firstName === "" &&
@@ -28,7 +28,7 @@ const CVModule = () => {
       personal.email === "" &&
       personal.linkedin === "";
 
-    if (isEmpty) {
+    if (isEmpty || force) {
       // User hasn't started → allow close
       setShowSubtask(false);
       setSelectedSubtask(null);
@@ -37,6 +37,10 @@ const CVModule = () => {
     if (!isSubmitted) {
       // show confirm popup
       setShowConfirmLeave(true);
+    }
+    else {
+      setShowSubtask(false);
+      setSelectedSubtask(null);
     }
   };
 
@@ -158,6 +162,7 @@ const CVModule = () => {
                 setPersonal={setPersonal}
                 isSubmitted={isSubmitted}
                 setIsSubmitted={setIsSubmitted}
+                onClose={handleClose}
               />
             </div>
           </div>

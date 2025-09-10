@@ -30,7 +30,7 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
         <label className="block text-base font-semibold mb-1">Subject Studied</label>
         <textarea
           className="w-full h-24 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
-          placeholder="List the main subjects you studied"
+          placeholder="List the main subjects you studied, separated by commas"
           value={secondary.subjects}
           onChange={(e) => setSecondary({ ...secondary, subjects: e.target.value })}
         />
