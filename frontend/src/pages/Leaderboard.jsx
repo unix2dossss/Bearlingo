@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from "../lib/axios";
 import TopNavbar from "../components/TopNavbar";
+import linkedInIcon from "../assets/linkedin.png";
 
 
 const Leaderboard = () => {
@@ -48,13 +49,17 @@ const Leaderboard = () => {
                                 <div>{user.username}</div>
                             </div>
                             <button className="btn btn-square btn-ghost">
-                                <svg className="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
+                                <img src={linkedInIcon} alt="LinkedIn Icon"></img>
                             </button>
+
+                            <div>
+
+                            </div>
                         </li>
 
                     ))}
                 </ul>
-            </div>
+            </div >
 
 
 
