@@ -33,7 +33,7 @@ const Login = () => {
         }
       );
       toast.success("Logged in succesfully!");
-      navigate("../FirstTimePg1"); // This should navigate to login page
+      navigate("/Introduction"); // This should navigate to login page
     } catch (error) {
       if (error.response && error.response.status === 401) {
         toast.error("Incorrect password! Please try again");
