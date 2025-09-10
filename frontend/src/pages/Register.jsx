@@ -95,6 +95,7 @@ const Register = () => {
             !confirmPassword.trim()
         ) {
             toast.error("All fields that are marked with * must be filled"); // Checks if there are not any input in the fields or an empty value which triggers an error
+
             return;
         }
 
