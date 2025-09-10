@@ -144,7 +144,7 @@ const Register = () => {
 
                         <div className="card bg-base-100">
                             <div className="card-body">
-                                <h2 className="card-title text-2xl mb flex justify-center">Register</h2>
+                                <h2 className="card-title text-2xl mb flex justify-center">Sign Up</h2>
                                 <form onSubmit={handleSubmit}>
                                     <div className="flex gap-4">
                                         <div className="form-control mb-4 w-full">
