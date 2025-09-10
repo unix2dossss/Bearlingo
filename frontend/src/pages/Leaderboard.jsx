@@ -40,11 +40,11 @@ const Leaderboard = () => {
                 <ul className="list bg-base-100 rounded-box shadow-md justify-center w-[800px]">
                     {leaderboardData.map((user, index) => (
                         <li className="list-row flex items-center justify-between gap-4 p-2 border-b" key={index}>
-                            <div className="flex gap-3">
-                                <div className="text-4xl font-thin opacity-30 tabular-nums">{index < 3 ? index + 1 : ""}</div>
-                                <div><img className="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
-                            </div>
-                            <div className="list-col-grow">
+
+                            <div className="text-4xl font-thin opacity-30 tabular-nums">{index < 3 ? index + 1 : ""}</div>
+                            <div><img className="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
+
+                            <div>
                                 <div>{user.username}</div>
                             </div>
                             <button className="btn btn-square btn-ghost">
