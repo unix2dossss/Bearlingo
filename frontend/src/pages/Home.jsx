@@ -6,13 +6,14 @@ import slide2 from '../assets/Slide2.svg';
 import { Carousel } from "flowbite-react";
 
 
+
 const Home = () => {
     return (
         <>
             <Navbar />
 
             <div className="w-full">
-                <Carousel slideInterval={5000}>
+                <Carousel slideInterval={4000}>
                     {/* Slide 1 */}
                     <div className="relative w-full h-[800px]">
                         <img
@@ -30,7 +31,7 @@ const Home = () => {
                                         Bearlingo turns the stress of job hunting into an adventure. Build skills, gain confidence, and land your dream job - one step at a time.
                                     </p>
                                     <button className="btn btn-primary btn-lg">
-                                        Try BearLingo →
+                                        <a href="/register">Try BearLingo →</a>
                                     </button>
                                 </div>
                             </div>
