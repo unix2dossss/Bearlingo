@@ -12,7 +12,7 @@ const Home = () => {
             <Navbar />
 
             <div className="w-full">
-                <Carousel slideInterval={5000}>
+                <Carousel slideInterval={4000}>
                     {/* Slide 1 */}
                     <div className="relative w-full h-[800px]">
                         <img
