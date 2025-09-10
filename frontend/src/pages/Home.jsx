@@ -30,7 +30,7 @@ const Home = () => {
                                         Bearlingo turns the stress of job hunting into an adventure. Build skills, gain confidence, and land your dream job - one step at a time.
                                     </p>
                                     <button className="btn btn-primary btn-lg">
-                                        Try BearLingo →
+                                        <a href="/register">Try BearLingo →</a>
                                     </button>
                                 </div>
                             </div>
