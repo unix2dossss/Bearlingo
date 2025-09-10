@@ -102,10 +102,7 @@ const Register = () => {
         if (!validateInputs()) return; // stop if validation fails
 
         setLoading(true);
-        console.log("LinkedIn-->", linkedIn, "<--");
-        console.log("linkedIn === no space", linkedIn === ""); // true -> empty string
-        console.log("linkedIn === space ", linkedIn === " "); // false -> not empty
-        console.log(linkedIn.trim() === ""); // true -> only whitespac
+
         try {
             await api.post(
                 "/users/register",

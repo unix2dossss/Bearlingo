@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import CvModule from './pages/CVmodulePages/CVModule';
 import FirstTimePg1 from './pages/FirstTimePages/FirstTimePg1';
 import FirstTimePg2 from './pages/FirstTimePages/FirstTimePg2';
+import Leaderboard from './pages/Leaderboard';
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
@@ -16,7 +17,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/CvModule" element={<CvModule />} />
         <Route path="/Welcome" element={<FirstTimePg1 />} />
-        <Route path="/Getting Started" element={<FirstTimePg2/>} />
+        <Route path="/Getting Started" element={<FirstTimePg2 />} />
+        <Route path="/Leaderboard" element={<Leaderboard />} />
       </Routes>
     </div>
   )
