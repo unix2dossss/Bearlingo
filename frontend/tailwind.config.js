@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'luckiest-guy': ['"Luckiest Guy"'],
+      },
       backgroundImage: {
         'register-bg': "url('/src/assets/login-page1.jpg')", // adjust path
       }
