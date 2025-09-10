@@ -13,10 +13,9 @@ const Leaderboard = () => {
         const fetchLeaderboardData = async () => {
             try {
                 const response = await api.get("/users/leaderboard");
-                setLeaderboardData(response.data);
+                setLeaderboardData(response.data.users);
                 toast.success("Leaderboard obtained sucessfully!");
                 console.log("DATA: ", response);
-                console.log("leaderboardData: ", leaderboardData);
 
             } catch (error) {
                 console.log("Error in obtaining leaderboard", error);
@@ -33,21 +32,31 @@ const Leaderboard = () => {
         <>
 
             <TopNavbar />
-            <pre>{JSON.stringify(leaderboardData, null, 2)}</pre>
+            <br />
+            <br />
 
             <input type="checkbox" value="synthwave" className="toggle theme-controller" />
+            <div className="flex justify-center">
+                <ul className="list bg-base-100 rounded-box shadow-md justify-center w-[800px]">
+                    {leaderboardData.map((user, index) => (
+                        <li className="list-row flex items-center justify-between gap-4 p-2 border-b" key={index}>
+                            <div className="flex gap-3">
+                                <div className="text-4xl font-thin opacity-30 tabular-nums">{index < 3 ? index + 1 : ""}</div>
+                                <div><img className="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
+                            </div>
+                            <div className="list-col-grow">
+                                <div>{user.username}</div>
+                            </div>
+                            <button className="btn btn-square btn-ghost">
+                                <svg className="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
+                            </button>
+                        </li>
 
-            <li className="list-row">
-                <div className="text-4xl font-thin opacity-30 tabular-nums">02</div>
-                <div><img className="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
-                <div className="list-col-grow">
-                    <div>Ellie Beilish</div>
-                    <div className="text-xs uppercase font-semibold opacity-60">Bears of a fever</div>
-                </div>
-                <button className="btn btn-square btn-ghost">
-                    <svg className="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
-                </button>
-            </li>
+                    ))}
+                </ul>
+            </div>
+
+
 
         </>
     )
