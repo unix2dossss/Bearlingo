@@ -1,8 +1,16 @@
 import React from "react";
 import messyFloor from '../../assets/MessyFloor.svg';
 import word from "../../assets/Welcome to Bearlingo.svg";
+import bear from "../../assets/Bear.svg";
+import { useNavigate } from 'react-router-dom';
+
 
 const FirstTimePg1 = () => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate("/Getting Started");
+    };
   return (
     <>
       <div className="relative w-full h-screen bg-[#D0EAFB] flex items-center justify-center">
@@ -30,11 +38,16 @@ const FirstTimePg1 = () => {
                     className="absolute left-[96px] top-[-33px] w-[775px] h-[476px]"
                     />
             </div>
+            <img
+                    src={bear}
+                    alt="Bear Mascot"
+                    className="fixed right-40 bottom-24 w-40 sm:w-48 md:w-56 lg:w-64"
+                    />
 
-
-            <button className="absolute left-1/2 transform -translate-x-1/2 bottom-[16rem] px-8 py-4 bg-blue-500 text-white text-2xl font-bold rounded-lg shadow-lg hover:bg-blue-600 transition">
-          Get Started →
-        </button>
+            <button className="absolute left-1/2 transform -translate-x-1/2 bottom-[16rem] px-8 py-4 bg-blue-500 text-white text-2xl 
+            font-bold rounded-lg shadow-lg hover:bg-blue-600 transition" onClick={handleClick} >
+                Get Started →
+            </button>
         </div>
       </div>
         
