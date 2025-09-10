@@ -122,7 +122,7 @@ const CVModule = () => {
       {/* Modal for CVSubtask1 */}
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[500px] flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col">
             {/* Close Button at Top-Right */}
             <button
               onClick={handleCloseForm}
