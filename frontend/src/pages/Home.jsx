@@ -12,7 +12,7 @@ const Home = () => {
             <Navbar />
 
             <div className="w-full">
-                <Carousel slideInterval={2000}>
+                <Carousel slideInterval={5000}>
                     {/* Slide 1 */}
                     <div className="relative w-full h-[800px]">
                         <img
@@ -22,7 +22,7 @@ const Home = () => {
                         />
                         <div className="absolute inset-0 flex items-center justify-start">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="text-left max-w-lg px-11 py-15">
+                                <div className="text-left max-w-lg px-8 py-12">
                                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6">
                                         Job Seeking, Made Fun
                                     </h1>
