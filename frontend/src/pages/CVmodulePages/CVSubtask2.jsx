@@ -289,7 +289,7 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
     // Get subtaskId by module name, level number and subtask sequence number
     let subtaskId;
     try {
-      subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 1);
+      subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 2);
     } catch (err) {
       console.error("Failed to get subtask ID", err);
       toast.error("Could not find subtask");
