@@ -237,7 +237,7 @@ const Register = () => {
                                                 onChange={(e) => setPassword(e.target.value)}
                                             ></input>
                                             {focused && !passwordPattern.test(password) && (<p className="validator-hint text-sm text-red-600 mt-1">
-                                                Must be more than 8 characters, including
+                                                Must be more than 8 characters, including:
                                                 <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                             </p>
                                             )}
@@ -259,7 +259,7 @@ const Register = () => {
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             ></input>
                                             {focused2 && !passwordPattern.test(confirmPassword) && (<p className="validator-hint text-sm text-red-600 mt-1">
-                                                Must be more than 8 characters, including
+                                                Must be more than 8 characters, including:
                                                 <br />At least one number. At least one lowercase letter. At least one uppercase letter
                                             </p>
                                             )}
