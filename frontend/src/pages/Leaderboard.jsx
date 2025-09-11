@@ -41,8 +41,6 @@ const Leaderboard = () => {
             <div className="flex pr-2 mt-2 justify-end">
                 <input type="checkbox" value="synthwave" className="toggle theme-controller" />
             </div>
-
-            <br />
             <br />
             <div className="flex justify-center">
                 <div className="bg-yellow-300 text-white px-8 py-4 rounded-full shadow-lg w-[300px] border-4 border-white">
@@ -50,7 +48,6 @@ const Leaderboard = () => {
                     <h1 className=" text-4xl font-bold text-center flex justify-center font-sans">Leaderboard</h1>
                 </div>
             </div>
-            <br />
             <br />
 
 
@@ -75,9 +72,6 @@ const Leaderboard = () => {
                             {![0, 1, 2].includes(index) && (
                                 < div className="w-[100px] text-4xl font-thin opacity-30 tabular-nums ml-3">{index + 1}</div>
                             )}
-
-
-
 
                             {/* Profile Image */}
                             <div className="w-[100px]"><img className=" size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
