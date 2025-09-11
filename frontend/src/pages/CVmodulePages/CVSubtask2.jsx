@@ -256,7 +256,12 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
   const removeExperience = (i) => setExperiences((xs) => xs.filter((_, idx) => idx !== i));
 
   const saveExperiences = async () => {
-    const payload = { experiences };
+    // remove any experience objects where all fields are blank
+    const cleaned = experiences.filter(
+      (x) => x.company || x.role || x.startYear || x.endYear || x.contribution
+    );
+
+    const payload = { experiences: cleaned };
     console.log(payload);
     const res = await api.post("/users/me/cv/work-experience", payload, { withCredentials: true });
     toast.success(res.data.message);
@@ -266,9 +271,32 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
   // ───────────────────────────────────────────
   // Navigation + submit
   const isStepValid = () => {
-    if (step === 0) return selectedSkills.length > 0 && selectedSkills.length <= maxSkills;
-    if (step === 1) return projects.some((p) => p.name && p.outcome && p.role);
-    if (step === 2) return true; // optional
+    if (step === 0) {
+      return selectedSkills.length > 0 && selectedSkills.length <= maxSkills;
+    }
+
+    if (step === 1) {
+      // All projects must have required fields filled
+      return (
+        projects.length > 0 &&
+        projects.every((p) => p.name.trim() && p.outcome.trim() && p.role.trim())
+      );
+    }
+
+    if (step === 2) {
+      // Experiences are optional, but if user added more than 1,
+      // every visible one must be fully filled
+      return experiences.every(
+        (x) =>
+          (!x.company && !x.role && !x.startYear && !x.endYear && !x.contribution) || // empty is fine
+          (x.company.trim() &&
+            x.role.trim() &&
+            x.startYear.trim() &&
+            x.endYear.trim() &&
+            x.contribution.trim())
+      );
+    }
+
     return true;
   };
 
