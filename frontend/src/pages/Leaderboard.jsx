@@ -38,8 +38,9 @@ const Leaderboard = () => {
         <img src={title} alt="Leaderboard" className="w-2/5 h-auto" />
       </div>
 
-      <div className="flex justify-center">
-        <ul className="list bg-base-100 rounded-box shadow-md justify-center w-[800px] h-[600px] overflow-y-auto">
+      <div className="flex justify-center py-14">
+        {/* <ul className="flex flex-col gap-2 w-[1000px] max-h-[600px] overflow-y-auto"> */}
+        <ul className="flex flex-col gap-2 w-full max-w-[1000px] px-4">
           {leaderboardData.map((user, index) => (
             <LeaderboardCard
               key={index}

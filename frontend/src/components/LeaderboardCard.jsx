@@ -9,28 +9,35 @@ const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, lin
   };
 
   return (
-    <li className="list-row flex items-center p-2 border-b h-[100px]">
-      <div className="w-[100px] text-4xl font-thin opacity-100 tabular-nums ml-3">{renderPosition()}</div>
+    // <li className={`flex items-center justify-between p-4 rounded-xl ${index === 0 ? "bg-yellow-100" : index === 1 ? "bg-gray-100" : index === 2 ? "bg-orange-100" : "bg-white"} shadow-md`}>
+    <li className={`flex items-center justify-between px-4 py-2 bg-white rounded-xl shadow-md border-2 border-gray-380`}>
+      {/* Position / Medal */}
+      <div className="flex items-center w-[100px] justify-center">
+        {index === 0 && <img height="35" width="35" src={goldMedal} alt="Gold medal" />}
+        {index === 1 && <img height="35" width="35" src={silverMedal} alt="Silver medal" />}
+        {index === 2 && <img height="35" width="35" src={bronzeMedal} alt="Bronze medal" />}
+        {![0,1,2].includes(index) && <span className="font-bold text-lg">{index+1}</span>}
+      </div>
 
       {/* Profile Image */}
-      <div className="w-[100px]">
-        <img className="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" alt="Profile" />
+      <div className="w-[80px]">
+        <img className="rounded-full w-12 h-12" src={user.profileImage || "https://img.daisyui.com/images/profile/demo/4@94.webp"} alt="Profile" />
       </div>
 
       {/* Username */}
-      <div className="w-[250px] flex justify-center">{user.username}</div>
+      <div className="flex-1 text-center font-semibold">{user.username}</div>
 
-      {/* LinkedIn */}
-      <div className="w-[190px]">
-        <button className="btn btn-square btn-ghost">
+      {/* LinkedIn Icon */}
+      <div>
+        <button className="btn btn-ghost btn-square">
           <img height="35" width="35" src={linkedInIcon} alt="LinkedIn Icon" />
         </button>
       </div>
 
       {/* XP */}
-      <div className="flex gap-2 justify-center align-center">
-        <img height="35" width="35" src={starIcon} alt="Star Icon" />
-        <div className="flex justify-center align-center">{user.xp}</div>
+      <div className="flex items-center gap-1">
+        <img height="30" width="30" src={starIcon} alt="Star Icon" />
+        <span className="font-bold">{user.xp}</span>
       </div>
     </li>
   );
