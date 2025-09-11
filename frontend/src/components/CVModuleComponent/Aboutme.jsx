@@ -4,7 +4,7 @@ import React from "react";
 export default function AboutMeCard({ aboutMe, setAboutMe }) {
 
   return (
-    <section className="max-w-3xl mx-auto p-6">
+    <section className="max-w-3xl p-6">
       {/* Heading */}
       <h1 className="text-center text-4xl md:text-5xl font-extrabold text-[#4f9cf9]">
         Section 4: About Me

@@ -4,7 +4,7 @@ import React from "react";
 export default function SecondaryEducationCard({ secondary, setSecondary }) {
 
   return (
-    <section className="max-w-3xl mx-auto p-6">
+    <section className="max-w-3xl p-6">
       {/* Heading */}
       <h1 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
         Section 2: Secondary Education

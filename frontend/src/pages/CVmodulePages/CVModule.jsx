@@ -2,6 +2,7 @@ import { React, useState } from "react";
 import TopNavbar from "../../components/TopNavbar";
 import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
 import CVSubtask1 from "./CVSubtask1";
+import CVSubtask2 from "./CVSubtask2";
 import CVSubtask3 from "./CVSubtask3";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 
@@ -82,7 +83,13 @@ const CVModule = () => {
           />
         );
       case "subtask2":
-        return <p className="text-center">Subtask 2 coming soon 🚧</p>;
+        return (
+        <CVSubtask2
+          onClose={handleClose}
+          // optional: let subtask2 mark modal-safe state if you track it
+          setIsSubmitted={setIsSubmitted}
+        />
+      );
       case "subtask3":
         return (
           <CVSubtask3

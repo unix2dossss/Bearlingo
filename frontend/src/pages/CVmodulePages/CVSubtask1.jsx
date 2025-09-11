@@ -8,7 +8,7 @@ import Aboutme from "../../components/CVModuleComponent/Aboutme";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose }) => {
+const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose={handleCloseForm} }) => {
   const [step, setStep] = useState(0);
   const [secondary, setSecondary] = useState({
     school: "",
@@ -227,7 +227,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
       {step > 0 && (
         <button
           onClick={() => setStep(step - 1)}
-          className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
+          className="absolute top-2 left-2 text-gray-600 hover:text-blue-500 text-sm"
         >
           ← Back
         </button>
@@ -237,7 +237,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
       {renderStep()}
 
       <div className="flex justify-between p-4">
-        <div className="flex justify-between mt-6">
+        <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
             className="inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
@@ -245,7 +245,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
              text-[#4f9cf9] font-extrabold
              hover:bg-[#4f9cf9]/5
              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-             min-w-[300px] "
+             min-w-[200px]"
             onClick={handleClear}
           >
             Clear
@@ -258,7 +258,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
                  font-extrabold text-base md:text-lg
                  shadow-sm hover:bg-[#4f9cf9]/90
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px] ${!isStepValid() ? "opacity-50 cursor-not-allowed" : ""}`}
+                 min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
               onClick={handleSaveAndContinue}
               disabled={!isStepValid()}
             >
@@ -271,9 +271,9 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
                  h-12 md:h-14 px-8 md:px-10 rounded-full
                  bg-[#4f9cf9] text-white
                  font-extrabold text-base md:text-lg
-                 shadow-sm hover:bg-[#4f9cf9]/90
+                 shadow-sm hover:bg-[#4f9cf9]/500
                  focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[300px] ${!isStepValid() ? "opacity-50 cursor-not-allowed" : ""}`}
+                 min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
               onClick={handleSubmit}
               disabled={!isStepValid()}
             >

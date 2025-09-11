@@ -7,13 +7,13 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
       {/* header */}
       <div className="pt-4 pb-2 px-8 text-center">
         <h2 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
-          Section 1: Personal Info
+          Section 1: Personal Information
         </h2>
         <p className="text-sm font-semibold text-[#767687]">Please fill out your details</p>
       </div>
 
       {/* Basic Details */}
-      <div className="px-6">
+      <div className="max-w-3xl p-6">
         <div className="border rounded-xl border-gray-200 p-4 mb-4">
           <p className="text-[#767687] font-semibold text-sm mb-3">Basic Details</p>
 
