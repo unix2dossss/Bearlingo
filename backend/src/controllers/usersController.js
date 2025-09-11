@@ -601,17 +601,19 @@ export const updateJournalEntry = async (req, res) => {
 
 // Getting the leaderboard
 export const getLeaderboard = async (req, res) => {
-  const userId = req.user._id;
+  //const userId = req.user._id; Removed for now
   // Check if id is valid
-  if (!mongoose.isValidObjectId(userId)) {
+  console.log("IN LEADERBOARD BACKEND ENDPOINT");
+  /* if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
-  }
+  } */
   try {
     const users = await User.find({}, { username: 1, xp: 1, "streak.current": 1, linkedIn: 1 }) // Retrieving all users
       .sort({ xp: -1 }); // -1 for descending order. Sorting by xp
 
     return res.status(200).json({ users });
   } catch (error) {
+    console.error("Error in leaderboard:", error.message);
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
