@@ -7,7 +7,8 @@ import starIcon from "../assets/star.png";
 import bearIcon from "../assets/Bear.svg";
 import goldMedal from "../assets/gold.png"
 import silverMedal from "../assets/silver.png";
-import bronzeMedal from "../assets/bronze.png"
+import bronzeMedal from "../assets/bronze.png";
+import Logo from '../assets/Logo1.svg';
 
 
 const Leaderboard = () => {
@@ -91,6 +92,7 @@ const Leaderboard = () => {
                                 <img height="35" width="35" src={starIcon} alt="Star Icon"></img>
                                 <div className="flex justify-center align-center">{user.xp}</div>
                             </div>
+
                         </li >
 
                     ))

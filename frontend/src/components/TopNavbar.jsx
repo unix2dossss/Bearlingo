@@ -14,8 +14,8 @@ const TopNavbar = () => {
   return (
     <nav className="w-full bg-opacity-50 p-4 flex justify-between items-center ">
       {/* Logo */}
-        
-          <img src={Logo} alt="Logo" className="h-13 w-auto" />
+
+      <img src={Logo} alt="Logo" className="h-13 w-auto" />
 
       {/* Right Section */}
       <div className="flex items-center space-x-4 bg-white rounded-full px-4 py-1">
