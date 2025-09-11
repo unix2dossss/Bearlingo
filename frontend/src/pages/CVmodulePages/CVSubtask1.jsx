@@ -9,7 +9,6 @@ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 import ProgressPills from "../../components/CVModuleComponent/Task1Progress";
 
-
 const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose }) => {
   const [step, setStep] = useState(0);
   const [secondary, setSecondary] = useState({
@@ -29,7 +28,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
   });
 
   const [aboutMe, setAboutMe] = useState("");
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   // Fetch existing data from database
   useEffect(() => {
@@ -67,10 +66,10 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
           setAboutMe(data.aboutMe || "");
         }
 
-        setLoading(false);
+        // setLoading(false);
       } catch (err) {
         console.error(err);
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
@@ -133,7 +132,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
       lastName: personal.lastName,
       contact: {
         phone: personal.phone,
-        email: personal.email,
+        email: personal.email + "gmail.com",
         linkedin: personal.linkedin
       },
       education: {
@@ -225,19 +224,19 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <div className="w-full p-6 space-y-6">
-      {step > 0 && (
-        <button
+        {step > 0 && (
+          <button
             onClick={() => setStep(step - 1)}
             className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
           >
             ← Back
-        </button>
-      )}
+          </button>
+        )}
       </div>
       {/* centered progress pills */}
-              <div className="mx-auto max-w-[680px]">
-                  <ProgressPills step={step} />
-              </div> 
+      <div className="mx-auto max-w-[680px]">
+        <ProgressPills step={step} />
+      </div>
       {/* Removed close button - parent handles it */}
       {renderStep()}
 
