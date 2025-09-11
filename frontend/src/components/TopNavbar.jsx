@@ -12,7 +12,7 @@ const TopNavbar = () => {
   }, [user, fetchUser]);
 
   return (
-    <nav className="w-full bg-opacity-50 p-4 flex justify-between items-center ">
+    <nav className="w-full bg-opacity-50 p-4 flex justify-between items-center">
       {/* Logo */}
 
       <img src={Logo} alt="Logo" className="h-13 w-auto" />

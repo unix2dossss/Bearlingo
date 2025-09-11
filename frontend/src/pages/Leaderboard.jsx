@@ -8,6 +8,7 @@ import bearIcon from "../assets/Bear.svg";
 import goldMedal from "../assets/gold.png"
 import silverMedal from "../assets/silver.png";
 import bronzeMedal from "../assets/bronze.png";
+import title from '../assets/leaderboard-title-doodle.svg';
 import Logo from '../assets/Logo1.svg';
 
 
@@ -39,15 +40,18 @@ const Leaderboard = () => {
         <div className="bg-blue-200 min-h-screen">
 
             <TopNavbar />
-            <div className="flex pr-2 mt-2 justify-end">
+            {/* <div className="flex pr-2 mt-2 justify-end">
                 <input type="checkbox" value="synthwave" className="toggle theme-controller" />
-            </div>
-            <br />
-            <div className="flex justify-center">
-                <div className="bg-yellow-300 text-white px-8 py-4 rounded-full shadow-lg w-[300px] border-4 border-white">
-
+            </div> */}
+            <div className="flex justify-center" >
+                {/* <div className="bg-yellow-300 text-white px-8 py-4 rounded-full shadow-lg w-[300px] border-4 border-white">
                     <h1 className=" text-4xl font-bold text-center flex justify-center font-sans">Leaderboard</h1>
-                </div>
+                </div> */}
+                <img
+                    src={title}
+                    alt="Leaderboard"
+                    className="w-2/5 h-auto"
+                />
             </div>
             <br />
 
