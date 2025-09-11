@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useUserStore } from "../store/user";
 import { Flame, Star, User } from "lucide-react";
+import Logo from '../assets/Logo1.svg';
+
 
 const TopNavbar = () => {
   const { user, fetchUser } = useUserStore();
@@ -10,11 +12,10 @@ const TopNavbar = () => {
   }, [user, fetchUser]);
 
   return (
-    <nav className="w-full bg-gray-200 p-4 flex justify-between items-center border border-black">
+    <nav className="w-full bg-opacity-50 p-4 flex justify-between items-center ">
       {/* Logo */}
-      <div className="flex items-center bg-white rounded-full px-4 py-1">
-        <span className="ml-2 font-bold text-lg">BearLingo</span>
-      </div>
+        
+          <img src={Logo} alt="Logo" className="h-13 w-auto" />
 
       {/* Right Section */}
       <div className="flex items-center space-x-4 bg-white rounded-full px-4 py-1">
