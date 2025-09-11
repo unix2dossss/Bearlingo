@@ -1,40 +1,43 @@
-import React from "react";
+// src/pages/CVModule/CVSubtask3.jsx
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const CVSubtask3 = ({ onClose, setIsSubmitted }) => {
+const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {} }) => {
   const { completeTask } = useUserStore();
+  const [downloading, setDownloading] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleComplete = async () => {
     try {
-      // Get subtaskId for CV Builder level 1, sequence 3
       const subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 3);
       const res = await completeTask(subtaskId);
-      if (res) {
-        toast.success(res.data.message);
-      } else {
-        toast.success("Well Done! You completed the subtask!");
-      }
-      
+      toast.success(res?.data?.message || "Well Done! You completed the subtask!");
       setIsSubmitted(true);
-      onClose(true); // force close modal
+      onClose(true);
     } catch (err) {
       console.error("Failed to complete Subtask 3:", err);
       toast.error("Could not complete task 3");
     }
   };
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handlePreview = () => {
-    window.open(`${BASE_URL}/users/me/cv/preview`, "_blank");
+    try {
+      window.open(`${BASE_URL}/users/me/cv/preview`, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to open preview");
+    }
   };
 
   const handleDownload = async () => {
     try {
+      setDownloading(true);
       const res = await fetch(`${BASE_URL}/users/me/cv/download`, {
-        credentials: "include"
+        credentials: "include",
       });
+      if (!res.ok) throw new Error("Download failed");
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -46,21 +49,73 @@ const CVSubtask3 = ({ onClose, setIsSubmitted }) => {
     } catch (err) {
       console.error(err);
       toast.error("Failed to download CV");
+    } finally {
+      setDownloading(false);
     }
   };
 
   return (
-    <div className="card bg-neutral text-neutral-content w-full max-w-lg mx-auto">
-      <div className="card-body items-center text-center">
-        <h2 className="card-title">Your CV is ready for the world! 🎉</h2>
-        <p className="mt-2">Choose what you want to do with it:</p>
-        <div className="card-actions justify-center mt-6 gap-4">
-          <button className="btn btn-primary" onClick={handlePreview}>
-            Preview My CV
+    <div className="flex flex-col h-full overflow-y-auto relative">
+      {/* Header */}
+      <div className="pt-4 pb-2 px-8 text-center">
+        <h2 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
+          Section 3: Review & Export
+        </h2>
+        <p className="text-sm font-semibold text-[#767687]">
+          Your CV is ready — preview or download it
+        </p>
+      </div>
+
+      {/* Status card (subtle, optional) */}
+      <div className="max-w-3xl mx-auto px-6 w-full">
+        <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-5 text-center">
+          <p className="text-sm font-semibold text-[#767687]">
+            Looking great! When you’re happy, download your PDF.
+          </p>
+        </div>
+      </div>
+
+      {/* Actions – same button look as Section 1 */}
+      <div className="px-6 pb-6 pt-4">
+        <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Preview (outlined) */}
+          <button
+            onClick={handlePreview}
+            className="inline-flex items-center justify-center
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-white border-2 border-[#4f9cf9]
+              text-[#4f9cf9] font-extrabold
+              hover:bg-[#4f9cf9]/5
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px]"
+          >
+            Preview my CV
           </button>
-          <button className="btn btn-ghost" onClick={handleDownload}>
-            Download as PDF
+
+          {/* Download (solid) */}
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className={`inline-flex items-center justify-center
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-[#4f9cf9] text-white 
+              font-extrabold text-base md:text-lg
+              shadow-sm hover:bg-[#4f9cf9]/90
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px] ${downloading ? "opacity-60 cursor-not-allowed" : ""}`}
+          >
+            {downloading ? "Preparing PDF…" : "Download as PDF"}
           </button>
+        </div>
+      </div>
+
+      {/* Gentle tip card */}
+      <div className="max-w-3xl mx-auto px-6 w-full pb-6">
+        <div className="rounded-2xl border border-orange-200 bg-orange-50 p-5">
+          <p className="text-orange-900 text-sm">
+            <span className="font-bold">Tip:</span> Double-check contact details and
+            dates. Keep an editable copy of your CV for quick updates later.
+          </p>
         </div>
       </div>
     </div>

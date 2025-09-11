@@ -4,21 +4,24 @@ import React from "react";
 export default function SecondaryEducationCard({ secondary, setSecondary }) {
 
   return (
-    <section className="max-w-3xl p-6">
+    <div>
       {/* Heading */}
-      <h1 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
+      <div className="pt-4 pb-2 px-8 text-center">
+      <h2  className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
         Section 2: Secondary Education
-      </h1>
-      <p className="text-center text-gray-500 font-semibold mt-1">
+      </h2>
+      <p className="text-sm font-semibold text-[#767687]">
         Please fill out your details
       </p>
+      </div>
 
       {/* Card */}
+      <div className="max-w-3xl p-6">
       <div className="mt-5 rounded-2xl border border-gray-300 p-6 md:p-7">
-        <p className="text-gray-500 font-semibold mb-4">Secondary Education</p>
+        <p className="text-[#767687] font-semibold text-sm mb-3">Secondary Education</p>
 
         {/* School */}
-        <label className="block text-base font-semibold mb-1">School Name</label>
+        <label className="block text-sm font-semibold mb-1">School Name <label className="text-red-500">*</label></label>
         <input
           className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="Enter your school name"
@@ -27,7 +30,7 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
         />
 
         {/* Subjects */}
-        <label className="block text-base font-semibold mb-1">Subject Studied</label>
+        <label className="block text-sm font-semibold mb-1">Subject Studied <label className="text-red-500">*</label></label>
         <textarea
           className="w-full h-24 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-5 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
           placeholder="List the main subjects you studied, separated by commas"
@@ -36,8 +39,8 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
         />
 
         {/* Achievements */}
-        <label className="block text-base font-semibold mb-1">
-          Achievements (Optional)
+        <label className="block text-sm font-semibold mb-1">
+          Achievements <span className="text-xs font-normal text-gray-500"> (optional) </span>
         </label>
         <textarea
           className="w-full h-28 rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 mb-6 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
@@ -49,7 +52,8 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
         {/* Years */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-base font-semibold mb-1">Start Year</label>
+            <label className="block text-sm font-semibold mb-1">Start Year <label className="text-red-500">*</label>
+            </label>
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="2018"
@@ -58,7 +62,7 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
             />
           </div>
           <div>
-            <label className="block text-base font-semibold mb-1">End Year</label>
+            <label className="block text-sm font-semibold mb-1">End Year <label className="text-red-500">*</label></label>
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="2022"
@@ -68,6 +72,7 @@ export default function SecondaryEducationCard({ secondary, setSecondary }) {
           </div>
         </div>
       </div>
-    </section>
+    </div>
+    </div>
   );
 }

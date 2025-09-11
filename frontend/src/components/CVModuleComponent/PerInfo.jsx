@@ -19,7 +19,10 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold mb-1">First Name</label>
+              <label className="block text-sm font-semibold mb-1">
+                First Name <label className="text-red-500">*</label>
+                {/*<label className="text-[#4f9cf9]">*</label>*/}
+                </label>
               <input
                 className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
                 placeholder="Enter your first name"
@@ -28,7 +31,9 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">Last Name</label>
+              <label className="block text-sm font-semibold mb-1">
+                Last Name <label className="text-red-500">*</label> 
+              </label>
               <input
                 className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
                 placeholder="Enter your last name"
@@ -44,7 +49,8 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
           <p className="text-[#767687] font-semibold text-sm mb-3">Contact Information</p>
 
           <div className="mb-3">
-            <label className="block text-sm font-semibold mb-1">Phone Number</label>
+            <label className="block text-sm font-semibold mb-1">
+              Phone Number <label className="text-red-500">*</label></label>
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
               placeholder="12345646"
@@ -54,7 +60,8 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
           </div>
 
           <div className="mb-3">
-            <label className="block text-sm font-semibold mb-1">Email</label>
+            <label className="block text-sm font-semibold mb-1">
+              Email <label className="text-red-500">*</label> </label>
             <div className="relative flex">
               <input
                 className="flex-1 h-10 rounded bg-gray-100 px-3 pr-28 placeholder:text-gray-400"
@@ -84,7 +91,10 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-1">LinkedIn Profile</label>
+            <label className="block text-sm font-semibold mb-1">
+              LinkedIn Profile  
+              <span className="text-xs font-normal text-gray-500"> (optional) </span>
+            </label>
             <input
               className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
               placeholder="https://linkedin.com/in/yourprofile"

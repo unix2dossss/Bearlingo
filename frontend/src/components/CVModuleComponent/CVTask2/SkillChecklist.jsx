@@ -8,7 +8,7 @@ export default function SkillsView({
 }) {
   return (
     <section className="max-w-3xl mx-auto p-6">
-      <h1 className="text-center text-4xl md:text-5xl font-extrabold text-[#4f9cf9]">
+      <h1 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
         Section 1: Skill Check List
       </h1>
       <p className="text-center text-gray-500 font-semibold mt-1">
@@ -18,7 +18,7 @@ export default function SkillsView({
       <div className="mt-5 rounded-2xl border border-gray-300 p-6 md:p-7">
         <div className="flex items-center justify-between mb-3">
           <p className="text-gray-600 font-semibold">
-            Skill ({selectedSkills.length}/{maxSkills})
+            Skill ({selectedSkills.length}/{maxSkills}) <label className="text-red-500">*</label>
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export default function SkillsView({
 
         {/* Add custom */}
         <div className="flex items-center gap-2 mb-1 text-gray-600">
-          Add your own
+          Add your own <span className="text-sm font-normal text-gray-500">(optional) </span>
         </div>
         <div className="flex gap-2 mb-2">
           <input

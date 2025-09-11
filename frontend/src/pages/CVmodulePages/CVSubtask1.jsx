@@ -7,6 +7,8 @@ import SecEdu from "../../components/CVModuleComponent/SecEdu";
 import Aboutme from "../../components/CVModuleComponent/Aboutme";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
+import ProgressPills from "../../components/CVModuleComponent/Task1Progress";
+
 
 const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose }) => {
   const [step, setStep] = useState(0);
@@ -206,8 +208,6 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
 
   // Render step
   const renderStep = () => {
-    if (loading) return <p>Loading...</p>;
-
     switch (step) {
       case 0:
         return <PerInfo personal={personal} setPersonal={setPersonal} />;
@@ -223,16 +223,21 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto relative">
+    <div className="flex flex-col h-full overflow-y-auto">
+      <div className="w-full p-6 space-y-6">
       {step > 0 && (
         <button
-          onClick={() => setStep(step - 1)}
-          className="absolute top-2 left-2 text-gray-600 hover:text-blue-500 text-sm"
-        >
-          ← Back
+            onClick={() => setStep(step - 1)}
+            className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
+          >
+            ← Back
         </button>
       )}
-
+      </div>
+      {/* centered progress pills */}
+              <div className="mx-auto max-w-[680px]">
+                  <ProgressPills step={step} />
+              </div> 
       {/* Removed close button - parent handles it */}
       {renderStep()}
 

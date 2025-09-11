@@ -12,6 +12,7 @@ import { useUserStore } from "../../store/user";
 import SkillsView from "../../components/CVModuleComponent/CVTask2/SkillChecklist";
 import ProjectsView from "../../components/CVModuleComponent/CVTask2/Projects";
 import ExperiencesView from "../../components/CVModuleComponent/CVTask2/Experiences";
+import ProgressPills from "../../components/CVModuleComponent/CVTask2/Task2Progress";
 
 /** Subtask 2 — Skills & Experience Checklist (container)
  * Uses your existing SkillsView, ProjectsView, ExperiencesView.
@@ -86,79 +87,28 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
   }, [isSubmitted]);
   // ───────────────────────────────────────────
   // Skills
-  const [allSkills, setAllSkills] = useState([
-    // Languages
-    "Python",
-    "Java",
-    "JavaScript",
-    "TypeScript",
-    "C",
-    "C++",
-    "C#",
-    "Go",
-    "Rust",
-    "Kotlin",
-    "Swift",
-    "Dart",
-    // Front-end
-    "React",
-    "Next.js",
-    "Vue",
-    "Angular",
-    "Svelte",
-    "HTML/CSS",
-    "Tailwind CSS",
-    "Bootstrap",
-    "Sass",
-    // Back-end / Frameworks
-    "Node.js",
-    "Express",
-    "Django",
-    "Flask",
-    "FastAPI",
-    "Spring Boot",
-    ".NET",
-    "Ruby on Rails",
-    "Laravel",
-    // Data / DB
-    "SQL",
-    "PostgreSQL",
-    "MySQL",
-    "SQLite",
-    "MongoDB",
-    "Redis",
-    "GraphQL",
-    "Elasticsearch",
-    "Kafka",
-    // DevOps / Cloud
-    "Git",
-    "GitHub",
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "GCP",
-    "Azure",
-    "Terraform",
-    "CI/CD",
-    "Jenkins",
-    "GitLab CI",
-    // Testing
-    "Jest",
-    "Cypress",
-    "Playwright",
-    "Mocha",
-    "Chai",
-    // Mobile / Misc
-    "React Native",
-    "Flutter",
-    "Figma",
-    "Jira",
-    "Communication",
-    "Teamwork",
-    "Leadership",
-    "Time management",
-    "Problem solving"
-  ]);
+  const BASE_SKILLS = [
+  // Languages
+  "Python","Java","JavaScript","TypeScript","C","C++","C#",
+  "Go","Rust","Kotlin","Swift","Dart",
+  // Front-end
+  "React","Next.js","Vue","Angular","Svelte",
+  "HTML/CSS","Tailwind CSS","Bootstrap","Sass",
+  // Back-end / Frameworks
+  "Node.js","Express","Django","Flask","FastAPI","Spring Boot",
+  ".NET","Ruby on Rails","Laravel",
+  // Data / DB
+  "SQL","PostgreSQL","MySQL","SQLite","MongoDB","Redis",
+  "GraphQL","Elasticsearch","Kafka",
+  // DevOps / Cloud
+  "Git","GitHub","Docker","Kubernetes","AWS","GCP","Azure",
+  "Terraform","CI/CD","Jenkins","GitLab CI",
+  // Testing
+  "Jest","Cypress","Playwright","Mocha","Chai",
+  // Mobile / Misc
+  "React Native","Flutter","Figma","Jira",
+  "Communication","Teamwork","Leadership","Time management","Problem solving",
+];const [allSkills, setAllSkills] = useState(BASE_SKILLS);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [query, setQuery] = useState("");
   const [customSkill, setCustomSkill] = useState("");
@@ -339,11 +289,20 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
   };
 
   const handleClear = () => {
-    if (step === 0) setSelectedSkills([]);
-    if (step === 1) setProjects([{ name: "", outcome: "", role: "", link: "" }]);
-    if (step === 2)
-      setExperiences([{ company: "", role: "", startYear: "", endYear: "", contribution: "" }]);
-  };
+  if (step === 0) {
+    // Step 0: Skills — clear selected + remove any custom skills from the list
+    setSelectedSkills([]);
+    setAllSkills(BASE_SKILLS);   // this drops any user-added skills
+    setQuery("");
+    setCustomSkill("");
+    toast.success("Skills cleared and custom skills removed.");
+    return;
+  }
+  if (step === 1) setProjects([{ name: "", outcome: "", role: "", link: "" }]);
+  if (step === 2)
+    setExperiences([{ company: "", role: "", startYear: "", endYear: "", contribution: "" }]);
+};
+
 
   // ───────────────────────────────────────────
   // Review inline (no extra component)
@@ -403,6 +362,10 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <div className="w-full p-6 space-y-6">
+        {/* centered progress pills */}
+                      <div className="mx-auto max-w-[880px]">
+                          <ProgressPills step={step} />
+                      </div> 
         {step > 0 && (
           <button
             onClick={() => setStep(step - 1)}
@@ -410,7 +373,9 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
           >
             ← Back
           </button>
-        )}
+          
+          
+        )} 
 
         {step === 0 && (
           <SkillsView

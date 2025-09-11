@@ -6,11 +6,11 @@ export default function ExperiencesView({
 }) {
   return (
     <section className="max-w-3xl mx-auto p-6">
-      <h1 className="text-center text-4xl md:text-5xl font-extrabold text-[#4f9cf9]">
-        Section 3: Work Experiences (Optional)
+      <h1 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
+        Section 3: Work Experiences 
       </h1>
       <p className="text-center text-gray-500 font-semibold mt-1">
-        Add up to {maxExperiences} experiences
+        Optional: Add up to {maxExperiences} experiences
       </p>
 
       <div className="mt-5 space-y-4">
@@ -25,20 +25,19 @@ export default function ExperiencesView({
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="block text-sm font-semibold mb-1">
               <div>
                 <label className="block text-sm font-semibold mb-1">Company/Organization</label>
                 <input
-                  className="w-full h-10 rounded bg-gray-100 px-3 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
+                  className="w-full h-10 rounded bg-gray-100 px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
                   placeholder="Company name"
                   value={x.company}
                   onChange={(e) => updateExp(i, "company", e.target.value)}
                 />
-              </div>
-              <div>
+
                 <label className="block text-sm font-semibold mb-1">Job Role</label>
                 <input
-                  className="w-full h-10 rounded bg-gray-100 px-3 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
+                  className="w-full h-10 rounded bg-gray-100 px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
                   placeholder="e.g., Frontend Developer"
                   value={x.role}
                   onChange={(e) => updateExp(i, "role", e.target.value)}
@@ -50,7 +49,7 @@ export default function ExperiencesView({
               <div>
                 <label className="block text-sm font-semibold mb-1">Start Year</label>
                 <input
-                  className="w-full h-10 rounded bg-gray-100 px-3 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
+                  className="w-full h-10 rounded bg-gray-100 px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
                   placeholder="2023"
                   value={x.startYear}
                   onChange={(e) => updateExp(i, "startYear", e.target.value)}
@@ -59,7 +58,7 @@ export default function ExperiencesView({
               <div>
                 <label className="block text-sm font-semibold mb-1">End Year (or “Present”)</label>
                 <input
-                  className="w-full h-10 rounded bg-gray-100 px-3 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
+                  className="w-full h-10 rounded bg-gray-100 px-3  mb-4 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
                   placeholder="2024 / Present"
                   value={x.endYear}
                   onChange={(e) => updateExp(i, "endYear", e.target.value)}
@@ -67,9 +66,9 @@ export default function ExperiencesView({
               </div>
             </div>
 
-            <label className="block text-sm font-semibold mb-1">Contribution (2–3 sentences)</label>
+            <label className="block text-sm font-semibold mb-1">Contribution (2–3 sentences) </label>
             <textarea
-              className="w-full min-h-[90px] rounded bg-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
+              className="w-full min-h-[90px] rounded bg-gray-100 px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]"
               placeholder="What did you do in this role?"
               value={x.contribution}
               onChange={(e) => updateExp(i, "contribution", e.target.value)}
