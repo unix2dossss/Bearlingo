@@ -24,7 +24,7 @@ export const useUserStore = create((set) => ({
   completeTask: async (subtaskId) => {
     try {
       set({ loading: true });
-      await api.post(
+      const taskCompletionRes = await api.post(
         `/users/complete/level-subtasks/${subtaskId}`,
         {},
         { withCredentials: true }
@@ -34,6 +34,7 @@ export const useUserStore = create((set) => ({
         withCredentials: true,
       });
       set({ user: res.data.user, loading: false });
+      return taskCompletionRes;
     } catch (err) {
       set({ error: err.message, loading: false });
     }

@@ -1,5 +1,5 @@
 // src/pages/CVModule/CVSubtask2.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
@@ -13,41 +13,151 @@ import SkillsView from "../../components/CVModuleComponent/CVTask2/SkillChecklis
 import ProjectsView from "../../components/CVModuleComponent/CVTask2/Projects";
 import ExperiencesView from "../../components/CVModuleComponent/CVTask2/Experiences";
 
-
 /** Subtask 2 — Skills & Experience Checklist (container)
  * Uses your existing SkillsView, ProjectsView, ExperiencesView.
  * Progress pills intentionally omitted (as requested).
  */
-export default function CVSubtask2({ onClose = () => {} }) {
-  const { setUser } = useUserStore?.() ?? { setUser: () => {} };
+export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () => {} }) {
+  // const { setUser } = useUserStore?.() ?? { setUser: () => {} };
 
   // ───────────────────────────────────────────
   // Step state: 0 = Skills, 1 = Projects, 2 = Experiences, 3 = Review/Submit
   const [step, setStep] = useState(0);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get("/users/me/cv", { withCredentials: true });
+        const data = res.data;
+
+        if (data) {
+          // Skills
+          if (Array.isArray(data.skills)) {
+            setSelectedSkills(data.skills.slice(0, maxSkills));
+          }
+
+          // Projects
+          if (Array.isArray(data.projects) && data.projects.length > 0) {
+            setProjects(
+              data.projects.map((p) => ({
+                name: p.name || "",
+                outcome: p.outcome || "",
+                role: p.roleContribution || "",
+                link: p.link || ""
+              }))
+            );
+          }
+
+          // Experiences
+          if (Array.isArray(data.experiences) && data.experiences.length > 0) {
+            setExperiences(
+              data.experiences.map((x) => ({
+                company: x.company || "",
+                role: x.role || "",
+                startYear: x.startYear || "",
+                endYear: x.endYear || "",
+                contribution: x.contribution || ""
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch CV data:", err);
+        toast.error("Could not load your CV data.");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Warn before reload/close browser
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (!isSubmitted) {
+        e.preventDefault();
+        e.returnValue = "You have unsaved changes. Are you sure you want to leave this page?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isSubmitted]);
   // ───────────────────────────────────────────
   // Skills
   const [allSkills, setAllSkills] = useState([
     // Languages
-    "Python", "Java", "JavaScript", "TypeScript", "C", "C++", "C#",
-    "Go", "Rust", "Kotlin", "Swift", "Dart",
+    "Python",
+    "Java",
+    "JavaScript",
+    "TypeScript",
+    "C",
+    "C++",
+    "C#",
+    "Go",
+    "Rust",
+    "Kotlin",
+    "Swift",
+    "Dart",
     // Front-end
-    "React", "Next.js", "Vue", "Angular", "Svelte",
-    "HTML/CSS", "Tailwind CSS", "Bootstrap", "Sass",
+    "React",
+    "Next.js",
+    "Vue",
+    "Angular",
+    "Svelte",
+    "HTML/CSS",
+    "Tailwind CSS",
+    "Bootstrap",
+    "Sass",
     // Back-end / Frameworks
-    "Node.js", "Express", "Django", "Flask", "FastAPI", "Spring Boot",
-    ".NET", "Ruby on Rails", "Laravel",
+    "Node.js",
+    "Express",
+    "Django",
+    "Flask",
+    "FastAPI",
+    "Spring Boot",
+    ".NET",
+    "Ruby on Rails",
+    "Laravel",
     // Data / DB
-    "SQL", "PostgreSQL", "MySQL", "SQLite", "MongoDB", "Redis",
-    "GraphQL", "Elasticsearch", "Kafka",
+    "SQL",
+    "PostgreSQL",
+    "MySQL",
+    "SQLite",
+    "MongoDB",
+    "Redis",
+    "GraphQL",
+    "Elasticsearch",
+    "Kafka",
     // DevOps / Cloud
-    "Git", "GitHub", "Docker", "Kubernetes", "AWS", "GCP", "Azure",
-    "Terraform", "CI/CD", "Jenkins", "GitLab CI",
+    "Git",
+    "GitHub",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "GCP",
+    "Azure",
+    "Terraform",
+    "CI/CD",
+    "Jenkins",
+    "GitLab CI",
     // Testing
-    "Jest", "Cypress", "Playwright", "Mocha", "Chai",
+    "Jest",
+    "Cypress",
+    "Playwright",
+    "Mocha",
+    "Chai",
     // Mobile / Misc
-    "React Native", "Flutter", "Figma", "Jira",
-    "Communication", "Teamwork", "Leadership", "Time management", "Problem solving",
+    "React Native",
+    "Flutter",
+    "Figma",
+    "Jira",
+    "Communication",
+    "Teamwork",
+    "Leadership",
+    "Time management",
+    "Problem solving"
   ]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [query, setQuery] = useState("");
@@ -73,70 +183,65 @@ export default function CVSubtask2({ onClose = () => {} }) {
   const addCustomSkill = () => {
     const v = customSkill.trim();
     if (!v) return;
-    setAllSkills((xs) =>
-      xs.some((s) => s.toLowerCase() === v.toLowerCase()) ? xs : [...xs, v]
-    );
-    setSelectedSkills((xs) =>
-      xs.includes(v) ? xs : xs.length < maxSkills ? [...xs, v] : xs
-    );
+    setAllSkills((xs) => (xs.some((s) => s.toLowerCase() === v.toLowerCase()) ? xs : [...xs, v]));
+    setSelectedSkills((xs) => (xs.includes(v) ? xs : xs.length < maxSkills ? [...xs, v] : xs));
     setCustomSkill("");
   };
 
   const saveSkills = async () => {
-  if (selectedSkills.length === 0) {
-    toast.error("Pick at least 1 skill.");
-    return;
-  }
+    if (selectedSkills.length === 0) {
+      toast.error("Pick at least 1 skill.");
+      return;
+    }
 
-  try {
-    const payload = { skills: Array.from(new Set(selectedSkills)).slice(0, maxSkills) };
-    console.log("POST /users/me/cv/skills", payload);
-    const res = await api.post("/users/me/cv/skills", payload, {
-      withCredentials: true,
-    });
-    toast.success(res?.data?.message ?? "Skills saved.");
-  } catch (e) {
-    console.error("saveSkills error:", e?.response || e);
-    const msg =
-      e?.response?.data?.message ||
-      `${e?.response?.status ?? ""} ${e?.response?.statusText ?? ""}`.trim() ||
-      e?.message;
-    toast.error(`Failed to save skills: ${msg}`);
-    throw e; // keep this so handleNext stops on error
-  }
-};
+    try {
+      const payload = { skills: Array.from(new Set(selectedSkills)).slice(0, maxSkills) };
+      console.log("POST /users/me/cv/skills", payload);
+      const res = await api.post("/users/me/cv/skills", payload, {
+        withCredentials: true
+      });
+      toast.success(res?.data?.message ?? "Skills saved.");
+    } catch (e) {
+      console.error("saveSkills error:", e?.response || e);
+      const msg =
+        e?.response?.data?.message ||
+        `${e?.response?.status ?? ""} ${e?.response?.statusText ?? ""}`.trim() ||
+        e?.message;
+      toast.error(`Failed to save skills: ${msg}`);
+      throw e; // keep this so handleNext stops on error
+    }
+  };
 
   // ───────────────────────────────────────────
   // Projects (max 3)
-  const [projects, setProjects] = useState([
-    { name: "", outcome: "", role: "", link: "" },
-  ]);
+  const [projects, setProjects] = useState([{ name: "", outcome: "", role: "", link: "" }]);
   const maxProjects = 3;
 
   const updateProject = (i, key, value) =>
     setProjects((ps) => ps.map((p, idx) => (idx === i ? { ...p, [key]: value } : p)));
   const addProject = () =>
     setProjects((ps) =>
-      ps.length < maxProjects
-        ? [...ps, { name: "", outcome: "", role: "", link: "" }]
-        : ps
+      ps.length < maxProjects ? [...ps, { name: "", outcome: "", role: "", link: "" }] : ps
     );
   const removeProject = (i) => setProjects((ps) => ps.filter((_, idx) => idx !== i));
 
   const saveProjects = async () => {
-    const payload = projects.filter((p) => p.name || p.outcome || p.role || p.link);
-    await api.post(
-      "/api/users/me/cv/projects",
-      { projects: payload },
-      { withCredentials: true }
-    );
-    toast.success("Projects saved.");
+    const payload = {
+      projects: projects.map((p) => ({
+        name: p.name,
+        outcome: p.outcome,
+        roleContribution: p.role,
+        link: p.link
+      }))
+    };
+    const res = await api.post("/users/me/cv/projects", payload, { withCredentials: true });
+    toast.success(res.data.message);
   };
 
   // ───────────────────────────────────────────
   // Work experiences (optional, max 4)
   const [experiences, setExperiences] = useState([
-    { company: "", role: "", startYear: "", endYear: "", contribution: "" },
+    { company: "", role: "", startYear: "", endYear: "", contribution: "" }
   ]);
   const maxExperiences = 4;
 
@@ -148,19 +253,14 @@ export default function CVSubtask2({ onClose = () => {} }) {
         ? [...xs, { company: "", role: "", startYear: "", endYear: "", contribution: "" }]
         : xs
     );
-  const removeExperience = (i) =>
-    setExperiences((xs) => xs.filter((_, idx) => idx !== i));
+  const removeExperience = (i) => setExperiences((xs) => xs.filter((_, idx) => idx !== i));
 
   const saveExperiences = async () => {
-    const payload = experiences.filter(
-      (x) => x.company || x.role || x.startYear || x.endYear || x.contribution
-    );
-    await api.post(
-      "/api/users/me/cv/work-experience",
-      { experiences: payload },
-      { withCredentials: true }
-    );
-    toast.success("Work experiences saved.");
+    const payload = { experiences };
+    console.log(payload);
+    const res = await api.post("/users/me/cv/work-experience", payload, { withCredentials: true });
+    toast.success(res.data.message);
+    setIsSubmitted(true); // mark as submitted → allow closing
   };
 
   // ───────────────────────────────────────────
@@ -184,22 +284,30 @@ export default function CVSubtask2({ onClose = () => {} }) {
     }
   };
 
+  const { completeTask } = useUserStore();
   const handleSubmit = async () => {
+    // Get subtaskId by module name, level number and subtask sequence number
+    let subtaskId;
     try {
-      const subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 2);
-      await api.get(`/api/users/complete/level-subtasks/${subtaskId}`, {
-        withCredentials: true,
-      });
-      toast.success("Subtask 2 completed!");
-
-      const prof = await api.get("/api/users/profile", { withCredentials: true });
-      setUser?.(prof.data);
-
-      onClose(true);
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to submit subtask.");
+      subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 1);
+    } catch (err) {
+      console.error("Failed to get subtask ID", err);
+      toast.error("Could not find subtask");
+      return;
     }
+    // Mark subtask as completed
+    try {
+      const res = await completeTask(subtaskId);
+      // Check if subtask is completed and display appropriate message
+      if (res.data.message === "Well Done! You completed the subtask") {
+        toast.success("Task 2 completed!");
+      }
+    } catch (err) {
+      console.error("Failed to complete task", err);
+      toast.error("Could not mark task complete");
+    }
+    setIsSubmitted(true); // allow closing/leaving
+    onClose(true); // force close, bypass ConfirmLeave check
   };
 
   const handleClear = () => {
@@ -213,9 +321,7 @@ export default function CVSubtask2({ onClose = () => {} }) {
   // Review inline (no extra component)
   const Review = () => {
     const visibleProjects = projects.filter((p) => p.name || p.outcome || p.role);
-    const visibleExperiences = experiences.filter(
-      (x) => x.company || x.role || x.contribution
-    );
+    const visibleExperiences = experiences.filter((x) => x.company || x.role || x.contribution);
 
     return (
       <section className="max-w-3xl mx-auto p-6">
@@ -242,9 +348,7 @@ export default function CVSubtask2({ onClose = () => {} }) {
 
           <p className="font-semibold mb-2">Projects</p>
           <ul className="list-disc ml-5 mb-4 text-gray-700">
-            {visibleProjects.length === 0 && (
-              <li className="list-none text-gray-500">None</li>
-            )}
+            {visibleProjects.length === 0 && <li className="list-none text-gray-500">None</li>}
             {visibleProjects.map((p, i) => (
               <li key={i}>
                 <span className="font-semibold">{p.name || "Untitled"}</span> —{" "}
@@ -255,13 +359,10 @@ export default function CVSubtask2({ onClose = () => {} }) {
 
           <p className="font-semibold mb-2">Work Experiences</p>
           <ul className="list-disc ml-5 text-gray-700">
-            {visibleExperiences.length === 0 && (
-              <li className="list-none text-gray-500">None</li>
-            )}
+            {visibleExperiences.length === 0 && <li className="list-none text-gray-500">None</li>}
             {visibleExperiences.map((x, i) => (
               <li key={i}>
-                <span className="font-semibold">{x.role || "Role"}</span> @{" "}
-                {x.company || "Company"}
+                <span className="font-semibold">{x.role || "Role"}</span> @ {x.company || "Company"}
               </li>
             ))}
           </ul>
@@ -329,7 +430,8 @@ export default function CVSubtask2({ onClose = () => {} }) {
              text-[#4f9cf9] font-extrabold
              hover:bg-[#4f9cf9]/5
              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-             min-w-[200px]">
+             min-w-[200px]"
+          >
             Clear
           </button>
 

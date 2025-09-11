@@ -8,7 +8,7 @@ import Aboutme from "../../components/CVModuleComponent/Aboutme";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose={handleCloseForm} }) => {
+const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClose }) => {
   const [step, setStep] = useState(0);
   const [secondary, setSecondary] = useState({
     school: "",
@@ -173,7 +173,7 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
       }
       // Mark subtask as completed
       try {
-        await completeTask(subtaskId);
+        const res = await completeTask(subtaskId);
         // Check if subtask is completed and display appropriate message
         if (res.data.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
