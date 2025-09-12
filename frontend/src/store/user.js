@@ -39,5 +39,8 @@ export const useUserStore = create((set) => ({
       set({ error: err.message, loading: false });
     }
   },
+
+  // Clear the user on logout
+  clearUser: () => set({ user: null }),
 }));
 
