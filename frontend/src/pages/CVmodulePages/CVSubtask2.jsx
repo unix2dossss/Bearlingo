@@ -9,7 +9,7 @@ import { useUserStore } from "../../store/user";
 // import SkillsView from "./views/SkillsView";
 // import ProjectsView from "./views/ProjectsView";
 // import ExperiencesView from "./views/ExperiencesView";
-import SkillsView from "../../components/CVModuleComponent/CVTask2/SkillChecklist";
+import SkillsView from "../../components/CVModuleComponent/SkillChecklist";
 import ProjectsView from "../../components/CVModuleComponent/CVTask2/Projects";
 import ExperiencesView from "../../components/CVModuleComponent/CVTask2/Experiences";
 import ProgressPills from "../../components/CVModuleComponent/CVTask2/Task2Progress";
@@ -188,6 +188,7 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
     toast.success(res.data.message);
   };
 
+
   // ───────────────────────────────────────────
   // Work experiences (optional, max 4)
   const [experiences, setExperiences] = useState([
@@ -357,26 +358,58 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
       </section>
     );
   };
+  // Handle close (from top-right X button)
+  const handleCloseClick = () => {
+  if (isSubmitted) {
+    // Same "saved" feel as when you submit
+    toast.success("Saved — closing task.");
+    onClose?.(true); // force close, bypass ConfirmLeave check
+    return;
+  }
+  // Not submitted yet → let parent show ConfirmLeave dialog
+  toast("Finish & save to close (or confirm to discard).", { icon: "⚠️" });
+  onClose?.(); // normal close → parent will decide
+};
 
   // UI design ───────────────────────────────────────────
-  return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div className="w-full p-6 space-y-6">
-        {/* centered progress pills */}
-                      <div className="mx-auto max-w-[880px]">
-                          <ProgressPills step={step} />
-                      </div> 
-        {step > 0 && (
-          <button
-            onClick={() => setStep(step - 1)}
-            className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
-          >
-            ← Back
-          </button>
-          
-          
-        )} 
+return (
+  <div className="flex flex-col h-full">
+    {/* Sticky white header */}
+    <header className="sticky top-0 z-40 bg-white">
+      <div className="mx-auto max-w-[800px] px-3 py-6 grid grid-cols-[auto_1fr_auto] items-center">
+        {/* Left: Back (reserve width so center stays centered) */}
+        <div className="min-w-[60px]">
+          {step > 0 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="text-gray-600 hover:text-[#4f9cf9] text-sm"
+            >
+              ← Back
+            </button>
+          )}
+        </div>
 
+        {/* Center: pills */}
+        <div className="flex justify-center">
+          <ProgressPills step={step} />
+        </div>
+
+        {/* Right: Close */}
+        <button
+          onClick={handleCloseClick}
+          className="text-gray-400 hover:text-gray-600 text-xl"
+          aria-label="Close"
+        >
+          ✖
+        </button>
+      </div>
+    </header>
+
+    {/* Scrollable content area */}
+    <div
+      className="flex-1 overflow-y-auto"
+      style={{ scrollbarGutter: "stable both-edges" }}
+    >
         {step === 0 && (
           <SkillsView
             selectedSkills={selectedSkills}
@@ -412,18 +445,19 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
         )}
 
         {step === 3 && <Review />}
+        </div>
 
-        {/* footer buttons */}
+        {/* Footer buttons */}
         <div className="flex items-center justify-center gap-5 mt-4">
           <button
             onClick={handleClear}
             className="inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
-             bg-white border-2 border-[#4f9cf9]
-             text-[#4f9cf9] font-extrabold
-             hover:bg-[#4f9cf9]/5
-             focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-             min-w-[200px]"
+              bg-white border-2 border-[#4f9cf9]
+              text-[#4f9cf9] font-extrabold
+              hover:bg-[#4f9cf9]/5
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px]"
           >
             Clear
           </button>
@@ -454,6 +488,6 @@ export default function CVSubtask2({ isSubmitted, setIsSubmitted, onClose = () =
           )}
         </div>
       </div>
-    </div>
-  );
+);
+
 }

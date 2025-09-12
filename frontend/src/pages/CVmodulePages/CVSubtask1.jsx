@@ -221,73 +221,99 @@ const CVSubtask1 = ({ personal, setPersonal, isSubmitted, setIsSubmitted, onClos
     }
   };
 
-  return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div className="w-full p-6 space-y-6">
-        {step > 0 && (
-          <button
-            onClick={() => setStep(step - 1)}
-            className="absolute top-3 left-3 text-gray-600 hover:text-blue-500 text-lg"
-          >
-            ← Back
-          </button>
-        )}
-      </div>
-      {/* centered progress pills */}
-      <div className="mx-auto max-w-[680px]">
-        <ProgressPills step={step} />
-      </div>
-      {/* Removed close button - parent handles it */}
-      {renderStep()}
-
-      <div className="flex justify-between p-4">
-        <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button
-            className="inline-flex items-center justify-center
-              h-12 md:h-14 px-8 md:px-10 rounded-full
-             bg-white border-2 border-[#4f9cf9]
-             text-[#4f9cf9] font-extrabold
-             hover:bg-[#4f9cf9]/5
-             focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-             min-w-[200px]"
-            onClick={handleClear}
-          >
-            Clear
-          </button>
-          {step < 3 && (
+  
+// UI ────────────────────────────────────────────────────────────────────────────
+return (
+  <div className="flex flex-col h-full">
+    {/* Sticky white header with Back • centered pills • Close */}
+    <header className="sticky top-0 z-40 bg-white">
+      <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
+        {/* Left: Back (keep width when hidden so the center stays centered) */}
+        <div className="min-w-[60px]">
+          {step > 0 && (
             <button
-              className={`inline-flex items-center justify-center
-                 h-12 md:h-14 px-8 md:px-10 rounded-full
-                 bg-[#4f9cf9] text-white 
-                 font-extrabold text-base md:text-lg
-                 shadow-sm hover:bg-[#4f9cf9]/90
-                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
-              onClick={handleSaveAndContinue}
-              disabled={!isStepValid()}
+              onClick={() => setStep(step - 1)}
+              className="text-gray-600 hover:text-[#4f9cf9] text-sm"
             >
-              Save & Continue
-            </button>
-          )}
-          {step === 3 && (
-            <button
-              className={`inline-flex items-center justify-center
-                 h-12 md:h-14 px-8 md:px-10 rounded-full
-                 bg-[#4f9cf9] text-white
-                 font-extrabold text-base md:text-lg
-                 shadow-sm hover:bg-[#4f9cf9]/500
-                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-                 min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
-              onClick={handleSubmit}
-              disabled={!isStepValid()}
-            >
-              Save & Submit
+              ← Back
             </button>
           )}
         </div>
+
+        {/* Center: Progress pills */}
+        <div className="flex justify-center">
+          <ProgressPills step={step} />
+        </div>
+
+        {/* Right: Close */}
+        <button
+          onClick={() => onClose?.()}
+          className="text-gray-400 hover:text-gray-600 text-xl"
+          aria-label="Close"
+        >
+          ✖
+        </button>
+      </div>
+    </header>
+
+    {/* Scrollable content area (keeps scrollbar away from the right edge actions) */}
+    <div
+      className="flex-1 overflow-y-auto px-6"
+      style={{ scrollbarGutter: "stable" }}
+    >
+      {renderStep()}
+    </div>
+
+    {/* Footer buttons */}
+    <div className="flex justify-between p-4">
+      <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
+          className="inline-flex items-center justify-center
+            h-12 md:h-14 px-8 md:px-10 rounded-full
+            bg-white border-2 border-[#4f9cf9]
+            text-[#4f9cf9] font-extrabold
+            hover:bg-[#4f9cf9]/5
+            focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+            min-w-[200px]"
+          onClick={handleClear}
+        >
+          Clear
+        </button>
+
+        {step < 3 ? (
+          <button
+            className={`inline-flex items-center justify-center
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-[#4f9cf9] text-white 
+              font-extrabold text-base md:text-lg
+              shadow-sm hover:bg-[#4f9cf9]/90
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
+            onClick={handleSaveAndContinue}
+            disabled={!isStepValid()}
+          >
+            Save & Continue
+          </button>
+        ) : (
+          <button
+            className={`inline-flex items-center justify-center
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-[#4f9cf9] text-white
+              font-extrabold text-base md:text-lg
+              shadow-sm hover:bg-[#4f9cf9]/90
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
+            onClick={handleSubmit}
+            disabled={!isStepValid()}
+          >
+            Save & Submit
+          </button>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CVSubtask1;
