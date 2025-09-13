@@ -1,16 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const CompanyResearchForm = ({ onSave, onCancel }) => {
+const CompanyResearchForm = ({ onSave, onCancel, initialData, onDraftChange }) => {
   const [form, setForm] = useState({
     companyName: "",
     industry: "",
     products: "",
     competitors: "",
-    questions: ["", ""],
+    questions: ["", ""]
   });
 
+  // Load existing data if editing (Not needed for now, later need when editing existing data)
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        companyName: initialData.companyName || "",
+        industry: initialData.industry || "",
+        products: initialData.products || "",
+        competitors: initialData.competitors || "",
+        questions: initialData.questions?.length ? initialData.questions : ["", ""]
+      });
+    }
+  }, [initialData]);
+
+  // Notify parent about draft changes
+  useEffect(() => {
+    onDraftChange(form);
+  }, [form, onDraftChange]);
+
   const isValid =
-    form.companyName && form.industry && form.products && form.competitors && form.questions[0] && form.questions[1];
+    form.companyName &&
+    form.industry &&
+    form.products &&
+    form.competitors &&
+    form.questions[0] &&
+    form.questions[1];
 
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
@@ -74,7 +97,9 @@ const CompanyResearchForm = ({ onSave, onCancel }) => {
         <button
           onClick={handleSubmit}
           disabled={!isValid}
-          className={`px-4 py-2 rounded text-white ${isValid ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
+          className={`px-4 py-2 rounded text-white ${
+            isValid ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+          }`}
         >
           Save Company Research
         </button>

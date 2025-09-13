@@ -13,30 +13,20 @@ const InterviewModule = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
 
-  const [interviewData, setInterviewData] = useState({
-    question: "",
-    answer: "",
-    notes: ""
-  });
-
-  //Ignore for now
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
     setShowSubtask(true);
   };
 
-  const handleClose = (force = false) => {
-    //Ignore for now
-    const isEmpty =
-      interviewData.question === "" && interviewData.answer === "" && interviewData.notes === "";
-    //Ignore for now
-    if (isEmpty || force) {
+  const handleClose = (hasChanges, force = false) => {
+    // Allow force close
+    if (force) {
       setShowSubtask(false);
       setSelectedSubtask(null);
       return;
     }
-
-    if (!isSubmitted) {
+    if (hasChanges) {
+      // show confirm popup
       setShowConfirmLeave(true);
     } else {
       setShowSubtask(false);
@@ -44,18 +34,13 @@ const InterviewModule = () => {
     }
   };
 
+  // If user clicked "Leave", allow them to leave
   const confirmLeave = () => {
     setShowConfirmLeave(false);
     setShowSubtask(false);
     setSelectedSubtask(null);
 
-    //Ignore for now
-    setInterviewData({
-      question: "",
-      answer: "",
-      notes: ""
-    });
-
+    // Reset submission state if needed
     setIsSubmitted(false);
   };
 
@@ -130,12 +115,7 @@ const InterviewModule = () => {
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col">
-            <button
-              onClick={handleClose}
-              className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-xl"
-            >
-              ✖
-            </button>
+            
             <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>
         </div>

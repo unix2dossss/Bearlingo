@@ -9,6 +9,11 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
   const [whatWasDifficult, setWhatWasDifficult] = useState("");
   const [improvementPlan, setImprovementPlan] = useState("");
 
+  // Snapshots of DB data for change detection
+  const [dbWhatWentWell, setDbWhatWentWell] = useState("");
+  const [dbWhatWasDifficult, setDbWhatWasDifficult] = useState("");
+  const [dbImprovementPlan, setDbImprovementPlan] = useState("");
+
   // Fetch existing reflection journal data
   useEffect(() => {
     const fetchReflection = async () => {
@@ -20,8 +25,13 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
 
         if (data) {
           setWhatWentWell(data.whatWentWell || "");
+          setDbWhatWentWell(data.whatWentWell || "");
+
           setWhatWasDifficult(data.whatWasDifficult || "");
+          setDbWhatWasDifficult(data.whatWasDifficult || "");
+
           setImprovementPlan(data.improvementPlan || "");
+          setDbImprovementPlan(data.improvementPlan || "");
         }
       } catch (err) {
         console.error("Failed to fetch reflection journal", err);
@@ -67,15 +77,18 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
 
     try {
       // Save reflection
-      const res = await api.post(
-        "/users/me/interview/reflection-journal",
-        payload,
-        { withCredentials: true }
-      );
+      const res = await api.post("/users/me/interview/reflection-journal", payload, {
+        withCredentials: true
+      });
       toast.success(res.data.message || "Reflection saved!");
+
+      // Update DB snapshot after successful save
+      setDbWhatWentWell(whatWentWell);
+      setDbWhatWasDifficult(whatWasDifficult);
+      setDbImprovementPlan(improvementPlan);
+
       setIsSubmitted(true);
-      onClose(true);
-      
+      onClose(false, true); // no unsaved changes, force close
 
       // Get subtaskId by module name, level number and subtask sequence number
       let subtaskId;
@@ -103,8 +116,26 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
     }
   };
 
+  // Local Close with unsaved-changes check
+  const handleLocalClose = () => {
+    const hasChanges =
+      whatWentWell !== dbWhatWentWell ||
+      whatWasDifficult !== dbWhatWasDifficult ||
+      improvementPlan !== dbImprovementPlan;
+
+    onClose(hasChanges);
+  };
+
   return (
     <div className="flex flex-col h-full overflow-y-auto">
+      {/* Right: Close */}
+      <button
+        onClick={handleLocalClose}
+        className="absolute top-2 right-2 p-4 text-gray-400 hover:text-gray-600 text-xl"
+        aria-label="Close"
+      >
+        ✖
+      </button>
       <form onSubmit={handleSubmit} className="mx-auto max-w-[680px] w-full space-y-6 p-6">
         <h2 className="text-2xl font-bold text-center text-[#4f9cf9]">Reflection Journal</h2>
 
