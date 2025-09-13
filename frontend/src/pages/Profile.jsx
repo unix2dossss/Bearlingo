@@ -10,7 +10,7 @@ const Profile = () => {
                 <div className="flex justify-center border border-red-600 gap-10 mt-16">
 
                     {/* For TSX uncomment the commented types below */}
-                    <div className="card bg-base-100 w-96 shadow-sm">
+                    <div className="card bg-base-100 w-[340px] h-[500px] shadow-sm">
                         <figure>
                             <img
                                 src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
@@ -24,7 +24,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 w-96 shadow-sm">
+                    <div className="card bg-base-100 w-[340px] h-[500px] shadow-sm">
                         <figure>
                             <img
                                 src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
@@ -38,7 +38,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 w-96 shadow-sm">
+                    <div className="card bg-base-100 w-[340px] h-[500px] shadow-sm">
                         <figure>
                             <img
                                 src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
