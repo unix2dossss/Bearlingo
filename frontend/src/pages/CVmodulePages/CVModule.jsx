@@ -16,22 +16,14 @@ const CVModule = () => {
     setSelectedSubtask(task);
     setShowSubtask(true);
   };
-  const handleClose = (force = false) => {
-    // Check if user hasn't typed anything yet
-    const isEmpty =
-      personal.firstName === "" &&
-      personal.lastName === "" &&
-      personal.phone === "" &&
-      personal.email === "" &&
-      personal.linkedin === "";
-
-    if (isEmpty || force) {
-      // User hasn't started → allow close
+  const handleClose = (hasChanges, force = false) => {
+    // Allow force close
+    if (force) {
       setShowSubtask(false);
       setSelectedSubtask(null);
       return;
     }
-    if (!isSubmitted) {
+    if (hasChanges) {
       // show confirm popup
       setShowConfirmLeave(true);
     } else {
@@ -40,29 +32,11 @@ const CVModule = () => {
     }
   };
 
-  // Lifted states from CVSubtask1 to clear the personal info state on close
-  const [personal, setPersonal] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    linkedin: ""
-  });
-
   // If user clicked "Leave", allow them to leave
   const confirmLeave = () => {
     setShowConfirmLeave(false);
     setShowSubtask(false);
     setSelectedSubtask(null);
-
-    // Reset personal info state
-    setPersonal({
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      linkedin: ""
-    });
 
     // Reset submission state if needed
     setIsSubmitted(false);
@@ -75,8 +49,6 @@ const CVModule = () => {
         return (
           <CVSubtask1
             task={selectedSubtask}
-            personal={personal}
-            setPersonal={setPersonal}
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
@@ -85,8 +57,6 @@ const CVModule = () => {
       case "subtask2":
         return(
           <CVSubtask2
-            personal={personal}
-            setPersonal={setPersonal}
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
