@@ -89,19 +89,19 @@ const InterviewModule = () => {
           <main className="flex-1 flex flex-col justify-center items-center p-6 space-y-6">
             <div className="flex space-x-6">
               <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask1")}
               >
                 Task 1
               </button>
               <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask2")}
               >
                 Task 2
               </button>
               <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask3")}
               >
                 Task 3
@@ -114,7 +114,7 @@ const InterviewModule = () => {
       {/* Modal */}
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#79B66F]">
             
             <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>

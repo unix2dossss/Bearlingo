@@ -30,7 +30,7 @@ const CompanyResearchList = ({ researches, onAddClick, onDelete }) => {
 
       <button
         onClick={onAddClick}
-        className="px-6 py-2 rounded-lg bg-black text-white font-semibold hover:bg-gray-800"
+        className="px-6 py-2 rounded-lg bg-[#79B66F] text-white font-semibold hover:bg-[#5f9c56] transition duration-200 ease-in-out"
       >
         + Add Company Research
       </button>

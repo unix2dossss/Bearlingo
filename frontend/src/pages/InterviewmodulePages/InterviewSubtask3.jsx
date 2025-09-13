@@ -137,7 +137,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
         ✖
       </button>
       <form onSubmit={handleSubmit} className="mx-auto max-w-[680px] w-full space-y-6 p-6">
-        <h2 className="text-2xl font-bold text-center text-[#4f9cf9]">Reflection Journal</h2>
+        <h2 className="text-2xl font-bold text-center text-[#79B66F]">Reflection Journal</h2>
 
         <div className="form-control">
           <label className="label font-semibold">What went well?</label>
@@ -174,8 +174,8 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
             type="button"
             className="inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
-              bg-white border-2 border-[#4f9cf9]
-              text-[#4f9cf9] font-extrabold
+              bg-white border-2 border-[#79B66F]
+              text-[#79B66F] font-extrabold
               hover:bg-[#4f9cf9]/5
               focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
               min-w-[200px]"
@@ -189,9 +189,9 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
             disabled={!isFormValid}
             className={`inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
-              bg-[#4f9cf9] text-white 
+              bg-[#79B66F] text-white 
               font-extrabold text-base md:text-lg
-              shadow-sm hover:bg-[#4f9cf9]/90
+              shadow-sm hover:bg-[#5f9c56]/90
               focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
               min-w-[200px] ${!isFormValid ? "opacity-60 cursor-not-allowed" : ""}`}
           >
