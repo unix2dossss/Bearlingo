@@ -40,7 +40,16 @@ const Leaderboard = () => {
 
       <div className="flex justify-center py-14">
         {/* <ul className="flex flex-col gap-2 w-[1000px] max-h-[600px] overflow-y-auto"> */}
-        <ul className="flex flex-col gap-2 w-full max-w-[1000px] px-4">
+        <ul className="
+  flex flex-col gap-2 
+  w-full max-w-[1000px] px-4 max-h-[530px] overflow-y-auto
+  border-4 border-solid border-white py-2 rounded-md
+  bg-[#c3ddfd] 
+  bg-[url('data:image/svg+xml,%3Csvg%20width=%2724%27%20height=%2740%27%20viewBox=%270%200%2024%2040%27%20xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cpath%20d=%27M0%2040c5.523%200%2010-4.477%2010-10V0C4.477%200%200%204.477%200%2010v30zm22%200c-5.523%200-10-4.477-10-10V0c5.523%200%2010%204.477%2010%2010v30z%27%20fill=%27%23ffffff%27%20fill-opacity=%270.4%27%20fill-rule=%27evenodd%27/%3E%3C/svg%3E')] 
+  bg-repeat 
+  bg-[length:24px_40px]
+">
+
           {leaderboardData.map((user, index) => (
             <LeaderboardCard
               key={index}
@@ -55,7 +64,7 @@ const Leaderboard = () => {
           ))}
         </ul>
       </div>
-    </div>
+    </div >
   );
 };
 
