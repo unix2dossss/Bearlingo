@@ -38,7 +38,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
   const [aboutMe, setAboutMe] = useState("");
   // const [loading, setLoading] = useState(true);
 
-  // States to track database data
+  // Snapshots from DB for ConfirmLeave check
   const [dbPersonal, setDbPersonal] = useState(null);
   const [dbSecondary, setDbSecondary] = useState(null);
   const [dbTertiary, setDbTertiary] = useState(null);
@@ -200,7 +200,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       toast.success(res.data.message);
       console.log(res.data);
 
-      // Update database state with new data
+      // Update database states with new data
       setDbPersonal(personal);
       setDbSecondary(secondary);
       setDbTertiary(tertiary);
