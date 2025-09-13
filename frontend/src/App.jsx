@@ -6,6 +6,7 @@ import CvModule from './pages/CVmodulePages/CVModule';
 import FirstTimePg1 from './pages/FirstTimePages/FirstTimePg1';
 import FirstTimePg2 from './pages/FirstTimePages/FirstTimePg2';
 import Leaderboard from './pages/Leaderboard';
+import Profile from './pages/Profile';
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/Welcome" element={<FirstTimePg1 />} />
         <Route path="/Getting Started" element={<FirstTimePg2 />} />
         <Route path="/Leaderboard" element={<Leaderboard />} />
+        <Route path="/Profile" element={<Profile />} />
       </Routes>
     </div>
   )
