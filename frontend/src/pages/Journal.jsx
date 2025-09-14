@@ -77,48 +77,49 @@ const Journal = () => {
                                                 X
                                             </button>
                                         </div>
-                                        <div className="border border-red-500 mr-[600px] bg-purple-400 h-full p-[8px]">
-                                            <ul className="mt-4 flex flex-col gap-2">
-                                                {openFolder.files.map((file, i) => (
-                                                    <button onClick={() => setOpenFile(file)}>
-                                                        {console.log("Opened file: ")}
-                                                        <li
-                                                            key={i}
-                                                            className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
-                                                        >
-                                                            {file}
-                                                        </li>
-                                                    </button>
+                                        <div className="flex flex-row h-full gap-0">
+                                            <div className="w-[190px] bg-purple-400 h-full p-[8px]">
+                                                <ul className="mt-4 flex flex-col gap-2">
+                                                    {openFolder.files.map((file, i) => (
+                                                        <button onClick={() => setOpenFile(file)}>
+                                                            {console.log("Opened file: ", file)}
+                                                            <li
+                                                                key={i}
+                                                                className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
+                                                            >
+                                                                {file}
+                                                            </li>
+                                                        </button>
 
-                                                ))}
-                                                <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
-                                                    <button onClick={() => ""} >
-                                                        + Add New
-                                                    </button>
-                                                </li>
-                                            </ul>
+                                                    ))}
+                                                    <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
+                                                        <button onClick={() => ""} >
+                                                            + Add New File
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* Showing a file */}
+                                            <div className="bg-purple-100 w-full">
+                                                <h2 className="flex justify-center text-3xl text-purple-400 mt-5">Goal Setting</h2>
+                                                <p className="text-purple-400 text-sm ml-7 mt-4">What makes a goal SMART?</p>
+                                                <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
+                                                <p className="text-purple-400 text-sm ml-7 mt-4">Top three SMART goals for the upcoming fortnight</p>
+                                                <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
+                                                {openFile && (
+                                                    <>
+                                                        {console.log("IN OPEN FILE!!!")}
+
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
-
-                                        {/* Showing a file */}
-                                        {openFile && (
-                                            <>
-                                            </>
-                                        )}
                                     </div>
-
                                 </div>
-
-
-
-
 
                             </>
                         )}
-
-
-
                     </div>
-
 
                     {/*<div className="w-16 h-10 bg-gray-700 mx-auto rounded-b-full"></div>*/}
                     <div className="w-56 h-[70px] bg-gray-700 mx-auto"></div>
@@ -129,17 +130,13 @@ const Journal = () => {
 
                     {/* Extra Shadow for Depth */}
                     <div className="w-64 h-2 bg-gray-900 mx-auto rounded-full blur-sm opacity-50"></div>
-                </div >
-
-
-
-
-                <div className="mockup-window border bg-base-300">
-                    <div className="flex justify-center bg-base-200 p-6">
-                        <h1 className="text-2xl font-bold">Your React Component</h1>
-                        <p>This content looks like it’s inside a computer window.</p>
-                    </div>
                 </div>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                {/* Other options...*/}
 
                 <div className="relative w-[1000px] mx-auto">
                     {/* Laptop Frame Image */}
@@ -151,9 +148,6 @@ const Journal = () => {
                 </div>
 
             </div >
-
-
-
 
         </>
     )
