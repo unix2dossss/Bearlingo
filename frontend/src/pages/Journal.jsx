@@ -2,8 +2,12 @@ import React from 'react';
 import Navbar from '../components/TopNavbar';
 import ComputerFrame from '../assets/computer-screen.png';
 import ComputerBackground from '../assets/pastel.jpg';
+import { useState } from "react";
+import { Modal, Button } from "daisyui";
+import FolderImage from "../assets/folder.png";
 
 const Journal = () => {
+    const [open, setOpen] = useState(false);
     return (
         <>
             <Navbar />
@@ -11,8 +15,35 @@ const Journal = () => {
 
                 <div className="mx-auto w-fit mt-20 ml-96">
                     {/* Monitor */}
-                    <div className="w-[900px] h-[500px] bg-gray-900 border-8 border-gray-700 rounded-xl shadow-2xl relative bg-cover bg-center bg-no-repeat"
+                    <div className="w-[900px] h-[500px] bg-gray-900 border-[15px] border-gray-700 rounded-xl shadow-2xl relative bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${ComputerBackground})` }}>
+
+                        {/* Folder Icon */}
+
+                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px]">
+                            <div
+                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer border border-green-900"
+                                onClick={() => setOpen(true)}
+                            >
+                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
+                                <span className="text-white text-sm mt-1">Reflections </span>
+                            </div>
+                            <div
+                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
+                                onClick={() => setOpen(true)}
+                            >
+                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
+                                <span className="text-white text-sm mt-1">Goals</span>
+                            </div>
+                            <div
+                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
+                                onClick={() => setOpen(true)}
+                            >
+                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
+                                <span className="text-white text-sm mt-1">Notes</span>
+                            </div>
+                        </div>
+
 
                     </div>
 
