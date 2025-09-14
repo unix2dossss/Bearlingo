@@ -9,6 +9,18 @@ import AddFolderImage from '../assets/add-folder.png';
 
 const Journal = () => {
     const [open, setOpen] = useState(false);
+    const [folders, setFolders] = useState([
+        { name: "Reflections" },
+        { name: "Goals" },
+        { name: "Notes" },
+    ]);
+
+    const handleAddFolder = () => {
+        const folderName = prompt("Enter folder name"); // Simple prompt for folder name
+        if (folderName) {
+            setFolders([...folders, { name: folderName }]);
+        }
+    };
     return (
         <>
             <Navbar />
@@ -21,35 +33,27 @@ const Journal = () => {
 
                         {/* Top nav bar */}
                         <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center">
-                            <button><img src={AddFolderImage} alt="Add folder image" className="w-8 h-8" /></button>
+                            <button onClick={handleAddFolder} className="mb-4"><img src={AddFolderImage} alt="Add folder image" className="w-8 h-8" /></button>
                             <a className="text-white font-bold ml-[350px]">Welcome user...</a>
                         </div>
 
                         {/* Folders */}
-                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[40px] mr-[10px] ">
-                            <div
-                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                onClick={() => setOpen(true)}
-                            >
-                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
-                                <span className="text-white text-sm mt-1">Reflections </span>
-                            </div>
-                            <div
-                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                onClick={() => setOpen(true)}
-                            >
-                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
-                                <span className="text-white text-sm mt-1">Goals</span>
-                            </div>
-                            <div
-                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                onClick={() => setOpen(true)}
-                            >
-                                <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
-                                <span className="text-white text-sm mt-1">Notes</span>
-                            </div>
+                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[40px] mr-[10px] overscroll-contain">
+                            {folders.map((folder, index) => (
+                                <div
+                                    key={index}
+                                    className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
+                                    onClick={() => console.log(`Open folder: ${folder.name}`)} // replace with your open logic
+                                >
+                                    <img
+                                        src={FolderImage}
+                                        alt="Folder"
+                                        className="w-12 h-12 flex justify-center"
+                                    />
+                                    <span className="text-white text-sm mt-1">{folder.name}</span>
+                                </div>
+                            ))}
                         </div>
-
 
                     </div>
 
