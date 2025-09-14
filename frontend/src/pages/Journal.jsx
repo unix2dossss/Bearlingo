@@ -38,12 +38,12 @@ const Journal = () => {
                         </div>
 
                         {/* Folders */}
-                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[40px] mr-[10px] overscroll-contain">
+                        <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[400px] overflow-y-auto bg-rose-300 ">
                             {folders.map((folder, index) => (
                                 <div
                                     key={index}
                                     className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                    onClick={() => console.log(`Open folder: ${folder.name}`)} // replace with your open logic
+                                    onClick={() => console.log(`Open folder: ${folder.name}`)}
                                 >
                                     <img
                                         src={FolderImage}
