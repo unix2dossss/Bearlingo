@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 const stepTopRef = useRef(null);
 
 // Scroll to the top of the step after it renders
