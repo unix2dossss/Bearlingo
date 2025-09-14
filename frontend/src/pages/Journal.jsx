@@ -65,11 +65,11 @@ const Journal = () => {
                         {/* Files of a folder */}
                         {openFolder && (
                             <>
-                                <div className="flex justify-center border border-red-500">
-                                    <div className=" absolute top-14 left-10 w-[600px] h-[400px] mockup-window bg-base-100 border border-green-300"> {/*} border-base-300 */}
+                                <div className="flex justify-center">
+                                    <div className=" absolute top-14 left-3 w-[800px] h-[400px] mockup-window bg-base-100 border border-green-300"> {/*} border-base-300 */}
 
                                         <button
-                                            className="btn btn-xs btn-error"
+                                            className="flex justify-center border border-green-500 rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
                                             onClick={() => setOpenFolder(null)}
                                         >
                                             X
