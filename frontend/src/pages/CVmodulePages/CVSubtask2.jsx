@@ -384,7 +384,7 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
     await api.post("/users/me/cv/work-experience", payloadExperiences, {
       withCredentials: true
     });
-    toast.success(`Skills, Projects and ${cleaned.length > 0 ? "Experiences" : ""} saved!`);
+    toast.success(`Skills, Projects and ${cleaned.length > 0 ? "Experiences" : ""} saved successfully!`);
 
     // Update database states with new data
     setDbSkills(selectedSkills);
