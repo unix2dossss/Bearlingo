@@ -158,7 +158,7 @@ const CVModule = () => {
       {/* Modal for CVSubtask1 */}
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#4f9cf9]">
             <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>
         </div>

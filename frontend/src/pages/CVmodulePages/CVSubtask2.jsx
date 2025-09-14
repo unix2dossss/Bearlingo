@@ -24,6 +24,7 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
   // ───────────────────────────────────────────
   // Step state: 0 = Skills, 1 = Projects, 2 = Experiences, 3 = Review/Submit
   const [step, setStep] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Skills
   const [selectedSkills, setSelectedSkills] = useState([]);
@@ -106,13 +107,15 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
   const maxSkills = 8;
 
   // Projects
-  const [projects, setProjects] = useState([{ name: "", outcome: "", role: "", link: "" }]);
+  // const [projects, setProjects] = useState([{ name: "", outcome: "", role: "", link: "" }]);
+  const [projects, setProjects] = useState([]);
   const maxProjects = 3;
 
   // Experiences
-  const [experiences, setExperiences] = useState([
-    { company: "", role: "", startYear: "", endYear: "", contribution: "" }
-  ]);
+  // const [experiences, setExperiences] = useState([
+  //   { company: "", role: "", startYear: "", endYear: "", contribution: "" }
+  // ]);
+  const [experiences, setExperiences] = useState([]);
   const maxExperiences = 4;
 
   // Snapshots from DB for ConfirmLeave check
@@ -181,6 +184,8 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
       } catch (err) {
         console.error("Failed to fetch CV data:", err);
         toast.error("Could not load your CV data.");
+      } finally {
+        setIsLoaded(true);
       }
     };
 
@@ -190,9 +195,10 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
   // Warn before reload/close browser
   useEffect(() => {
     const isDirty = () =>
-      JSON.stringify(selectedSkills) !== JSON.stringify(dbSkills) ||
-      JSON.stringify(projects) !== JSON.stringify(dbProjects) ||
-      JSON.stringify(experiences) !== JSON.stringify(dbExperiences);
+      isLoaded &&
+      (JSON.stringify(selectedSkills) !== JSON.stringify(dbSkills) ||
+        JSON.stringify(normalizeProjects(projects)) !== JSON.stringify(dbProjects) ||
+        JSON.stringify(normalizeExperiences(experiences)) !== JSON.stringify(dbExperiences));
 
     const handleBeforeUnload = (e) => {
       if (isDirty()) {
@@ -205,7 +211,7 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [selectedSkills, projects, experiences, dbSkills, dbProjects, dbExperiences]);
+  }, [isLoaded, selectedSkills, projects, experiences, dbSkills, dbProjects, dbExperiences]);
   // ───────────────────────────────────────────
   // Skills
   const filteredSkills = useMemo(() => {
@@ -494,9 +500,10 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
   // Check if data in form is different from the one in the database when user click close button
   const handleLocalClose = () => {
     const hasChanges =
-      JSON.stringify(selectedSkills) !== JSON.stringify(dbSkills) ||
-      JSON.stringify(projects) !== JSON.stringify(dbProjects) ||
-      JSON.stringify(experiences) !== JSON.stringify(dbExperiences);
+      isLoaded &&
+      (JSON.stringify(selectedSkills) !== JSON.stringify(dbSkills) ||
+        JSON.stringify(normalizeProjects(projects)) !== JSON.stringify(dbProjects) ||
+        JSON.stringify(normalizeExperiences(experiences)) !== JSON.stringify(dbExperiences));
 
     onClose(hasChanges);
   };
