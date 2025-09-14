@@ -9,13 +9,14 @@ import AddFolderImage from '../assets/add-folder.png';
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
+    const [openFile, setOpenFile] = useState(false);
     const [folders, setFolders] = useState([
-        { name: "Reflections", files: ["entry1.txt", "entry2.txt"] },
-        { name: "Goals", files: ["goals2025.txt", "career-plan.md"] },
-        { name: "Notes", files: ["jobs-to-apply-to.pdf", "ideas.md"] },
+        { name: "Reflections", files: ["First Networking event!", "25/03/2025"] },
+        { name: "Goals", files: ["Major goals", "Refining goals"] },
+        { name: "Notes", files: ["Jobs to apply to", "{date}"] },
     ]);
 
-    const handleShowFiles = () => {
+    const addAddFile = () => {
         const folderName = prompt("Enter folder name"); // Simple prompt for folder name
         return (
             <div className="mockup-window border bg-base-300">
@@ -38,8 +39,8 @@ const Journal = () => {
                         style={{ backgroundImage: `url(${ComputerBackground})` }}>
 
                         {/* Top nav bar */}
-                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center">
-                            <a className="text-white font-bold ml-[350px]">Welcome User...</a>
+                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
+                            <a className="text-white font-bold">Its Goal Setting Time User!</a>
                         </div>
 
                         {/* Folders */}
@@ -66,24 +67,43 @@ const Journal = () => {
                         {openFolder && (
                             <>
                                 <div className="flex justify-center">
-                                    <div className=" absolute top-14 left-3 w-[800px] h-[400px] mockup-window bg-base-100 border border-green-300"> {/*} border-base-300 */}
+                                    <div className=" absolute top-14 left-3 w-[830px] h-[400px] mockup-window bg-base-100"> {/*} border-base-300 */}
+                                        <div className="border border-stone-400">
 
-                                        <button
-                                            className="flex justify-center border border-green-500 rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
-                                            onClick={() => setOpenFolder(null)}
-                                        >
-                                            X
-                                        </button>
-                                        <ul className="mt-4 space-y-2">
-                                            {openFolder.files.map((file, i) => (
-                                                <li
-                                                    key={i}
-                                                    className="p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer"
-                                                >
-                                                    {file}
+                                            <button
+                                                className="flex justify-center rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
+                                                onClick={() => setOpenFolder(null)}
+                                            >
+                                                X
+                                            </button>
+                                        </div>
+                                        <div className="border border-red-500 mr-[600px] bg-purple-400 h-full p-[8px]">
+                                            <ul className="mt-4 flex flex-col gap-2">
+                                                {openFolder.files.map((file, i) => (
+                                                    <button onClick={() => setOpenFile(file)}>
+                                                        {console.log("Opened file: ")}
+                                                        <li
+                                                            key={i}
+                                                            className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
+                                                        >
+                                                            {file}
+                                                        </li>
+                                                    </button>
+
+                                                ))}
+                                                <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
+                                                    <button onClick={() => ""} >
+                                                        + Add New
+                                                    </button>
                                                 </li>
-                                            ))}
-                                        </ul>
+                                            </ul>
+                                        </div>
+
+                                        {/* Showing a file */}
+                                        {openFile && (
+                                            <>
+                                            </>
+                                        )}
                                     </div>
 
                                 </div>
