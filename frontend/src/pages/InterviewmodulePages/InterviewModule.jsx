@@ -126,7 +126,7 @@ const InterviewModule = () => {
         <ConfirmLeaveDialog
           isOpen={showConfirmLeave}
           title="Your changes will be lost!"
-          message="Please finish the interview task to save your progress."
+          message="Please finish the task to save your progress."
           onConfirm={confirmLeave}
           onCancel={() => setShowConfirmLeave(false)}
         />
