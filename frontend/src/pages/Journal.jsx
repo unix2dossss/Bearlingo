@@ -101,9 +101,13 @@ const Journal = () => {
                                             </div>
                                             {/* Showing a file */}
                                             <div className="bg-purple-100 w-full">
+
                                                 <h2 className="flex justify-center text-3xl text-purple-400 mt-5">Goal Setting</h2>
-                                                <p className="text-purple-400 text-sm ml-7 mt-4">What makes a goal SMART?</p>
-                                                <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
+                                                <div className="flex flex-col ml-7">
+                                                    <p className="text-purple-400 text-sm mt-4">What makes a goal SMART?</p>
+                                                    <textarea placeholder="Type here" className="textarea textarea-neutral mt-2 w-96"></textarea>
+                                                    <button className="ml-80 btn-neutral btn-outline border border-gray-600 h-5 w-16 text-sm">Submit</button>
+                                                </div>
                                                 <p className="text-purple-400 text-sm ml-7 mt-4">Top three SMART goals for the upcoming fortnight</p>
                                                 <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
                                                 {openFile && (
@@ -130,7 +134,7 @@ const Journal = () => {
 
                     {/* Extra Shadow for Depth */}
                     <div className="w-64 h-2 bg-gray-900 mx-auto rounded-full blur-sm opacity-50"></div>
-                </div>
+                </div >
 
                 <br />
                 <br />
