@@ -1,7 +1,33 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/TopNavbar';
+import api from "../lib/axios";
 
 const Profile = () => {
+    const [level1, setLevel1] = useState("");
+    const [level2, setLevel2] = useState("");
+    const [level3, setLevel3] = useState("");
+    const [allInfo, setallInfo] = useState("");
+
+    useEffect(() => {
+        const fetchUserProgress = async () => {
+            try {
+                const response = await api.get("/progress/levels", { withCredentials: true })
+                    .then((res) => setUser(res.data))
+                    .catch(() => navigate("/login"));
+                setAllInfo(response);
+                toast.success("All levels obtained successfully!");
+            } catch (error) {
+                console.log("Error in obtaining user progress levels", error);
+                toast.error("Error occurred!");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUserProgress();
+    }, []);
+
+
+
     return (
         <>
             <Navbar />

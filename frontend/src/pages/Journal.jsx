@@ -1,10 +1,14 @@
-import React from 'react'
+import React from 'react';
+import Navbar from '../components/TopNavbar';
 
 const Journal = () => {
     return (
-        <div>
-            Journal component
-        </div>
+        <>
+            <Navbar />
+            <div>
+                Journal component
+            </div>
+        </>
     )
 }
 
