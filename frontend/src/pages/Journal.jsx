@@ -5,6 +5,7 @@ import ComputerBackground from '../assets/pastel.jpg';
 import { useState } from "react";
 import { Modal, Button } from "daisyui";
 import FolderImage from "../assets/folder.png";
+import AddFolderImage from '../assets/add-folder.png';
 
 const Journal = () => {
     const [open, setOpen] = useState(false);
@@ -18,11 +19,16 @@ const Journal = () => {
                     <div className="w-[900px] h-[500px] bg-gray-900 border-[15px] border-gray-700 rounded-xl shadow-2xl relative bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${ComputerBackground})` }}>
 
-                        {/* Folder Icon */}
+                        {/* Top nav bar */}
+                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center">
+                            <button><img src={AddFolderImage} alt="Add folder image" className="w-8 h-8" /></button>
+                            <a className="text-white font-bold ml-[350px]">Welcome user...</a>
+                        </div>
 
-                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px]">
+                        {/* Folders */}
+                        <div className="border border-red-500 flex flex-col items-end gap-2 ml-[750px] mt-[40px] mr-[10px] ">
                             <div
-                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer border border-green-900"
+                                className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
                                 onClick={() => setOpen(true)}
                             >
                                 <img src={FolderImage} alt="Folder" className="w-12 h-12 flex justify-center" />
