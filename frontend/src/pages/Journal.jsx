@@ -8,18 +8,25 @@ import FolderImage from "../assets/folder.png";
 import AddFolderImage from '../assets/add-folder.png';
 
 const Journal = () => {
-    const [open, setOpen] = useState(false);
+    const [openFolder, setOpenFolder] = useState(false);
+    const [openFile, setOpenFile] = useState(false);
     const [folders, setFolders] = useState([
-        { name: "Reflections" },
-        { name: "Goals" },
-        { name: "Notes" },
+        { name: "Reflections", files: ["First Networking event!", "25/03/2025"] },
+        { name: "Goals", files: ["Major goals", "Refining goals"] },
+        { name: "Notes", files: ["Jobs to apply to", "{date}"] },
     ]);
 
-    const handleAddFolder = () => {
+    const addAddFile = () => {
         const folderName = prompt("Enter folder name"); // Simple prompt for folder name
-        if (folderName) {
-            setFolders([...folders, { name: folderName }]);
-        }
+        return (
+            <div className="mockup-window border bg-base-300">
+                <div className="flex justify-center bg-base-200 p-6">
+                    <h1 className="text-2xl font-bold">Your React Component</h1>
+                    <p>This content looks like it’s inside a computer window.</p>
+                </div>
+            </div>
+        );
+
     };
     return (
         <>
@@ -32,31 +39,91 @@ const Journal = () => {
                         style={{ backgroundImage: `url(${ComputerBackground})` }}>
 
                         {/* Top nav bar */}
-                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center">
-                            <button onClick={handleAddFolder} className="mb-4"><img src={AddFolderImage} alt="Add folder image" className="w-8 h-8" /></button>
-                            <a className="text-white font-bold ml-[350px]">Welcome user...</a>
+                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
+                            <a className="text-white font-bold">Its Goal Setting Time User!</a>
                         </div>
 
                         {/* Folders */}
-                        <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[400px] overflow-y-auto bg-rose-300 ">
+                        <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[318px] rounded-lg bg-rose-300 ">
                             {folders.map((folder, index) => (
                                 <div
                                     key={index}
                                     className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                    onClick={() => console.log(`Open folder: ${folder.name}`)}
                                 >
-                                    <img
-                                        src={FolderImage}
-                                        alt="Folder"
-                                        className="w-12 h-12 flex justify-center"
-                                    />
+                                    <button onClick={() => setOpenFolder(folder)}>
+                                        {console.log("folder: ", folder)}
+                                        <img
+                                            src={FolderImage}
+                                            alt="Folder"
+                                            className="w-12 h-12 flex justify-center"
+                                        />
+                                    </button>
                                     <span className="text-white text-sm mt-1">{folder.name}</span>
                                 </div>
                             ))}
                         </div>
 
-                    </div>
+                        {/* Files of a folder */}
+                        {openFolder && (
+                            <>
+                                <div className="flex justify-center">
+                                    <div className=" absolute top-14 left-3 w-[830px] h-[400px] mockup-window bg-base-100"> {/*} border-base-300 */}
+                                        <div className="border border-stone-400">
 
+                                            <button
+                                                className="flex justify-center rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
+                                                onClick={() => setOpenFolder(null)}
+                                            >
+                                                X
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-row h-full gap-0">
+                                            <div className="w-[190px] bg-purple-400 h-full p-[8px]">
+                                                <ul className="mt-4 flex flex-col gap-2">
+                                                    {openFolder.files.map((file, i) => (
+                                                        <button onClick={() => setOpenFile(file)}>
+                                                            {console.log("Opened file: ", file)}
+                                                            <li
+                                                                key={i}
+                                                                className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
+                                                            >
+                                                                {file}
+                                                            </li>
+                                                        </button>
+
+                                                    ))}
+                                                    <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
+                                                        <button onClick={() => ""} >
+                                                            + Add New File
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* Showing a file */}
+                                            <div className="bg-purple-100 w-full">
+
+                                                <h2 className="flex justify-center text-3xl text-purple-400 mt-5">Goal Setting</h2>
+                                                <div className="flex flex-col ml-7">
+                                                    <p className="text-purple-400 text-sm mt-4">What makes a goal SMART?</p>
+                                                    <textarea placeholder="Type here" className="textarea textarea-neutral mt-2 w-96"></textarea>
+                                                    <button className="ml-80 btn-neutral btn-outline border border-gray-600 h-5 w-16 text-sm">Submit</button>
+                                                </div>
+                                                <p className="text-purple-400 text-sm ml-7 mt-4">Top three SMART goals for the upcoming fortnight</p>
+                                                <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
+                                                {openFile && (
+                                                    <>
+                                                        {console.log("IN OPEN FILE!!!")}
+
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </>
+                        )}
+                    </div>
 
                     {/*<div className="w-16 h-10 bg-gray-700 mx-auto rounded-b-full"></div>*/}
                     <div className="w-56 h-[70px] bg-gray-700 mx-auto"></div>
@@ -68,20 +135,12 @@ const Journal = () => {
                     {/* Extra Shadow for Depth */}
                     <div className="w-64 h-2 bg-gray-900 mx-auto rounded-full blur-sm opacity-50"></div>
                 </div >
-                <div className="flex justify-center border border-red-500">
-                    <div className="mockup-window bg-base-100 border w-[1000px] h-[600px] border-green-300 ml-32 mt-32"> {/*} border-base-300 */}
-                        <div className="grid place-content-center h-80">Hello!</div>
-                    </div>
-                </div>
 
-
-
-                <div className="mockup-window border bg-base-300">
-                    <div className="flex justify-center bg-base-200 p-6">
-                        <h1 className="text-2xl font-bold">Your React Component</h1>
-                        <p>This content looks like it’s inside a computer window.</p>
-                    </div>
-                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                {/* Other options...*/}
 
                 <div className="relative w-[1000px] mx-auto">
                     {/* Laptop Frame Image */}
@@ -93,9 +152,6 @@ const Journal = () => {
                 </div>
 
             </div >
-
-
-
 
         </>
     )
