@@ -1,6 +1,8 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import TopNavbar from "../../components/TopNavbar";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
+import { useUserStore } from "../../store/user";
+import { useNavigate } from "react-router-dom";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -12,6 +14,22 @@ const InterviewModule = () => {
   const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
+
+  const navigate = useNavigate();
+  const user = useUserStore((state) => state.user);
+  useEffect(() => {
+  const fetchUserData = async () => {
+    if (!user) {
+      await useUserStore.getState().fetchUser();
+    }
+
+    const currentUser = useUserStore.getState().user;
+    if (!currentUser) {
+      navigate("/login"); // redirect if still not logged in
+    }
+  };
+  fetchUserData();
+}, [navigate, user]);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);

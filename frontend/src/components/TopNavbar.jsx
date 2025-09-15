@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useUserStore } from "../store/user";
 import { Flame, Star, User } from "lucide-react";
+import Logo from '../assets/Logo1.svg';
+
 import api from "../lib/axios";
 import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
@@ -49,15 +51,9 @@ const TopNavbar = () => {
   };
 
   return (
-    <nav className="navbar bg-blue-100 px-4 py-2 shadow-sm">
+    <nav className="navbar bg-blue-100 px-4 py-2 shadow-sm flex justify-between items-center">
       {/* left: brand */}
-      <div className="flex-1">
-        <Link to="/" className="flex items-center space-x-3 ml-7 cursor-pointer text-xl">
-          <div className="flex items-center space-x-3">
-            <span className="font-bold">BearLingo</span>
-          </div>
-        </Link>
-      </div>
+      <img src={Logo} alt="Logo" className="h-13 w-auto" />
 
       {/* right: stats + profile */}
       <div className="flex-none flex items-center gap-3 mr-6">

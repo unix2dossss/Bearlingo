@@ -41,6 +41,6 @@ router.get("/journals/:year/:month", authenticate, usersController.getJournalsBy
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
 
 // ---------- Leaderboard Routes ----------
-router.get("/leaderboard", authenticate, usersController.getLeaderboard);
+router.get("/leaderboard", usersController.getLeaderboard); // For the time being I will get rud of authenticate middleware as not all of the components have been made yet
 
 export default router;

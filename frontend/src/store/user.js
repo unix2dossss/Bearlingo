@@ -15,10 +15,12 @@ export const useUserStore = create((set) => ({
         withCredentials: true, // Send jwt cookie to backend
       });
       set({ user: res.data.user, loading: false });
+
     } catch (err) {
       set({ error: err.message, loading: false });
     }
   },
+
 
   // Call when task is completed
   completeTask: async (subtaskId) => {

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function AboutMeCard({ aboutMe, setAboutMe }) {
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div>
       {/* Heading */}
       <div className="pt-4 pb-2 px-8 text-center">
         <h2 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
@@ -14,6 +14,7 @@ export default function AboutMeCard({ aboutMe, setAboutMe }) {
       </div>
 
       {/* Single Card (everything lives inside this box) */}
+      <div className="max-w-3xl p-6">
       <div className="mt-5 rounded-2xl border border-gray-300 bg-white p-6 md:p-7 shadow-sm">
 
         {/* Writing guide */}
@@ -65,6 +66,7 @@ export default function AboutMeCard({ aboutMe, setAboutMe }) {
           onChange={(e) => setAboutMe(e.target.value)}
         />
       </div>
+    </div>
     </div>
   );
 }

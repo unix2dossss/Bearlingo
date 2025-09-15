@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
 import PerInfo from "../../components/CVModuleComponent/PerInfo";
@@ -36,7 +36,38 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
   });
 
   const [aboutMe, setAboutMe] = useState("");
-  // const [loading, setLoading] = useState(true);
+
+  // ⬇⬇ NEW: refs for controlled scrolling
+  const contentRef = useRef(null);
+  const stepTopRef = useRef(null);
+
+  // ⬇⬇ NEW: reset inner scroll whenever the step changes
+  useLayoutEffect(() => {
+    const scroller = contentRef.current;
+    if (scroller) {
+      scroller.scrollTo({ top: 0, behavior: "auto" });
+    } else {
+      // fallback if contentRef isn't attached yet
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [step]);
+
+  // ⬇⬇ NEW: avoid browser auto-scroll to focused input on step change
+  const blurActive = () => {
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
+  };
+
+  const handleSaveAndContinue = () => {
+    blurActive();
+    setStep((s) => s + 1);
+  };
+
+  const handleBack = () => {
+    blurActive();
+    setStep((s) => Math.max(0, s - 1));
+  };
 
   // Snapshots from DB for ConfirmLeave check
   const [dbPersonal, setDbPersonal] = useState(null);
@@ -87,11 +118,8 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
           setAboutMe(loadedAboutMe);
           setDbAboutMe(loadedAboutMe); // snapshot of database data
         }
-
-        // setLoading(false);
       } catch (err) {
         console.error(err);
-        // setLoading(false);
       }
     };
 
@@ -113,9 +141,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [personal, secondary, tertiary, aboutMe, dbPersonal, dbSecondary, dbTertiary, dbAboutMe]);
 
   // Check if data in form is different from the one in the database when user click close button
@@ -129,35 +155,13 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
     onClose(hasChanges);
   };
 
-  const handleSaveAndContinue = () => {
-    setStep(step + 1);
-  };
-
   const handleClear = () => {
     if (step === 0)
-      setPersonal({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        linkedin: ""
-      });
+      setPersonal({ firstName: "", lastName: "", phone: "", email: "", linkedin: "" });
     if (step === 1)
-      setSecondary({
-        school: "",
-        subjects: "",
-        achievements: "",
-        startYear: "",
-        endYear: ""
-      });
+      setSecondary({ school: "", subjects: "", achievements: "", startYear: "", endYear: "" });
     if (step === 2)
-      setTertiary({
-        university: "",
-        degree: "",
-        startYear: "",
-        endYear: "",
-        studying: false
-      });
+      setTertiary({ university: "", degree: "", startYear: "", endYear: "", studying: false });
     if (step === 3) setAboutMe("");
   };
 
@@ -170,7 +174,8 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       lastName: personal.lastName,
       contact: {
         phone: personal.phone,
-        email: personal.email + "gmail.com",
+        // NOTE: if you’re splitting the email UI, make sure this is a full email
+        email: personal.email + "gmail.com", // ← don’t append "gmail.com" here unless that’s intentional
         linkedin: personal.linkedin
       },
       education: {
@@ -190,12 +195,12 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
           }
         ]
       },
-      aboutMe: aboutMe
+      aboutMe
     };
 
     try {
       const res = await api.post("/users/me/cv/personal-information", payload, {
-        withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
+        withCredentials: true
       });
       toast.success(res.data.message);
       console.log(res.data);
@@ -217,11 +222,10 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
         toast.error("Could not find subtask");
         return;
       }
-      // Mark subtask as completed
+
       try {
-        const res = await completeTask(subtaskId);
-        // Check if subtask is completed and display appropriate message
-        if (res.data.message === "Well Done! You completed the subtask") {
+        const done = await completeTask(subtaskId);
+        if (done?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
         }
       } catch (err) {
@@ -237,15 +241,9 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
   // Check if step is valid
   const isStepValid = () => {
     if (step === 0) return personal.firstName && personal.lastName && personal.email;
-    if (step === 1)
-      return secondary.school && secondary.subjects && secondary.startYear && secondary.endYear;
+    if (step === 1) return secondary.school && secondary.subjects && secondary.startYear && secondary.endYear;
     if (step === 2)
-      return (
-        tertiary.university &&
-        tertiary.degree &&
-        tertiary.startYear &&
-        (tertiary.studying || tertiary.endYear)
-      );
+      return tertiary.university && tertiary.degree && tertiary.startYear && (tertiary.studying || tertiary.endYear);
     if (step === 3) return aboutMe.trim().length > 0;
     return false;
   };
@@ -265,24 +263,23 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
         return <p>All done 🎉</p>;
     }
   };
-
-  // UI ────────────────────────────────────────────────────────────────────────────
-  return (
-    <div className="flex flex-col h-full">
-      {/* Sticky white header with Back • centered pills • Close */}
-      <header className="sticky top-0 z-40 bg-white">
-        <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
-          {/* Left: Back (keep width when hidden so the center stays centered) */}
-          <div className="min-w-[60px]">
-            {step > 0 && (
-              <button
-                onClick={() => setStep(step - 1)}
-                className="text-gray-600 hover:text-[#4f9cf9] text-sm"
-              >
-                ← Back
-              </button>
-            )}
-          </div>
+  // UI
+    return (
+      <div className="flex flex-col h-full">
+        {/* Sticky white header with Back • centered pills • Close */}
+        <header className="sticky top-0 z-40 bg-white">
+          <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
+            {/* Left: Back (reserve width when hidden to keep center centered) */}
+            <div className="min-w-[60px]">
+              {step > 0 && (
+                <button
+                  onClick={handleBack} // ⬅ use handler so blur + scroll reset run
+                  className="text-gray-600 hover:text-[#4f9cf9] text-sm"
+                >
+                  ← Back
+                </button>
+              )}
+            </div>
 
           {/* Center: Progress pills */}
           <div className="flex justify-center">
@@ -300,8 +297,13 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
         </div>
       </header>
 
-      {/* Scrollable content area (keeps scrollbar away from the right edge actions) */}
-      <div className="flex-1 overflow-y-auto px-6" style={{ scrollbarGutter: "stable" }}>
+      {/* The ONLY scrollable area */}
+      <div
+        ref={contentRef}                    // ⬅ attach scroller ref
+        className="flex-1 overflow-y-auto px-6"
+        style={{ scrollbarGutter: "stable" }}
+      >
+        <div ref={stepTopRef} className="h-0" />
         {renderStep()}
       </div>
 
@@ -310,12 +312,12 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
         <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
             className="inline-flex items-center justify-center
-            h-12 md:h-14 px-8 md:px-10 rounded-full
-            bg-white border-2 border-[#4f9cf9]
-            text-[#4f9cf9] font-extrabold
-            hover:bg-[#4f9cf9]/5
-            focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-            min-w-[200px]"
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-white border-2 border-[#4f9cf9]
+              text-[#4f9cf9] font-extrabold
+              hover:bg-[#4f9cf9]/5
+              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+              min-w-[200px]"
             onClick={handleClear}
           >
             Clear
@@ -324,13 +326,13 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
           {step < 3 ? (
             <button
               className={`inline-flex items-center justify-center
-              h-12 md:h-14 px-8 md:px-10 rounded-full
-              bg-[#4f9cf9] text-white 
-              font-extrabold text-base md:text-lg
-              shadow-sm hover:bg-[#4f9cf9]/90
-              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-              min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
-              onClick={handleSaveAndContinue}
+                h-12 md:h-14 px-8 md:px-10 rounded-full
+                bg-[#4f9cf9] text-white 
+                font-extrabold text-base md:text-lg
+                shadow-sm hover:bg-[#4f9cf9]/90
+                focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+                min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
+              onClick={handleSaveAndContinue}  // ⬅ use handler so blur + scroll reset run
               disabled={!isStepValid()}
             >
               Save & Continue
@@ -338,12 +340,12 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
           ) : (
             <button
               className={`inline-flex items-center justify-center
-              h-12 md:h-14 px-8 md:px-10 rounded-full
-              bg-[#4f9cf9] text-white
-              font-extrabold text-base md:text-lg
-              shadow-sm hover:bg-[#4f9cf9]/90
-              focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
-              min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
+                h-12 md:h-14 px-8 md:px-10 rounded-full
+                bg-[#4f9cf9] text-white
+                font-extrabold text-base md:text-lg
+                shadow-sm hover:bg-[#4f9cf9]/90
+                focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
+                min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
               onClick={handleSubmit}
               disabled={!isStepValid()}
             >
