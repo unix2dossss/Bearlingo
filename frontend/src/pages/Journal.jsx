@@ -7,7 +7,7 @@ import { Modal, Button } from "daisyui";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
-import AddFolderImage from '../assets/add-folder.png';
+import AddFolderImage from '../assets/add-folder-icon.svg';
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
@@ -53,7 +53,10 @@ const Journal = () => {
                             className="w-full h-auto"
                             />
 
-                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 bg-black/30"></div>
+                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
+                                style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
+                                <img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" />
+                            </div>
 
                             <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
                                 {folders.map((folder, index) => (
