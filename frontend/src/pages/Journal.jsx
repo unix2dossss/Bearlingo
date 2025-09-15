@@ -1,19 +1,21 @@
 import React from 'react';
 import Navbar from '../components/TopNavbar';
 import ComputerFrame from '../assets/computer-screen.png';
-import ComputerBackground from '../assets/pastel.jpg';
+import MonitorImage from '../assets/journal-monitor.svg';
 import { useState } from "react";
 import { Modal, Button } from "daisyui";
-import FolderImage from "../assets/folder.png";
-import AddFolderImage from '../assets/add-folder.png';
+import YellowFolder from "../assets/folder-yellow.svg";
+import PinkFolder from "../assets/folder-pink.svg";
+import BlueFolder from "../assets/folder-blue.svg";
+import AddFolderImage from '../assets/add-folder-icon.svg';
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
     const [openFile, setOpenFile] = useState(false);
     const [folders, setFolders] = useState([
-        { name: "Reflections", files: ["First Networking event!", "25/03/2025"] },
-        { name: "Goals", files: ["Major goals", "Refining goals"] },
-        { name: "Notes", files: ["Jobs to apply to", "{date}"] },
+        { name: "Reflections", image: PinkFolder, files: ["First Networking event!", "25/03/2025"] },
+        { name: "Goals", image: YellowFolder, files: ["Major goals", "Refining goals"] },
+        { name: "Notes", image: BlueFolder, files: ["Jobs to apply to", "{date}"] },
     ]);
 
     const addAddFile = () => {
@@ -31,20 +33,47 @@ const Journal = () => {
     return (
         <>
             <Navbar />
-            <div className="bg-blue-200 min-h-screen  border border-blue-600">
+            <div className="bg-blue-200 min-h-screen border">
+                <div className="flex justify-center items-center h-[calc(100vh-65px)]">
+                    {/* side navbar here */}
+                    <div className="flex justify-center items-center">
+                        <div className="relative w-3/4">
+                            {/* Full monitor image */}
+                            <img
+                            src={MonitorImage}
+                            alt="Monitor"
+                            className="w-full h-auto"
+                            />
 
-                <div className="mx-auto w-fit mt-20 ml-96">
-                    {/* Monitor */}
-                    <div className="w-[900px] h-[500px] bg-gray-900 border-[15px] border-gray-700 rounded-xl shadow-2xl relative bg-cover bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${ComputerBackground})` }}>
+                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
+                                style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
+                                <img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" />
+                            </div>
+
+                            <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
+                                {folders.map((folder, index) => (
+                                <div key={index} className="flex flex-col items-center cursor-pointer">
+                                    <button onClick={() => setOpenFolder(folder)}>
+                                    <img
+                                        src={folder.image}
+                                        alt={folder.name}
+                                        className="w-16 h-auto"
+                                    />
+                                    </button>
+                                    <span className="text-black text-sm mt-1">{folder.name}</span>
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        
 
                         {/* Top nav bar */}
-                        <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
+                        {/* <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
                             <a className="text-white font-bold">Its Goal Setting Time User!</a>
-                        </div>
+                        </div> */}
 
                         {/* Folders */}
-                        <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[318px] rounded-lg bg-rose-300 ">
+                        {/* <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[318px] rounded-lg bg-rose-300 ">
                             {folders.map((folder, index) => (
                                 <div
                                     key={index}
@@ -61,96 +90,14 @@ const Journal = () => {
                                     <span className="text-white text-sm mt-1">{folder.name}</span>
                                 </div>
                             ))}
-                        </div>
+                        </div> */}
 
                         {/* Files of a folder */}
-                        {openFolder && (
-                            <>
-                                <div className="flex justify-center">
-                                    <div className=" absolute top-14 left-3 w-[830px] h-[400px] mockup-window bg-base-100"> {/*} border-base-300 */}
-                                        <div className="border border-stone-400">
-
-                                            <button
-                                                className="flex justify-center rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
-                                                onClick={() => setOpenFolder(null)}
-                                            >
-                                                X
-                                            </button>
-                                        </div>
-                                        <div className="flex flex-row h-full gap-0">
-                                            <div className="w-[190px] bg-purple-400 h-full p-[8px]">
-                                                <ul className="mt-4 flex flex-col gap-2">
-                                                    {openFolder.files.map((file, i) => (
-                                                        <button onClick={() => setOpenFile(file)}>
-                                                            {console.log("Opened file: ", file)}
-                                                            <li
-                                                                key={i}
-                                                                className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
-                                                            >
-                                                                {file}
-                                                            </li>
-                                                        </button>
-
-                                                    ))}
-                                                    <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
-                                                        <button onClick={() => ""} >
-                                                            + Add New File
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            {/* Showing a file */}
-                                            <div className="bg-purple-100 w-full">
-
-                                                <h2 className="flex justify-center text-3xl text-purple-400 mt-5">Goal Setting</h2>
-                                                <div className="flex flex-col ml-7">
-                                                    <p className="text-purple-400 text-sm mt-4">What makes a goal SMART?</p>
-                                                    <textarea placeholder="Type here" className="textarea textarea-neutral mt-2 w-96"></textarea>
-                                                    <button className="ml-80 btn-neutral btn-outline border border-gray-600 h-5 w-16 text-sm">Submit</button>
-                                                </div>
-                                                <p className="text-purple-400 text-sm ml-7 mt-4">Top three SMART goals for the upcoming fortnight</p>
-                                                <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
-                                                {openFile && (
-                                                    <>
-                                                        {console.log("IN OPEN FILE!!!")}
-
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </>
-                        )}
                     </div>
 
                     {/*<div className="w-16 h-10 bg-gray-700 mx-auto rounded-b-full"></div>*/}
-                    <div className="w-56 h-[70px] bg-gray-700 mx-auto"></div>
-
-
-                    {/* Base */}
-                    <div className="w-96 h-[50px] bg-gray-700 mx-auto rounded-full shadow-inner"></div>
-
-                    {/* Extra Shadow for Depth */}
-                    <div className="w-64 h-2 bg-gray-900 mx-auto rounded-full blur-sm opacity-50"></div>
+                    {/* <div className="w-56 h-[70px] bg-gray-700 mx-auto"></div> */}
                 </div >
-
-                <br />
-                <br />
-                <br />
-                <br />
-                {/* Other options...*/}
-
-                <div className="relative w-[1000px] mx-auto">
-                    {/* Laptop Frame Image */}
-                    <img
-                        src={ComputerFrame}
-                        alt="Computer Frame"
-                        className="w-full h-auto"
-                    />
-                </div>
-
             </div >
 
         </>
