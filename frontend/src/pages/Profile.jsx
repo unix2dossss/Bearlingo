@@ -11,9 +11,10 @@ const Profile = () => {
     const [level3, setLevel3] = useState("");
     const [allInfo, setallInfo] = useState("");
     const [loading, setLoading] = useState(false);
+    const [userInfo, setUserInfo] = useState("");
     const navigate = useNavigate();
 
-    console.log("User: ", user);
+    const user = useUserStore.getState().user;
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -24,6 +25,9 @@ const Profile = () => {
             const currentUser = useUserStore.getState().user;
             if (!currentUser) {
                 navigate("/login"); // redirect if still not logged in
+            } else {
+                setUserInfo(currentUser);
+                console.log(currentUser);
             }
         };
         fetchUserData();
@@ -51,7 +55,10 @@ const Profile = () => {
             <Navbar />
             <div className="bg-blue-200 min-h-screen  border border-blue-600">
 
+                <h1 className="text-xl flex justify-center text-black p-2">Hi {user.username}</h1>
+
                 <div className="flex justify-center border border-red-600 gap-10 mt-16">
+
 
                     {/* For TSX uncomment the commented types below */}
                     <div className="card bg-base-100 w-[340px] h-[500px] shadow-sm">
