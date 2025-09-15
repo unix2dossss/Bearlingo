@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { getSubtaskBySequenceNumber, isSubtaskCompleted } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 import FlashCard from "../../components/InterviewModuleComponents/FlashCard";
 
-export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
+export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
   const questions = [
-    { q: "Tell me about yourself", a: "I'm a passionate developer with 3+ years of experience..." },
-    { q: "What are your strengths?", a: "Problem-solving, adaptability, and teamwork." },
-    { q: "What are your weaknesses?", a: "I sometimes take on too much responsibility..." },
-    { q: "Why should we hire you?", a: "Because I can bring immediate value to your team..." },
+    {
+      q: "Tell me about yourself",
+      a: "I’m a Computer Science graduate with a strong foundation in software development, data structures, and databases. During my studies, I worked on several projects, including developing a full-stack web application and implementing algorithms to solve real-world problems. I’m passionate about learning new technologies and applying them to build practical, user-focused solutions."
+    },
+    {
+      q: "What are your strengths?",
+      a: "I would say my biggest strengths are problem-solving, adaptability, and collaboration. In team projects, I often take initiative to break down complex problems into smaller tasks, and I enjoy working with others to find efficient solutions. I’m also quick to learn new tools or frameworks when needed."
+    },
+    {
+      q: "What are your weaknesses?",
+      a: "At times, I can take on too many responsibilities because I want to contribute as much as possible. However, I’ve been working on improving my time management and learning how to delegate and prioritize tasks more effectively."
+    },
+    {
+      q: "Why should we hire you?",
+      a: "I bring both technical skills and a strong willingness to learn. My academic background gave me solid programming and analytical abilities, and my project work taught me how to collaborate effectively in teams. I’m confident I can quickly adapt to your environment and contribute value from day one."
+    },
     {
       q: "Where do you see yourself in 5 years?",
-      a: "In a senior engineering or leadership role."
+      a: "In five years, I see myself growing into a senior developer or technical lead role, where I can mentor others and take on more responsibility for designing scalable and efficient solutions. I also want to continue expanding my skills and staying up to date with emerging technologies."
     },
-    { q: "Tell me about a challenge you faced at work.", a: "I had to refactor legacy code..." },
-    { q: "How do you handle stress?", a: "By staying organized, prioritizing tasks..." },
-    { q: "Why do you want to work here?", a: "Because I admire your mission and culture..." }
+    {
+      q: "Tell me about a challenge you faced at work.",
+      a: "In one of my group projects, we had to refactor a large piece of legacy code that was poorly documented. It was challenging because we had to balance fixing bugs with improving the structure. I suggested that we start by writing tests for the existing code to better understand its behavior, and that approach helped us confidently refactor the system without breaking functionality."
+    },
+    {
+      q: "How do you handle stress?",
+      a: "I stay organized by breaking tasks into smaller steps and prioritizing the most important ones. I also find that communicating with my teammates early helps avoid last-minute pressure. When I feel overwhelmed, I take short breaks to reset, which helps me stay focused and productive."
+    },
+    {
+      q: "Why do you want to work here?",
+      a: "I admire your company’s mission to deliver innovative software solutions and your culture of continuous learning. I’m excited by the opportunity to work with experienced professionals, grow my skills, and contribute to meaningful projects that make a real impact."
+    }
   ];
 
   const total = questions.length;
@@ -30,10 +51,8 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
   useEffect(() => {
     const checkCompletion = async () => {
       try {
-        const subtaskId = await getSubtaskBySequenceNumber("Interview", 1, 1);
-        const res = await completeTask(subtaskId);
-
-        if (res.data.message !== "Well Done! You completed the subtask") {
+        const istaskCompleted = await isSubtaskCompleted("Interview", 1, 1);
+        if (istaskCompleted) {
           // Means already completed before
           setSubtaskAlreadyCompleted(true);
           setIsSubmitted(true); // reflect completion to parent too
@@ -64,16 +83,17 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
       setIndex(index + 1);
       setFlipped(false);
       setIsDirty(true);
-    } else if (!subtaskAlreadyCompleted) {
-      // Only mark complete if not already done
+    } else {
       try {
         const subtaskId = await getSubtaskBySequenceNumber("Interview", 1, 1);
         const res = await completeTask(subtaskId);
-        if (res.data.message === "Well Done! You completed the subtask") {
+        if (res?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
         }
+        setSubtaskAlreadyCompleted(true);
         setIsSubmitted(true);
         setIsDirty(false);
+        onClose(false, true);
       } catch (err) {
         console.error("Failed to complete subtask", err);
         toast.error("Could not mark task complete.");
