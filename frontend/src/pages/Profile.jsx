@@ -1,21 +1,32 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import Navbar from '../components/TopNavbar';
 import api from "../lib/axios";
+import { useUserStore } from "../store/user";
 
 const Profile = () => {
     const [level1, setLevel1] = useState("");
-    const [level2, setLevel2] = useState("");
+    const [level2, setLevel2] = useState("")
     const [level3, setLevel3] = useState("");
     const [allInfo, setallInfo] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+
+    const user = useUserStore((state) => state.user);
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login"); // redirect if not logged in
+        }
+    }, [user, navigate]);
+
 
     useEffect(() => {
         const fetchUserProgress = async () => {
             try {
-                const response = await api.get("/progress/levels", { withCredentials: true })
-                    .then((res) => setUser(res.data))
-                    .catch(() => navigate("/login"));
-                setAllInfo(response);
-                toast.success("All levels obtained successfully!");
+                console.log("FROM TRY BLOCK", currentUser);
+
             } catch (error) {
                 console.log("Error in obtaining user progress levels", error);
                 toast.error("Error occurred!");
