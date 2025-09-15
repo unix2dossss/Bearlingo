@@ -1,16 +1,30 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import TopNavbar from "../../components/TopNavbar";
 import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
 import CVSubtask1 from "./CVSubtask1";
 import CVSubtask2 from "./CVSubtask2";
 import CVSubtask3 from "./CVSubtask3";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
+import { useUserStore } from "../../store/user";
+import { useNavigate } from "react-router-dom";
 
 const CVModule = () => {
   const [showSubtask, setShowSubtask] = useState(false);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
+  const navigate = useNavigate();
+  const currentUser = useUserStore.getState().user;
+  console.log("User:", currentUser);
+
+  // Check if user is logged in and redirect if not
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login"); // redirect if not logged in
+    }
+  }, [user, navigate]);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
@@ -55,21 +69,15 @@ const CVModule = () => {
           />
         );
       case "subtask2":
-        return(
+        return (
           <CVSubtask2
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
-          />  
-
-        )
-      case "subtask3":
-        return (
-          <CVSubtask3
-            onClose={handleClose}
-            setIsSubmitted={setIsSubmitted}
           />
         );
+      case "subtask3":
+        return <CVSubtask3 onClose={handleClose} setIsSubmitted={setIsSubmitted} />;
       default:
         return null;
     }
@@ -81,9 +89,7 @@ const CVModule = () => {
       <TopNavbar />
 
       {/* Background */}
-      <div
-        className="flex-1 relative bg-cover bg-center"
-      >
+      <div className="flex-1 relative bg-cover bg-center">
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/70" />
 
