@@ -34,9 +34,9 @@ const Journal = () => {
         <>
             <Navbar />
             <div className="bg-blue-200 min-h-screen border">
-                <div className="flex justify-center items-center h-[calc(100vh-65px)] border border-black">
+                <div className="flex justify-center items-center h-[calc(100vh-65px)]">
                     {/* side navbar here */}
-                    <div className="flex justify-center items-center border border-black">
+                    <div className="flex justify-center items-center">
                         <div className="relative w-3/4">
                             {/* Full monitor image */}
                             <img
