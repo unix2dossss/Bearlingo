@@ -49,6 +49,8 @@ const Login = () => {
     }
   };
   setTimeout(() => setLoading(false), 1500);
+  const user = useUserStore((state) => state.user);
+  console.log("User: ", user);
 
 
   return (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import Navbar from '../components/TopNavbar';
 import api from "../lib/axios";
 import { useUserStore } from "../store/user";
+import toast from 'react-hot-toast'
 
 const Profile = () => {
     const [level1, setLevel1] = useState("");
@@ -12,20 +13,26 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-
-    const user = useUserStore((state) => state.user);
+    console.log("User: ", user);
 
     useEffect(() => {
-        if (!user) {
-            navigate("/login"); // redirect if not logged in
-        }
-    }, [user, navigate]);
+        const fetchUserData = async () => {
+            if (!user) {
+                await useUserStore.getState().fetchUser();
+            }
+
+            const currentUser = useUserStore.getState().user;
+            if (!currentUser) {
+                navigate("/login"); // redirect if still not logged in
+            }
+        };
+        fetchUserData();
+    }, [navigate]);
 
 
     useEffect(() => {
         const fetchUserProgress = async () => {
             try {
-                console.log("FROM TRY BLOCK", currentUser);
 
             } catch (error) {
                 console.log("Error in obtaining user progress levels", error);
