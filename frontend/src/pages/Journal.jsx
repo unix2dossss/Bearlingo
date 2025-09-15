@@ -34,18 +34,10 @@ const Journal = () => {
         <>
             <Navbar />
             <div className="bg-blue-200 min-h-screen border">
-                <div className="flex justify-end items-end pr-12 h-[calc(100vh-65px)]">
-                    {/* Monitor */}
-                    <div>
-                        {/* <div classname="relative w-2/3 h-full flex items-center justify-center">
-                            <img
-                                src={MonitorImage}
-                                alt="Monitor"
-                                className="absolute inset-0 w-full h-full object-contain"
-                            />
-                        </div> */}
-
-                        <div className="relative w-full w-3/4 ml-auto">
+                <div className="flex justify-center items-center h-[calc(100vh-65px)] border border-black">
+                    {/* side navbar here */}
+                    <div className="flex justify-center items-center border border-black">
+                        <div className="relative w-3/4">
                             {/* Full monitor image */}
                             <img
                             src={MonitorImage}
