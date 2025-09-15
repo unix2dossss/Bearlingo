@@ -13,8 +13,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-
-    const user = useUserStore((state) => state.user);
     console.log("User: ", user);
 
     useEffect(() => {
