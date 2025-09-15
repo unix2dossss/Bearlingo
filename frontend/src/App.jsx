@@ -7,7 +7,8 @@ import FirstTimePg1 from './pages/FirstTimePages/FirstTimePg1';
 import FirstTimePg2 from './pages/FirstTimePages/FirstTimePg2';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
-import Journal from './pages/Journal'
+import Journal from './pages/Journal';
+import Test1 from './pages/Journal-redone'
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/Leaderboard" element={<Leaderboard />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Journal" element={<Journal />} />
+        <Route path="/test" element={<Test1 />} />
       </Routes>
     </div>
   )
