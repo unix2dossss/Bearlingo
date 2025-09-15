@@ -63,7 +63,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose }) => {
     try {
       // create new
       await api.post("/users/me/interview/company-research", form, { withCredentials: true });
-      toast.success("Company research saved!");
+      toast.success("Company research added successfully!");
       setShowForm(false);
       setIsSubmitted(true);
       setEditing(null);
@@ -99,7 +99,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose }) => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/users/me/interview/company-research/${id}`, { withCredentials: true });
-      toast.success("Deleted successfully");
+      toast.success("Company research deleted successfully");
       fetchResearches();
     } catch (err) {
       console.error(err);
