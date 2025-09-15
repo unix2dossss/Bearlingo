@@ -21,10 +21,18 @@ const CVModule = () => {
   const user = useUserStore((state) => state.user);
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login"); // redirect if not logged in
-    }
-  }, [user, navigate]);
+    const fetchUserData = async () => {
+      if (!user) {
+        await useUserStore.getState().fetchUser();
+      }
+
+      const currentUser = useUserStore.getState().user;
+      if (!currentUser) {
+        navigate("/login"); // redirect if still not logged in
+      }
+    };
+    fetchUserData();
+  }, [navigate, user]);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);

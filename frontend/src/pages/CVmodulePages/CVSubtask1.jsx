@@ -285,10 +285,6 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
           <div className="flex justify-center">
             <ProgressPills step={step} />
           </div>
-          {/* Center: Progress pills */}
-          <div className="flex justify-center">
-            <ProgressPills step={step} />
-          </div>
 
           {/* Right: Close */}
           <button
