@@ -27,6 +27,7 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
   const { completeTask } = useUserStore();
 
   // Check if task is already completed when user comes back
+  /*
   useEffect(() => {
     const checkCompletion = async () => {
       try {
@@ -43,7 +44,9 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
       }
     };
     checkCompletion();
-  }, [completeTask, setIsSubmitted]);
+  }, [completeTask, setIsSubmitted]); */
+
+
 
   // Warn on refresh/close if unfinished
   useEffect(() => {
@@ -99,8 +102,12 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
     onClose(hasChanges);
   };
 
-  // Progress calculation
-  const progressPercent = subtaskAlreadyCompleted ? 100 : ((index + 1) / total) * 100;
+  // Progress Bar calculation
+const progressPercentRaw = subtaskAlreadyCompleted ? 100:((index + 1) / total) * 100;
+const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
+
+
+
 
   return (
     <div className="relative flex flex-col h-full p-4">
@@ -114,19 +121,25 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
       </button>
 
       {/* Progress bar */}
-      <div className="w-full mt-8 mb-10">
-        <div className="flex justify-between text-sm mb-1">
-          <span className="font-semibold text-gray-700">
-            Progress {subtaskAlreadyCompleted ? total : index + 1} of {total}
-          </span>
-        </div>
-        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[#79B66F] transition-all duration-300"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
+<div className="w-full mt-8 mb-10">
+  <div className="flex justify-between text-sm mb-1">
+    <span className="font-semibold text-gray-700">
+      Progress {subtaskAlreadyCompleted ? total : index + 1} of {total}
+    </span>
+  </div>
+
+  <div className="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+    <div
+      className="absolute left-0 top-0 h-full bg-[#43a047] transition-[width] duration-300 ease-in-out"
+      style={{ width: `${progressPercent}%` }}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(progressPercent)}
+      role="progressbar"
+    />
+  </div>
+</div>
+
 
       {/* Flashcard */}
       <div className="flex-1 flex items-center justify-center">
@@ -174,22 +187,22 @@ export default function InterviewSubtask2({ setIsSubmitted, onClose }) {
         <button
           className={`inline-flex items-center justify-center
   h-10 px-5 rounded-full
-  bg-[#79B66F] text-white 
+  bg-[#43a047] text-white 
   font-bold text-sm
-  shadow-sm hover:bg-[#5f9c56]
+  shadow-sm hover:bg-[#79B66F]
   focus:outline-none focus:ring-2 focus:ring-[#79B66F]
   min-w-[120px]
   ${subtaskAlreadyCompleted && index === total - 1 ? "opacity-60 cursor-not-allowed" : ""}`}
           onClick={handleNext}
-          disabled={subtaskAlreadyCompleted && index === total - 1} // disable Finish if already done
+          disabled={subtaskAlreadyCompleted && index === total - 1} 
         >
           {index === total - 1 ? "Finish" : "Next"}
         </button>
       </div>
 
       {/* Pro Tip */}
-      <div className="mt-6 p-4 bg-gray-100 rounded-xl text-center">
-        <p className="text-gray-700">
+      <div className="mt-6 p-4 bg-gray-100 rounded-2xl border border-orange-200 bg-orange-50 p-5">
+        <p className="text-orange-900 text-sm">
           💡 <span className="font-semibold">Pro Tip:</span> Practice your answers out loud and
           personalize them to your experience. The best answers tell a story!
         </p>

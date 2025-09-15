@@ -107,19 +107,19 @@ const InterviewModule = () => {
           <main className="flex-1 flex flex-col justify-center items-center p-6 space-y-6">
             <div className="flex space-x-6">
               <button
-                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#43a047] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask1")}
               >
                 Task 1
               </button>
               <button
-                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#43a047] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask2")}
               >
                 Task 2
               </button>
               <button
-                className="bg-[#79B66F] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                className="bg-[#43a047] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask3")}
               >
                 Task 3
