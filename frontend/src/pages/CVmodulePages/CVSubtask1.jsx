@@ -175,7 +175,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       contact: {
         phone: personal.phone,
         // NOTE: if you’re splitting the email UI, make sure this is a full email
-        email: personal.email, // ← don’t append "gmail.com" here unless that’s intentional
+        email: personal.email + "gmail.com", // ← don’t append "gmail.com" here unless that’s intentional
         linkedin: personal.linkedin
       },
       education: {
