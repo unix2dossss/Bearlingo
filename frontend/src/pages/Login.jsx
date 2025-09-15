@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../lib/axios";
+import { useUserStore } from "../store/user";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -12,7 +13,7 @@ const Login = () => {
   const usernameRegex = /^[\w\s-]{3,20}$/;
   const navigate = useNavigate();
 
-
+  const { fetchUser } = useUserStore();
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
@@ -33,6 +34,9 @@ const Login = () => {
         }
       );
       toast.success("Logged in succesfully!");
+
+      await fetchUser();
+      //const user = useUserStore((state) => state.user);
       navigate("/Welcome"); // This should navigate to login page
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -45,6 +49,8 @@ const Login = () => {
     }
   };
   setTimeout(() => setLoading(false), 1500);
+  const user = useUserStore((state) => state.user);
+  console.log("User: ", user);
 
 
   return (

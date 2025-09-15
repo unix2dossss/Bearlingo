@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import axios from "axios";
 import api from "../lib/axios";
 
 // Zustand store
@@ -16,28 +15,34 @@ export const useUserStore = create((set) => ({
         withCredentials: true, // Send jwt cookie to backend
       });
       set({ user: res.data.user, loading: false });
+
     } catch (err) {
       set({ error: err.message, loading: false });
     }
   },
 
+
   // Call when task is completed
   completeTask: async (subtaskId) => {
     try {
       set({ loading: true });
-      await api.post(
+      const taskCompletionRes = await api.post(
         `/users/complete/level-subtasks/${subtaskId}`,
         {},
         { withCredentials: true }
       );
       // after backend updates streak + xp, re-fetch user
-      const res = await axios.api("/users/profile", {
+      const res = await api("/users/profile", {
         withCredentials: true,
       });
       set({ user: res.data.user, loading: false });
+      return taskCompletionRes;
     } catch (err) {
       set({ error: err.message, loading: false });
     }
   },
+
+  // Clear the user on logout
+  clearUser: () => set({ user: null }),
 }));
 
