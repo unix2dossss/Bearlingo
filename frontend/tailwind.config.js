@@ -1,3 +1,4 @@
+// tailwind.config.js (ESM)
 import daisyui from "daisyui";
 import flowbiteReact from "flowbite-react/plugin/tailwindcss";
 

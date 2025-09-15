@@ -270,7 +270,7 @@ export const getCV = async (req, res) => {
     const cv = await CV.findOne({ userId });
 
     if (!cv) {
-      return res.status(404).json({ message: "CV not found. Please create one first." });
+      return res.status(200).json({ message: "CV not found. Please create one first." });
     }
     res.status(200).json(cv);
   } catch (error) {

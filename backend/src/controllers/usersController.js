@@ -369,7 +369,8 @@ export const completeSubtask = async (req, res) => {
       // Check if already completed
       const completedSubtasks = userProgress.levelProgress.completedSubtasks || [];
       if (completedSubtasks.includes(subtaskId)) {
-        return res.status(400).json({ message: "Subtask already completed" });
+        // return res.status(400).json({ message: "Subtask already completed" });
+        return res.status(200).json({ message: "Subtask already completed" });
       }
 
       // Update completed subtasks
