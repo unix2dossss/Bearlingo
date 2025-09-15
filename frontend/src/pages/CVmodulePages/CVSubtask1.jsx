@@ -1,4 +1,4 @@
-7import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
 import PerInfo from "../../components/CVModuleComponent/PerInfo";
@@ -281,10 +281,6 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
               )}
             </div>
 
-          {/* Center: Progress pills */}
-          <div className="flex justify-center">
-            <ProgressPills step={step} />
-          </div>
           {/* Center: Progress pills */}
           <div className="flex justify-center">
             <ProgressPills step={step} />
