@@ -53,6 +53,8 @@ const Journal = () => {
                             className="w-full h-auto"
                             />
 
+                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 bg-black/30"></div>
+
                             <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
                                 {folders.map((folder, index) => (
                                 <div key={index} className="flex flex-col items-center cursor-pointer">
