@@ -12,25 +12,17 @@ import api from "../lib/axios";
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
-    const [openFile, setOpenFile] = useState(false);
+    const [showAddFileModal, setShowAddFileModal] = useState(false);
+    const [newFileName, setNewFileName] = useState("");
     const [folders, setFolders] = useState([
         { name: "Reflections", image: PinkFolder, files: ["First Networking event!", "25/03/2025"] },
         { name: "Goals", image: YellowFolder, files: ["Major goals", "Refining goals"] },
         { name: "Notes", image: BlueFolder, files: ["Jobs to apply to", "{date}"] },
     ]);
 
-    const addAddFile = () => {
-        const folderName = prompt("Enter folder name");
-        return (
-            <div className="mockup-window border bg-base-300">
-                <div className="flex justify-center bg-base-200 p-6">
-                    <h1 className="text-2xl font-bold">Your React Component</h1>
-                    <p>This content looks like it’s inside a computer window.</p>
-                </div>
-            </div>
-        );
 
-    };
+
+
     return (
         <>
             <Navbar />
@@ -109,9 +101,64 @@ const Journal = () => {
                                             {file}
                                         </button>
                                     ))}
-                                    <button className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white">
+                                    <button
+                                        className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
+                                        onClick={() => setShowAddFileModal(true)}
+                                    >
                                         + Add New File
                                     </button>
+                                    {showAddFileModal && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                                            <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
+                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
+                                                    Add A New Entry To {openFolder.name}
+                                                </h2>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter name of entry"
+                                                    value={newFileName}
+                                                    onChange={(e) => setNewFileName(e.target.value)}
+                                                    className="input input-bordered w-full mb-4"
+                                                />
+
+                                                <div className="flex justify-end gap-3">
+                                                    <button
+                                                        className="btn btn-ghost"
+                                                        onClick={() => {
+                                                            setNewFileName("");
+                                                            setShowAddFileModal(false);
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => {
+                                                            if (newFileName.trim()) {
+                                                                setFolders((currentFolder) =>
+                                                                    currentFolder.map((folder) =>
+                                                                        folder.name === openFolder.name
+                                                                            ? { ...folder, files: [...folder.files, newFileName] }
+                                                                            : folder
+                                                                    )
+                                                                );
+                                                                setOpenFolder((prev) => ({
+                                                                    ...prev,
+                                                                    files: [...prev.files, newFileName],
+                                                                }));
+                                                            }
+                                                            setNewFileName("");
+                                                            setShowAddFileModal(false);
+                                                        }}
+                                                    >
+                                                        Add File
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 </div>
 
                                 {/* actual file content + typing area */}
