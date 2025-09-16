@@ -7,8 +7,6 @@ import { useUserStore } from "../../store/user";
 
 const ACCENT = "#43a047"; // Interview theme color (green)
 
-
-
 const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
   const [whatWentWell, setWhatWentWell] = useState("");
   const [whatWasDifficult, setWhatWasDifficult] = useState("");
