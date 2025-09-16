@@ -1,4 +1,4 @@
-// src/pages/InterviewModule/InterviewSubtask3.jsx
+
 import React, { useEffect, useRef, useLayoutEffect, useState } from "react";
 import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
@@ -6,6 +6,8 @@ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
 const ACCENT = "#43a047"; // Interview theme color (green)
+
+
 
 const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
   const [whatWentWell, setWhatWentWell] = useState("");
@@ -29,6 +31,8 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
     }
   }, []);
 
+
+
   // fetch existing reflection
   useEffect(() => {
     const fetchReflection = async () => {
@@ -40,7 +44,6 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
 
         setWhatWentWell(data.whatWentWell || "");
         setDbWhatWentWell(data.whatWentWell || "");
-
         setWhatWasDifficult(data.whatWasDifficult || "");
         setDbWhatWasDifficult(data.whatWasDifficult || "");
 
@@ -49,10 +52,13 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
       } catch (err) {
         console.error("Failed to fetch reflection journal", err);
       }
-    };
 
+    };
     fetchReflection();
+
   }, []);
+
+
 
   // warn before reload/close if not submitted
   useEffect(() => {
@@ -67,15 +73,19 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isSubmitted]);
 
+
+
   // local close with unsaved changes check (uniform with CVSubtask1 local close)
+
   const handleLocalClose = () => {
     const hasChanges =
       whatWentWell !== dbWhatWentWell ||
       whatWasDifficult !== dbWhatWasDifficult ||
       improvementPlan !== dbImprovementPlan;
-
     onClose?.(hasChanges); // parent shows confirm if true
   };
+
+
 
   const handleClear = () => {
     setWhatWentWell("");
@@ -87,6 +97,8 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
     whatWentWell.trim().length > 0 &&
     whatWasDifficult.trim().length > 0 &&
     improvementPlan.trim().length > 0;
+
+
 
   // complete task hook
   const { completeTask } = useUserStore();
@@ -100,10 +112,13 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
       improvementPlan
     };
 
+
+
     try {
       const res = await api.post("/users/me/interview/reflection-journal", payload, {
         withCredentials: true
       });
+
       toast.success(res?.data?.message || "Reflection saved!");
 
       // refresh DB snapshots
@@ -114,7 +129,10 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
       setIsSubmitted?.(true);
       onClose?.(false, true); // no unsaved changes, force close (same pattern as Subtask 1)
 
+
+
       // mark subtask complete
+
       try {
         const subtaskId = await getSubtaskBySequenceNumber("Interview", 1, 3);
         const done = await completeTask(subtaskId);
@@ -130,6 +148,8 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
       toast.error("Error saving reflection!");
     }
   };
+
+
 
   return (
   <div className="flex flex-col h-full">
@@ -248,6 +268,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
             <button
               type="submit"
               disabled={!isFormValid}
+               onClick={handleSubmit}
               className="inline-flex items-center justify-center h-12 md:h-14 px-8 md:px-10 rounded-full 
               text-white font-extrabold shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ backgroundColor: ACCENT, minWidth: 200 }}
