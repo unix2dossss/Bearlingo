@@ -67,7 +67,7 @@ const Journal = () => {
 
                             <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
                                 style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
-                                <img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" />
+                                {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
                                 {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
                             </div>
 
