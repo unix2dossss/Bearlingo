@@ -109,7 +109,7 @@ const InterviewModule = () => {
 
         <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
           {/* Main Workspace */}
-            <div className="flex space-x-48 mb-28">
+            <div className="flex space-x-48 mb-[51px]">
               <button
                 className="bg-[#43a047] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask1")}
