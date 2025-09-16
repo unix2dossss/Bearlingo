@@ -37,6 +37,8 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserProgress = async () => {
             try {
+                const userProgress = await api.get("/progress/levels");
+                console.log(userProgress);
 
             } catch (error) {
                 console.log("Error in obtaining user progress levels", error);
@@ -58,8 +60,6 @@ const Profile = () => {
                 <h1 className="text-xl flex justify-center text-black p-2">Hi {user.username}</h1>
 
                 <div className="flex justify-center border border-red-600 gap-10 mt-16">
-
-
                     {/* For TSX uncomment the commented types below */}
                     <div className="card bg-base-100 w-[340px] h-[500px] shadow-sm">
                         <figure>

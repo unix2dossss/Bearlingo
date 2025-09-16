@@ -15,14 +15,13 @@ const Home = () => {
             <div className="w-full">
                 <Carousel slideInterval={4000}>
                     {/* Slide 1 */}
-                    <div className="relative w-full h-[800px]">
+                    <div className="absolute w-full h-[700px]">
                         <img
                             src={landPg}
                             alt="Job Seeking"
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex items-center justify-start">
-                            <div className="absolute inset-0 flex items-center">
+                        <div className="absolute inset-3 flex items-center justify-start">
                                 <div className="text-left max-w-lg px-8 py-12">
                                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6">
                                         Job Seeking, Made Fun
@@ -34,11 +33,10 @@ const Home = () => {
                                         <a href="/register">Try BearLingo →</a>
                                     </button>
                                 </div>
-                            </div>
                         </div>
                     </div>
                     {/* Slide 2 */}
-                    <div className="relative w-full h-[800px]">
+                    <div className="relative w-full h-[700px]">
                         <img
                             src={slide2}
                             className="w-full h-full object-cover" />

@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import background from "../../assets/Background.svg";
+import background from "../../assets/Background1.svg";
 import bear from "../../assets/Bear.svg";
 import cvbutton from "../../assets/CVButton.svg";
 import TopNavbar from '../../components/TopNavbar';
+import StartButton from "../../assets/StartingButton.svg";
 
 const FirstTimePg2 = () => {
   const navigate = useNavigate();
@@ -22,17 +23,16 @@ const FirstTimePg2 = () => {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Bear Mascot */}
       <img
-        src={bear}
-        alt="Bear Mascot"
-        className="absolute right-44 bottom-28 w-40 sm:w-48 md:w-56 lg:w-64"
+        src={StartButton}
+        alt="Start Button"
+        className="fixed right-[90px] top-[140px]"
       />
 
       {/* White Glowing CV Button */}
       {/* CV Button with hover glow */}
       <div
-        className="absolute right-[450px] top-[400px] -translate-y-1/2 cursor-pointer group"
+        className="fixed right-[350px] top-[340px] -translate-y-1/2 cursor-pointer group"
         onClick={handleClick}
       >
         {/* Glow only on hover */}
