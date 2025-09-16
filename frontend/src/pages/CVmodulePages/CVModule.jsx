@@ -92,39 +92,40 @@ const CVModule = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Top Navbar */}
-      <TopNavbar />
-
+    <div className="relative min-h-screen flex flex-col">
       {/* Background */}
-      <div className="flex-1 relative bg-cover bg-center">
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-white/70" />
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url("src/assets/CV-Floor1.svg")`
+        }}
+      />
+      {/* Top Navbar */}
+      <div className="relative z-10">
+        <TopNavbar />
+      </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row h-full">
-          {/* Main Workspace */}
-          <main className="flex-1 flex flex-col justify-center items-center p-6 space-y-6">
-            <div className="flex space-x-6">
-              <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask1")}
-              >
-                Task 1
-              </button>
-              <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask2")}
-              >
-                Task 2
-              </button>
-              <button
-                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask3")}
-              >
-                Task 3
-              </button>
-            </div>
-          </main>
+      <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
+        {/* Main Workspace */}
+        <div className="flex space-x-48 mb-28">
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask1")}
+          >
+            Task 1
+          </button>
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask2")}
+          >
+            Task 2
+          </button>
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask3")}
+          >
+            Task 3
+          </button>
         </div>
       </div>
 
