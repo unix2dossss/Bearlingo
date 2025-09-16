@@ -24,36 +24,35 @@ const FirstTimePg1 = () => {
           alt="Welcome"
           className="absolute bottom-0 left-0 w-full h-auto"
         />
-        <div className="relative w-[1167px] h-[999px] overflow-hidden mx-auto">
+        <div className="relative w-[867px] h-[999px] mx-auto">
             {/* Background box */}
-            <div className="absolute left-[64px] top-[137px] w-[1040px] h-[548px] bg-black"></div>
+            <div className="absolute left-[24px] top-[137px] w-[840px] h-[515px] bg-black"></div>
 
             {/* Blue inner box */}
-            <div className="absolute left-[81px] top-[154px] w-[1005px] h-[513px] bg-blue-400"></div>
+            <div className="absolute left-[41px] top-[154px] w-[805px] h-[483px] bg-blue-400"></div>
 
             {/* Grey inner box */}
-            <div className="absolute left-[96px] top-[154px] w-[1005px] h-[513px] bg-black/25"></div>
+            <div className="absolute left-[56px] top-[154px] w-[805px] h-[466px] bg-black/25"></div>
 
             {/* Transparent overlays */}
-            <div className="absolute left-[96px] top-[172px] w-[975px] h-[476px] bg-white">
+            <div className="absolute left-[56px] top-[172px] w-[775px] h-[450px] bg-white">
                 <img
                     src={word}
                     alt="Welcome to Bearlingo"
-                    className="absolute left-[96px] top-[-33px] w-[775px] h-[476px]"
+                    className="absolute left-[51px] top-[-3px] w-[675px] h-[373px]"
                     />
             </div>
 
-            <img
-                    src={bear}
-                    alt="Bear Mascot"
-                    className="absolute right-[40px] bottom-24 w-40 sm:w-48 md:w-56 lg:w-64"
-                  />
-
-            <button className="absolute left-1/2 transform -translate-x-1/2 bottom-[24rem] px-8 py-4 bg-blue-500 text-white text-2xl 
+            <button className="absolute left-1/2 transform -translate-x-1/2 bottom-[27rem] px-8 py-4 bg-blue-500 text-white text-2xl 
             font-bold rounded-lg shadow-lg hover:bg-blue-600 transition" onClick={handleClick} >
                 Get Started →
             </button>
         </div>
+        <img
+            src={bear}
+            alt="Bear Mascot"
+            className="absolute right-[40px] bottom-[100px]"
+          />
       </div>
         
     </>

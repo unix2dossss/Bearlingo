@@ -10,7 +10,7 @@ const FirstTimePg2 = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/first-time-pg3"); // navigate to FirstTimePg3
+    navigate("/First Level"); // navigate to FirstTimePg3
   };
 
   return (
