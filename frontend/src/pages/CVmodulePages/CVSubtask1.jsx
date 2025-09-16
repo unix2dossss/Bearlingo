@@ -299,7 +299,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
 
       {/* The ONLY scrollable area */}
       <div
-        ref={contentRef}                    // ⬅ attach scroller ref
+        ref={contentRef}                   
         className="flex-1 overflow-y-auto px-6"
         style={{ scrollbarGutter: "stable" }}
       >
@@ -332,7 +332,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
                 shadow-sm hover:bg-[#4f9cf9]/90
                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
                 min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
-              onClick={handleSaveAndContinue}  // ⬅ use handler so blur + scroll reset run
+              onClick={handleSaveAndContinue}  
               disabled={!isStepValid()}
             >
               Save & Continue

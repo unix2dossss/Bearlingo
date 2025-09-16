@@ -33,3 +33,33 @@ export const getSubtaskBySequenceNumber = async (moduleName, levelNumber, sequen
   return subtask._id;
 };
 
+// Check if user has completed a specific subtask
+export const isSubtaskCompleted = async (moduleName, levelNumber, sequenceNumber) => {
+  try {
+    // 1. Get the module
+    const module = await getModuleByName(moduleName);
+
+    // 2. Get the level
+    const level = getLevelByNumber(module, levelNumber);
+
+    // 3. Get the subtaskId
+    const subtaskId = await getSubtaskBySequenceNumber(moduleName, levelNumber, sequenceNumber);
+
+    // 4. Get user progress for this module
+    const res = await api.get(`/users/progress/module/${module._id}`, { withCredentials: true });
+    const moduleProgress = res.data;
+
+    // 5. Find progress for this level
+    const levelProgressObject = moduleProgress.levelProgresses.find(
+      (lp) => lp.levelProgress.level === level._id
+    );
+
+    if (!levelProgressObject) return false; // no progress on this level yet
+
+    // 6. Check if subtaskId is inside completedSubtasks
+    return levelProgressObject.levelProgress.completedSubtasks.includes(subtaskId);
+  } catch (err) {
+    console.error("Error checking subtask completion:", err.message);
+    return false;
+  }
+};

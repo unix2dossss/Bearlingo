@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Journal from './pages/Journal';
 import Test1 from './pages/Journal-redone'
 import { Routes, Route } from 'react-router-dom';
+import InterviewModule from './pages/InterviewmodulePages/InterviewModule';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/CvModule" element={<CvModule />} />
+        <Route path="/InterviewModule" element={<InterviewModule />} />
         <Route path="/Welcome" element={<FirstTimePg1 />} />
         <Route path="/Getting Started" element={<FirstTimePg2 />} />
         <Route path="/First Level" element={<FirstTimePg3 />} />
