@@ -37,7 +37,7 @@ const Journal = () => {
 
     return (
         <>
-            
+
             <div className="bg-blue-200 min-h-screen border">
                 <Navbar />
                 <div className="flex justify-center items-center h-[calc(100vh-65px)]">
@@ -188,7 +188,7 @@ const Journal = () => {
                                         {openFile ? (
                                             // Show selected file content
                                             <div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
-                                                <div className="flex justify-center border  border-red-500">
+                                                <div className="flex justify-center">
                                                     <h1 className="text-purple-800 font-semibold mb-2 text-xl">
                                                         {typeof openFile === "object" ? openFile.fileName : openFile}
                                                     </h1>
@@ -201,26 +201,26 @@ const Journal = () => {
 
                                                 {/* If SMART goals exist */}
                                                 {typeof openFile === "object" && openFile.smart ? (
-                                                    <div className="space-y-3">
-                                                        <div>
-                                                            <h4 className="font-semibold text-purple-900">Specific:</h4>
-                                                            <p className="text-purple-700">{openFile.smart.specific}</p>
+                                                    <div className="space-y-3 mt-8">
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Specific</h4>
+                                                            <p className="text-gray-700">{openFile.smart?.specific}</p>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="font-semibold text-purple-900">Measurable:</h4>
-                                                            <p className="text-purple-700">{openFile.smart.measurable}</p>
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Measurable</h4>
+                                                            <p className="text-gray-700">{openFile.smart?.measurable}</p>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="font-semibold text-purple-900">Achievable:</h4>
-                                                            <p className="text-purple-700">{openFile.smart.achievable}</p>
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Achievable</h4>
+                                                            <p className="text-gray-700">{openFile.smart?.achievable}</p>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="font-semibold text-purple-900">Relevant:</h4>
-                                                            <p className="text-purple-700">{openFile.smart.relevant}</p>
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Relevant</h4>
+                                                            <p className="text-gray-700">{openFile.smart?.relevant}</p>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="font-semibold text-purple-900">Time-bound:</h4>
-                                                            <p className="text-purple-700">{openFile.smart.timebound}</p>
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Time Bound</h4>
+                                                            <p className="text-gray-700">{openFile.smart?.timebound}</p>
                                                         </div>
                                                     </div>
                                                 ) : (
