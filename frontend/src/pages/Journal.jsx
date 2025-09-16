@@ -66,37 +66,6 @@ const Journal = () => {
                                 ))}
                             </div>
                         </div>
-<<<<<<< HEAD
-=======
-
-
-                        {/* Top nav bar */}
-                        {/* <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
-                            <a className="text-white font-bold">Its Goal Setting Time User!</a>
-                        </div> */}
-
-                        {/* Folders */}
-                        {/* <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[318px] rounded-lg bg-rose-300 ">
-                            {folders.map((folder, index) => (
-                                <div
-                                    key={index}
-                                    className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                >
-                                    <button onClick={() => setOpenFolder(folder)}>
-                                        {console.log("folder: ", folder)}
-                                        <img
-                                            src={FolderImage}
-                                            alt="Folder"
-                                            className="w-12 h-12 flex justify-center"
-                                        />
-                                    </button>
-                                    <span className="text-white text-sm mt-1">{folder.name}</span>
-                                </div>
-                            ))}
-                        </div> */}
-
-                        {/* Files of a folder */}
->>>>>>> 3550831320c55158226c0f0b9018b1b59aff6ce9
                     </div>
                 </div >
 
