@@ -40,32 +40,33 @@ const Journal = () => {
                         <div className="relative w-3/4">
                             {/* Full monitor image */}
                             <img
-                            src={MonitorImage}
-                            alt="Monitor"
-                            className="w-full h-auto"
+                                src={MonitorImage}
+                                alt="Monitor"
+                                className="w-full h-auto"
                             />
 
                             <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
                                 style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
                                 <img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" />
+                                {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
                             </div>
 
                             <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
                                 {folders.map((folder, index) => (
-                                <div key={index} className="flex flex-col items-center cursor-pointer">
-                                    <button onClick={() => setOpenFolder(folder)}>
-                                    <img
-                                        src={folder.image}
-                                        alt={folder.name}
-                                        className="w-16 h-auto"
-                                    />
-                                    </button>
-                                    <span className="text-black text-sm mt-1">{folder.name}</span>
-                                </div>
+                                    <div key={index} className="flex flex-col items-center cursor-pointer">
+                                        <button onClick={() => setOpenFolder(folder)}>
+                                            <img
+                                                src={folder.image}
+                                                alt={folder.name}
+                                                className="w-16 h-auto"
+                                            />
+                                        </button>
+                                        <span className="text-black text-sm mt-1">{folder.name}</span>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                        
+
 
                         {/* Top nav bar */}
                         {/* <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
