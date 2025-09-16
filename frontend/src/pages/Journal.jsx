@@ -45,6 +45,8 @@ const Journal = () => {
                                 className="w-full h-auto"
                             />
 
+                            {/* Top header to add folder - do we need this? */}
+
                             <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
                                 style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
                                 <img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" />
@@ -65,7 +67,31 @@ const Journal = () => {
                                     </div>
                                 ))}
                             </div>
+
+                            {openFolder && (<div className="absolute left-[6.5%] right-[7%] top-[16%] h-[480px] bg-white shadow-lg rounded-md p-4 overflow-y-auto">
+                                <div className="flex justify-between items-center border-b pb-2">
+                                    <h2 className="font-bold text-lg">{openFolder.name}</h2>
+                                    <button
+                                        className="btn btn-xs btn-error"
+                                        onClick={() => setOpenFolder(null)} // close
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <ul className="mt-4 space-y-2">
+                                    {openFolder.files.map((file, i) => (
+                                        <li
+                                            key={i}
+                                            className="p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer"
+                                        >
+                                            {file}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>)}
                         </div>
+
+
 
 
                         {/* Top nav bar */}
