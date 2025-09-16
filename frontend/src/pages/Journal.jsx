@@ -8,6 +8,7 @@ import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
+import api from "../lib/axios";
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);

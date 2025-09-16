@@ -14,7 +14,7 @@ const Profile = () => {
     const [userInfo, setUserInfo] = useState("");
     const navigate = useNavigate();
 
-    const user = useUserStore.getState().user;
+    const user = useUserStore((state) => state.user);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -34,21 +34,6 @@ const Profile = () => {
     }, [navigate]);
 
 
-    useEffect(() => {
-        const fetchUserProgress = async () => {
-            try {
-                const userProgress = await api.get("/progress/levels");
-                console.log(userProgress);
-
-            } catch (error) {
-                console.log("Error in obtaining user progress levels", error);
-                toast.error("Error occurred!");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchUserProgress();
-    }, []);
 
 
 
@@ -57,7 +42,7 @@ const Profile = () => {
             <Navbar />
             <div className="bg-blue-200 min-h-screen  border border-blue-600">
 
-                <h1 className="text-xl flex justify-center text-black p-2">Hi {user.username}</h1>
+                <h1 className="text-xl flex justify-center text-black p-2"> Hi {userInfo ? userInfo.username : "Loading..."}</h1>
 
                 <div className="flex justify-center border border-red-600 gap-10 mt-16">
                     {/* For TSX uncomment the commented types below */}
