@@ -15,6 +15,16 @@ const Journal = () => {
     const [showAddFileModal, setShowAddFileModal] = useState(false);
     const [newFileName, setNewFileName] = useState("");
     const [openFile, setOpenFile] = useState(false);
+    const [newSmartGoal, setNewSmartGoal] = useState({
+        fileName: "",
+        smart: {
+            specific: "",
+            measurable: "",
+            achievable: "",
+            relevant: "",
+            timebound: "",
+        },
+    });
     const [folders, setFolders] = useState([
         { name: "Reflections", image: PinkFolder, files: [{ fileName: "First Networking event!", text: "Blah" }, { fileName: "25/03/2025", text: "" }] },
         {
@@ -169,14 +179,32 @@ const Journal = () => {
                                                             }
                                                             setNewFileName("");
                                                             setShowAddFileModal(false);
+
+                                                            // Open the next modal to fill out the file
+                                                            const modal = document.getElementById("my_modal_2");
+                                                            if (modal) modal.showModal();
+
                                                         }}
                                                     >
-                                                        Add File
+                                                        Next
                                                     </button>
+
+
                                                 </div>
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Second modal */}
+                                    <dialog id="my_modal_2" className="modal">
+                                        <div className="modal-box">
+                                            <h3 className="font-bold text-lg">Hello!</h3>
+                                            <p className="py-4">Press ESC key or click outside to close</p>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
 
                                 </div>
 
@@ -189,9 +217,12 @@ const Journal = () => {
                                             // Show selected file content
                                             <div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
                                                 <div className="flex justify-center">
-                                                    <h1 className="text-purple-800 font-semibold mb-2 text-xl">
-                                                        {typeof openFile === "object" ? openFile.fileName : openFile}
-                                                    </h1>
+                                                    <div className="flex items-between">
+                                                        <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
+                                                            {typeof openFile === "object" ? openFile.fileName : openFile}
+                                                        </h1>
+
+                                                    </div>
                                                 </div>
                                                 <p className="text-purple-700">
                                                     {typeof openFile === "object" ? openFile.text : "No content available."}
@@ -228,13 +259,15 @@ const Journal = () => {
                                                         {typeof openFile === "object" ? openFile.text || "No content available." : "No file selected."}
                                                     </p>
                                                 )}
+                                                <div className=" mt-auto flex justify-center items-center p-2">
 
-                                                <button
-                                                    className="mt-4 btn btn-ghost w-32"
-                                                    onClick={() => { setOpenFile(null); setOpenFile(null); }}
-                                                >
-                                                    Back to Goals Overview
-                                                </button>
+                                                    <button
+                                                        className="mt-4 btn btn-ghost w-40 border border-purple-500"
+                                                        onClick={() => { setOpenFile(null); setOpenFile(null); }}
+                                                    >
+                                                        Back to Goals Overview
+                                                    </button>
+                                                </div>
                                             </div>
                                         ) : (
                                             // Show default list of goals
@@ -261,23 +294,23 @@ const Journal = () => {
 
 
                                     /*<div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
-                                <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
-                                <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
-                                <textarea
-                                    placeholder="Type here"
-                                    className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
-                                />
-                                <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
-                                <textarea
-                                    placeholder="Type here"
-                                    className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
-                                />
-                                <div className="flex justify-end mt-4">
-                                    <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>*/)}
+                                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
+                                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
+                                                    <textarea
+                                                        placeholder="Type here"
+                                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
+                                                    />
+                                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
+                                                    <textarea
+                                                        placeholder="Type here"
+                                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                                                    />
+                                                    <div className="flex justify-end mt-4">
+                                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+                                                            Submit
+                                                        </button>
+                                                    </div>
+                                                </div>*/)}
                             </div>
                         </div>
                     </div>
