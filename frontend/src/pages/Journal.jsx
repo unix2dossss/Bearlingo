@@ -19,7 +19,7 @@ const Journal = () => {
     ]);
 
     const addAddFile = () => {
-        const folderName = prompt("Enter folder name"); // Simple prompt for folder name
+        const folderName = prompt("Enter folder name"); 
         return (
             <div className="mockup-window border bg-base-300">
                 <div className="flex justify-center bg-base-200 p-6">
@@ -35,10 +35,10 @@ const Journal = () => {
             <Navbar />
             <div className="bg-blue-200 min-h-screen border">
                 <div className="flex justify-center items-center h-[calc(100vh-65px)]">
-                    {/* side navbar here */}
+                    {/* side navbar will come here */}
                     <div className="flex justify-center items-center">
                         <div className="relative w-3/4">
-                            {/* Full monitor image */}
+                            {/* Monitor here */}
                             <img
                             src={MonitorImage}
                             alt="Monitor"
@@ -69,63 +69,72 @@ const Journal = () => {
                 </div >
 
                 {openFolder && (
-                    <>
-                        <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
-                            <div className="relative bg-base-100 mockup-window max-w-6xl w-[90%] h-[90%]"> {/*} border-base-300 */}
-                                <div className="border border-stone-400">
+                    <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
+                        <div className="relative bg-white max-w-6xl w-[90%] h-[85%] rounded-2xl shadow-xl overflow-hidden flex flex-col">
+                        
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                            {/* dots */}
+                            <div className="flex gap-2">
+                                <button
+                                onClick={() => setOpenFolder(null)}
+                                className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
+                                aria-label="Close"
+                                >
+                                    X
+                                </button>
+                                <div className="w-4 h-4 rounded-full bg-yellow-400" />
+                                <div className="w-4 h-4 rounded-full bg-green-500" />
+                            </div>
 
-                                    <button
-                                        className="flex justify-center rounded-full absolute left-4 top-4 bg-red-600 btn-error w-[25px] h-[25px] "
-                                        onClick={() => setOpenFolder(null)}
-                                    >
-                                        X
+                            {/* Title - Folder */}
+                            <h2 className="text-xl md:text-2xl font-bold text-purple-600 text-center flex-1">
+                                {openFolder.name}
+                            </h2>
+                            <div className="w-10"></div>
+                        </div>
+
+                        {/* Main thing */}
+                        <div className="flex flex-1 overflow-hidden">
+                            {/* sidebar thingy with buttons */}
+                            <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
+                            {openFolder.files.map((file, i) => (
+                                <button
+                                key={i}
+                                onClick={() => setOpenFile(file)}
+                                className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
+                                >
+                                {file}
+                                </button>
+                            ))}
+                            <button className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white">
+                                + Add New File
+                            </button>
+                            </div>
+
+                            {/* actual file content + typing area */}
+                            <div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
+                                <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
+                                <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
+                                <textarea
+                                    placeholder="Type here"
+                                    className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
+                                />
+                                <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
+                                <textarea
+                                    placeholder="Type here"
+                                    className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                                />
+                                <div className="flex justify-end mt-4">
+                                    <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+                                        Submit
                                     </button>
-                                </div>
-                                <div className="flex flex-row h-full gap-0">
-                                    <div className="w-[190px] bg-purple-400 h-full p-[8px]">
-                                        <ul className="mt-4 flex flex-col gap-2">
-                                            {openFolder.files.map((file, i) => (
-                                                <button onClick={() => setOpenFile(file)}>
-                                                    {console.log("Opened file: ", file)}
-                                                    <li
-                                                        key={i}
-                                                        className="flex justify-center p-3 bg-purple-200 text-purple-800 hover:bg-gray-200 cursor-pointer"
-                                                    >
-                                                        {file}
-                                                    </li>
-                                                </button>
-
-                                            ))}
-                                            <li className="flex justify-center p-3 bg-purple-400 border border-white text-white hover:bg-white hover:text-purple-800 cursor-pointer">
-                                                <button onClick={() => ""} >
-                                                    + Add New File
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    {/* Showing a file */}
-                                    <div className="bg-purple-100 w-full">
-
-                                        <h2 className="flex justify-center text-3xl text-purple-400 mt-5">Goal Setting</h2>
-                                        <div className="flex flex-col ml-7">
-                                            <p className="text-purple-400 text-sm mt-4">What makes a goal SMART?</p>
-                                            <textarea placeholder="Type here" className="textarea textarea-neutral mt-2 w-96"></textarea>
-                                            <button className="ml-80 btn-neutral btn-outline border border-gray-600 h-5 w-16 text-sm">Submit</button>
-                                        </div>
-                                        <p className="text-purple-400 text-sm ml-7 mt-4">Top three SMART goals for the upcoming fortnight</p>
-                                        <textarea placeholder="Type here" className="textarea textarea-neutral ml-7 mt-2 w-96"></textarea>
-                                        {openFile && (
-                                            <>
-                                                {console.log("IN OPEN FILE!!!")}
-
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                                </div>                                
                             </div>
                         </div>
-                    </>
-                )}
+                        </div>
+                    </div>
+                    )}
             </div >
         </>
     )
