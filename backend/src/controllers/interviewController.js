@@ -48,7 +48,7 @@ export const getCompanyResearches = async (req, res) => {
     );
 
     if (!record) {
-      return res.status(404).json({ message: "No company research found for this user" });
+      return res.status(200).json({ message: "No company research found for this user", researches: [] });
     }
     res.status(200).json(record.companyResearches);
   } catch (error) {

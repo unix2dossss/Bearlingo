@@ -37,8 +37,9 @@ const Journal = () => {
 
     return (
         <>
-            <Navbar />
+            
             <div className="bg-blue-200 min-h-screen border">
+                <Navbar />
                 <div className="flex justify-center items-center h-[calc(100vh-65px)]">
                     {/* side navbar will come here */}
                     <div className="flex justify-center items-center">
