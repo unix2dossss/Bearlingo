@@ -97,7 +97,7 @@ const CVModule = () => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url("src/assets/CV-Floor1.svg")`
+          backgroundImage: `url("src/assets/CVFloor.svg")`
         }}
       />
       {/* Top Navbar */}
@@ -107,7 +107,7 @@ const CVModule = () => {
 
       <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
         {/* Main Workspace */}
-        <div className="flex space-x-48 mb-28">
+        <div className="flex space-x-48 mb-[51px]">
           <button
             className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask1")}
