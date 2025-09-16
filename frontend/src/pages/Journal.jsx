@@ -15,6 +15,7 @@ const Journal = () => {
     const [showAddFileModal, setShowAddFileModal] = useState(false);
     const [newFileName, setNewFileName] = useState("");
     const [openFile, setOpenFile] = useState(false);
+    const [showSmartFormModal, setShowSmartFormModal] = useState(false);
     const [newSmartGoal, setNewSmartGoal] = useState({
         fileName: "",
         smart: {
@@ -161,28 +162,23 @@ const Journal = () => {
                                                         className="btn btn-primary"
                                                         onClick={() => {
                                                             if (newFileName.trim()) {
-                                                                setFolders((currentFolders) =>
-                                                                    currentFolders.map((folder) =>
-                                                                        folder.name === openFolder.name
-                                                                            ? {
-                                                                                ...folder,
-                                                                                files: [...folder.files, { fileName: newFileName, text: "" }]
-                                                                            }
-                                                                            : folder
-                                                                    )
-                                                                );
+                                                                // Initialize the new goal
+                                                                setNewSmartGoal({
+                                                                    fileName: newFileName,
+                                                                    smart: {
+                                                                        specific: "",
+                                                                        measurable: "",
+                                                                        achievable: "",
+                                                                        relevant: "",
+                                                                        timebound: "",
+                                                                    },
+                                                                });
 
-                                                                setOpenFolder((prev) => ({
-                                                                    ...prev,
-                                                                    files: [...prev.files, { fileName: newFileName, text: "" }]
-                                                                }));
+                                                                setShowAddFileModal(false);
+                                                                setShowSmartFormModal(true);
+                                                                setNewFileName("");
                                                             }
-                                                            setNewFileName("");
-                                                            setShowAddFileModal(false);
 
-                                                            // Open the next modal to fill out the file
-                                                            const modal = document.getElementById("my_modal_2");
-                                                            if (modal) modal.showModal();
 
                                                         }}
                                                     >
@@ -196,15 +192,71 @@ const Journal = () => {
                                     )}
 
                                     {/* Second modal */}
-                                    <dialog id="my_modal_2" className="modal">
-                                        <div className="modal-box">
-                                            <h3 className="font-bold text-lg">Hello!</h3>
-                                            <p className="py-4">Press ESC key or click outside to close</p>
+                                    {showSmartFormModal && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                                            <div className="bg-white w-[600px] p-6 rounded-xl shadow-lg">
+                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
+                                                    Fill SMART details for {newSmartGoal.fileName}
+                                                </h2>
+
+                                                {["Specific - What is one specific thing you want to achieve in the next 2 weeks? ", "measurable - How will you measure progress toward this goal?", "achievable - Is this goal achievable with the resources you have? ", "relevant - Why is this goal relevant to your long-term vision? ", "timebound - What is your deadline for completing this goal?"].map((field) => {
+                                                    const [label, placeholder] = field.split(" - ");
+                                                    return (
+                                                        <div key={field} className="mb-3">
+
+                                                            <label className="block font-semibold text-purple-700 capitalize">{label}</label>
+                                                            <input
+                                                                type="text"
+                                                                className="input input-bordered w-full"
+                                                                placeholder={placeholder}
+                                                                value={newSmartGoal.smart[field]}
+                                                                onChange={(e) =>
+                                                                    setNewSmartGoal((prev) => ({
+                                                                        ...prev,
+                                                                        smart: { ...prev.smart, [label.toLowerCase()]: e.target.value }
+                                                                    }))
+                                                                }
+                                                            />
+                                                        </div>
+                                                    );
+                                                })}
+
+                                                <div className="flex justify-end gap-3 mt-4">
+                                                    <button
+                                                        className="btn btn-ghost"
+                                                        onClick={() => setShowSmartFormModal(false)}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => {
+                                                            // Add new goal to Goals folder
+                                                            setFolders((currentFolders) =>
+                                                                currentFolders.map((folder) =>
+                                                                    folder.name === "Goals"
+                                                                        ? { ...folder, files: [...folder.files, newSmartGoal] }
+                                                                        : folder
+                                                                )
+                                                            );
+
+                                                            // Also update the openFolder object if it's currently open
+                                                            setOpenFolder((prev) =>
+                                                                prev.name === "Goals"
+                                                                    ? { ...prev, files: [...prev.files, newSmartGoal] }
+                                                                    : prev
+                                                            );
+
+                                                            setShowSmartFormModal(false);
+                                                            setOpenFile(newSmartGoal); // Optionally open the newly created goal
+                                                        }}
+                                                    >
+                                                        Save Goal
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <form method="dialog" className="modal-backdrop">
-                                            <button>close</button>
-                                        </form>
-                                    </dialog>
+                                    )}
 
                                 </div>
 
