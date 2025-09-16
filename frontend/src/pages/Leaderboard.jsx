@@ -19,7 +19,6 @@ const Leaderboard = () => {
       try {
         const response = await api.get("/users/leaderboard");
         setLeaderboardData(response.data.users);
-        toast.success("Leaderboard obtained successfully!");
       } catch (error) {
         console.log("Error in obtaining leaderboard", error);
         toast.error("Error occurred!");
