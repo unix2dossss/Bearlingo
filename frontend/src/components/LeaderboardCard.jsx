@@ -16,13 +16,13 @@ const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, lin
         {index === 0 && <img height="35" width="35" src={goldMedal} alt="Gold medal" />}
         {index === 1 && <img height="35" width="35" src={silverMedal} alt="Silver medal" />}
         {index === 2 && <img height="35" width="35" src={bronzeMedal} alt="Bronze medal" />}
-        {![0,1,2].includes(index) && <span className="font-bold text-lg">{index+1}</span>}
+        {![0, 1, 2].includes(index) && <span className="font-bold text-lg">{index + 1}</span>}
       </div>
 
       {/* Profile Image */}
-      <div className="w-[80px]">
+      {/* <div className="w-[80px]">
         <img className="rounded-full w-12 h-12" src={user.profileImage || "https://img.daisyui.com/images/profile/demo/4@94.webp"} alt="Profile" />
-      </div>
+  </div> */}
 
       {/* Username */}
       <div className="flex-1 text-center font-semibold">{user.username}</div>
