@@ -19,7 +19,7 @@ const Journal = () => {
     ]);
 
     const addAddFile = () => {
-        const folderName = prompt("Enter folder name"); // Simple prompt for folder name
+        const folderName = prompt("Enter folder name");
         return (
             <div className="mockup-window border bg-base-300">
                 <div className="flex justify-center bg-base-200 p-6">
@@ -35,17 +35,15 @@ const Journal = () => {
             <Navbar />
             <div className="bg-blue-200 min-h-screen border">
                 <div className="flex justify-center items-center h-[calc(100vh-65px)]">
-                    {/* side navbar here */}
+                    {/* side navbar will come here */}
                     <div className="flex justify-center items-center">
                         <div className="relative w-3/4">
-                            {/* Full monitor image */}
+                            {/* Monitor here */}
                             <img
                                 src={MonitorImage}
                                 alt="Monitor"
                                 className="w-full h-auto"
                             />
-
-                            {/* Top header to add folder - do we need this? */}
 
                             <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
                                 style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
@@ -67,66 +65,78 @@ const Journal = () => {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                </div >
 
-                            {openFolder && (<div className="absolute left-[6.5%] right-[7%] top-[16%] h-[480px] bg-white shadow-lg rounded-md p-4 overflow-y-auto">
-                                <div className="flex justify-between items-center border-b pb-2">
-                                    <h2 className="font-bold text-lg">{openFolder.name}</h2>
+                {openFolder && (
+                    <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
+                        <div className="relative bg-white max-w-6xl w-[90%] h-[85%] rounded-2xl shadow-xl overflow-hidden flex flex-col">
+
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                                {/* dots */}
+                                <div className="flex gap-2">
                                     <button
-                                        className="btn btn-xs btn-error"
-                                        onClick={() => setOpenFolder(null)} // close
+                                        onClick={() => setOpenFolder(null)}
+                                        className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
+                                        aria-label="Close"
                                     >
                                         X
                                     </button>
+                                    <div className="w-4 h-4 rounded-full bg-yellow-400" />
+                                    <div className="w-4 h-4 rounded-full bg-green-500" />
                                 </div>
-                                <ul className="mt-4 space-y-2">
+
+                                {/* Title - Folder */}
+                                <h2 className="text-xl md:text-2xl font-bold text-purple-600 text-center flex-1">
+                                    {openFolder.name}
+                                </h2>
+                                <div className="w-10"></div>
+                            </div>
+
+                            {/* Main thing */}
+                            <div className="flex flex-1 overflow-hidden">
+                                {/* sidebar thingy with buttons */}
+                                <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
                                     {openFolder.files.map((file, i) => (
-                                        <li
+                                        <button
                                             key={i}
-                                            className="p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer"
+                                            onClick={() => setOpenFile(file)}
+                                            className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
                                             {file}
-                                        </li>
+                                        </button>
                                     ))}
-                                </ul>
-                            </div>)}
-                        </div>
-
-
-
-
-                        {/* Top nav bar */}
-                        {/* <div className="bg-slate-500/30 shadow-sm h-[50px] p-3 flex items-center justify-center">
-                            <a className="text-white font-bold">Its Goal Setting Time User!</a>
-                        </div> */}
-
-                        {/* Folders */}
-                        {/* <div className="flex flex-col items-end gap-2 ml-[750px] mt-[10px] mr-[10px] w-[100px] h-[318px] rounded-lg bg-rose-300 ">
-                            {folders.map((folder, index) => (
-                                <div
-                                    key={index}
-                                    className="w-16 h-16 flex flex-col items-center m-4 cursor-pointer"
-                                >
-                                    <button onClick={() => setOpenFolder(folder)}>
-                                        {console.log("folder: ", folder)}
-                                        <img
-                                            src={FolderImage}
-                                            alt="Folder"
-                                            className="w-12 h-12 flex justify-center"
-                                        />
+                                    <button className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white">
+                                        + Add New File
                                     </button>
-                                    <span className="text-white text-sm mt-1">{folder.name}</span>
                                 </div>
-                            ))}
-                        </div> */}
 
-                        {/* Files of a folder */}
+                                {/* actual file content + typing area */}
+                                <div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
+                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
+                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
+                                    <textarea
+                                        placeholder="Type here"
+                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
+                                    />
+                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
+                                    <textarea
+                                        placeholder="Type here"
+                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                                    />
+                                    <div className="flex justify-end mt-4">
+                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    {/*<div className="w-16 h-10 bg-gray-700 mx-auto rounded-b-full"></div>*/}
-                    {/* <div className="w-56 h-[70px] bg-gray-700 mx-auto"></div> */}
-                </div >
+                )}
             </div >
-
         </>
     )
 }
