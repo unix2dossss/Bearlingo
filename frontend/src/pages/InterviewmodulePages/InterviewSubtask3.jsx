@@ -251,13 +251,18 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
         </div>
 
         {/* Buttons */}
-        <div className="lfex justify-between p-4">
+        <div className="flex justify-between p-4">
           <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={handleClear}
-              className="inline-flex items-center justify-center h-12 md:h-14 px-8 md:px-10 
-              rounded-full bg-white border-2"
+              className="inline-flex items-center justify-center
+              h-12 md:h-14 px-8 md:px-10 rounded-full
+              bg-white border-2 border-[#43a047]
+              text-[#43a047] font-extrabold
+              hover:bg-[#43a047]/5
+              focus:outline-none focus:ring-2 focus:ring-[#43a047]
+              min-w-[200px]"
               style={{ borderColor: ACCENT, color: ACCENT, fontWeight: 800, minWidth: 200 }}
             >
               Clear
