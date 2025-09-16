@@ -26,8 +26,12 @@ const Journal = () => {
             timebound: "",
         },
     });
+    const [newReflection, setNewReflection] = useState({
+        fileName: "",
+        text: ""
+    })
     const [folders, setFolders] = useState([
-        { name: "Reflections", image: PinkFolder, files: [{ fileName: "First Networking event!", text: "Blah" }, { fileName: "25/03/2025", text: "" }] },
+        { name: "Reflections", image: PinkFolder, files: [{ fileName: "First Networking event!", text: "Was really nervous but found it incredibly helpful to connect with employers!" }] },
         {
             name: "Goals", image: YellowFolder, files: [{
                 fileName: "Refining goals: Apply to Microsoft",
@@ -42,7 +46,6 @@ const Journal = () => {
         },
         { name: "Notes", image: BlueFolder, files: ["Jobs to apply to", "{date}"] },
     ]);
-
 
 
 
@@ -95,7 +98,10 @@ const Journal = () => {
                                 {/* dots */}
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => setOpenFolder(null)}
+                                        onClick={() => {
+                                            setOpenFolder(null),
+                                                setOpenFile(null)
+                                        }}
                                         className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
                                         aria-label="Close"
                                     >
@@ -132,8 +138,8 @@ const Journal = () => {
                                         + Add New File
                                     </button>
 
-                                    {/* Creating a new file and adding it to the relevant folder */}
-                                    {showAddFileModal && (
+                                    {/* Creating a new file and adding it to the goals folder */}
+                                    {showAddFileModal && openFolder.name == "Goals" && (
                                         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
                                             <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
                                                 <h2 className="text-lg font-bold mb-4 text-purple-600">
@@ -191,8 +197,61 @@ const Journal = () => {
                                         </div>
                                     )}
 
-                                    {/* Second modal */}
-                                    {showSmartFormModal && (
+                                    {/* Creating a new file and adding it to the reflections folder */}
+                                    {showAddFileModal && openFolder.name == "Reflections" && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                                            <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
+                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
+                                                    Add A New Entry To {openFolder.name}
+                                                </h2>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter name of Reflection"
+                                                    value={newFileName}
+                                                    onChange={(e) => setNewFileName(e.target.value)}
+                                                    className="input input-bordered w-full mb-4"
+                                                />
+
+                                                <div className="flex justify-end gap-3">
+                                                    <button
+                                                        className="btn btn-ghost"
+                                                        onClick={() => {
+                                                            setNewFileName("");
+                                                            setShowAddFileModal(false);
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => {
+                                                            if (newFileName.trim()) {
+                                                                // Initialize the new goal
+                                                                setNewReflection({
+                                                                    fileName: newFileName,
+                                                                    text: ""
+                                                                });
+
+                                                                setShowAddFileModal(false);
+                                                                setShowSmartFormModal(true);
+                                                                setNewFileName("");
+                                                            }
+
+
+                                                        }}
+                                                    >
+                                                        Next
+                                                    </button>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Filling out SMART goals in modal for Goals folder */}
+                                    {showSmartFormModal && openFolder.name == "Goals" && (
                                         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
                                             <div className="bg-white w-[600px] p-6 rounded-xl shadow-lg">
                                                 <h2 className="text-lg font-bold mb-4 text-purple-600">
@@ -258,9 +317,80 @@ const Journal = () => {
                                         </div>
                                     )}
 
+                                    {/* Filling out reflection text in modal for Reflections folder */}
+                                    {showSmartFormModal && openFolder.name == "Reflections" && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                                            <div className="bg-white w-[600px] p-6 rounded-xl shadow-lg">
+                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
+                                                    Fill out reflection for {newReflection.fileName}
+                                                </h2>
+
+                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+
+                                                <h4 className="text-black text-sm font-extralight italic">
+                                                    Example prompts: How are you feeling about your career this week? Are you happy with the direction you’re heading in? What challenges are you facing right now? How will you overcome this challenge? How clear are you about your next steps?
+                                                </h4>
+                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+
+                                                <div className="mb-3">
+
+                                                    <label className="block font-semibold text-purple-700 capitalize">Reflection</label>
+                                                    <input
+                                                        type="text"
+                                                        className="input input-bordered w-full"
+                                                        placeholder={""}
+                                                        value={newReflection.text}
+                                                        onChange={(e) =>
+                                                            setNewReflection((prev) => ({
+                                                                ...prev,
+                                                                text: e.target.value
+                                                            }))
+                                                        }
+                                                    />
+                                                </div>
+
+
+                                                <div className="flex justify-end gap-3 mt-4">
+                                                    <button
+                                                        className="btn btn-ghost"
+                                                        onClick={() => setShowSmartFormModal(false)}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => {
+                                                            // Add new goal to Goals folder
+                                                            setFolders((currentFolders) =>
+                                                                currentFolders.map((folder) =>
+                                                                    folder.name === "Reflections"
+                                                                        ? { ...folder, files: [...folder.files, newReflection] }
+                                                                        : folder
+                                                                )
+                                                            );
+
+                                                            // Also update the openFolder object if it's currently open
+                                                            setOpenFolder((prev) =>
+                                                                prev.name === "Reflections"
+                                                                    ? { ...prev, files: [...prev.files, newReflection] }
+                                                                    : prev
+                                                            );
+
+                                                            setShowSmartFormModal(false);
+                                                            setOpenFile(newReflection); // Optionally open the newly created goal
+                                                        }}
+                                                    >
+                                                        Save Reflection
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+
                                 </div>
 
-                                {/* actual file content + typing area */}
+                                {/* actual file content in Goals folder + typing area */}
                                 {openFolder.name == "Goals" && (
 
                                     < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
@@ -343,26 +473,97 @@ const Journal = () => {
                                             </ul>
                                         )}
                                     </div>
+                                )}
 
 
-                                    /*<div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
-                                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
-                                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
-                                                    <textarea
-                                                        placeholder="Type here"
-                                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
-                                                    />
-                                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
-                                                    <textarea
-                                                        placeholder="Type here"
-                                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
-                                                    />
-                                                    <div className="flex justify-end mt-4">
-                                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
-                                                            Submit
-                                                        </button>
+                                {/* actual file content of Reflections folder + typing area */}
+                                {openFolder.name == "Reflections" && (
+
+                                    < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+                                        {/* Check if a file is selected */}
+                                        {openFile ? (
+                                            // Show selected file content
+                                            <div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
+                                                <div className="flex justify-center">
+                                                    <div className="flex items-between">
+                                                        <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
+                                                            {typeof openFile === "object" ? openFile.fileName : openFile}
+                                                        </h1>
+
                                                     </div>
-                                                </div>*/)}
+                                                </div>
+
+                                                {/* Displaying the SMART Goals if they exist */}
+
+                                                {/* If SMART goals exist */}
+                                                {typeof openFile === "object" && openFile.smart ? (
+                                                    <div className="space-y-3 mt-8">
+                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
+                                                            <h4 className="font-semibold text-purple-700">Specific</h4>
+                                                            <p className="text-gray-700">{openFile.text}</p>
+                                                        </div>
+
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-purple-700">
+                                                        {typeof openFile === "object" ? openFile.text || "No content available." : "No file selected."}
+                                                    </p>
+                                                )}
+                                                <div className=" mt-auto flex justify-center items-center p-2">
+
+                                                    <button
+                                                        className="mt-4 btn btn-ghost w-40 border border-purple-500"
+                                                        onClick={() => { setOpenFile(null); setOpenFile(null); }}
+                                                    >
+                                                        Back to Reflections Overview
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            // Show default overview of reflections
+                                            <ul className="space-y-3">
+                                                {openFolder.files.map((file, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
+
+                                                    >
+
+                                                        <span className="text-purple-800 font-medium">
+                                                            {typeof file === "object" ? file.fileName : file}
+                                                            <p className="text-purple-500 font-light text-sm italic">{file.text}</p>
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
+
+
+
+
+
+
+
+                                {/*<div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
+                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
+                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
+                                    <textarea
+                                        placeholder="Type here"
+                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
+                                    />
+                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
+                                    <textarea
+                                        placeholder="Type here"
+                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                                    />
+                                    <div className="flex justify-end mt-4">
+                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+                                            Submit
+                                        </button>
+                                    </div>
+                            </div>*/}
                             </div>
                         </div>
                     </div>
