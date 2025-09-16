@@ -18,18 +18,18 @@ const InterviewModule = () => {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   useEffect(() => {
-  const fetchUserData = async () => {
-    if (!user) {
-      await useUserStore.getState().fetchUser();
-    }
+    const fetchUserData = async () => {
+      if (!user) {
+        await useUserStore.getState().fetchUser();
+      }
 
-    const currentUser = useUserStore.getState().user;
-    if (!currentUser) {
-      navigate("/login"); // redirect if still not logged in
-    }
-  };
-  fetchUserData();
-}, [navigate, user]);
+      const currentUser = useUserStore.getState().user;
+      if (!currentUser) {
+        navigate("/login"); // redirect if still not logged in
+      }
+    };
+    fetchUserData();
+  }, [navigate, user]);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
@@ -94,18 +94,22 @@ const InterviewModule = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Top Navbar */}
-      <TopNavbar />
-
+    <div className="relative min-h-screen flex flex-col">
       {/* Background */}
-      <div className="flex-1 relative bg-cover bg-center">
-        <div className="absolute inset-0 bg-white/70" />
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url("src/assets/Interview-Floor1.svg")`
+        }}
+      />
+      {/* Top Navbar */}
+      <div className="relative z-10">
+        <TopNavbar />
+      </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row h-full">
+        <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
           {/* Main Workspace */}
-          <main className="flex-1 flex flex-col justify-center items-center p-6 space-y-6">
-            <div className="flex space-x-6">
+            <div className="flex space-x-48 mb-28">
               <button
                 className="bg-[#43a047] hover:bg-[#5f9c56] text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                 onClick={() => handleSubtaskClick("subtask1")}
@@ -125,15 +129,14 @@ const InterviewModule = () => {
                 Task 3
               </button>
             </div>
-          </main>
+          
         </div>
-      </div>
+      
 
       {/* Modal */}
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#79B66F]">
-            
             <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>
         </div>
