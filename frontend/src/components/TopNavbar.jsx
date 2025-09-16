@@ -51,7 +51,7 @@ const TopNavbar = () => {
   };
 
   return (
-    <nav className="navbar bg-blue-100 px-4 py-2 flex justify-between items-center bg-transparent">
+    <nav className="navbar bg-transparent px-4 py-2 shadow-sm flex justify-between items-center">
       {/* left: brand */}
       <img src={Logo} alt="Logo" className="h-13 w-auto" />
 
