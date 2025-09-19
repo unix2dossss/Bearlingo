@@ -22,6 +22,16 @@ const journalEntrySchema = new mongoose.Schema(
       ],
       default: []
     },
+    reflections: {
+      type: [
+        { text: { type: String, required: true } }
+      ]
+    },
+    notes: {
+      type: [
+        { text: { type: String, required: true } }
+      ]
+    },
     month: {
       type: Number,
       default: () => new Date().getMonth() + 1 // 1–12
