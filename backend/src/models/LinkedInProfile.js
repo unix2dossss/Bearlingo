@@ -8,15 +8,16 @@ const LinkedInProfileSchema = new mongoose.Schema(
             ref: "User",
             required: true
         },
-        name: { type: String },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
         profressionalHeadline: { type: String },
         currentRole: { type: String },
         keySkills: {
-            keySkill1: { type: String },
+            keySkill1: { type: String, required: true },
             keySkill2: { type: String },
             keySkill3: { type: String },
         },
-        objective: { type: String }
+        objective: { type: String, required: true }
 
     },
     {
