@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import api from "../lib/axios";
 import TopNavbar from "../components/TopNavbar";
@@ -9,10 +9,21 @@ import silverMedal from "../assets/silver.png";
 import bronzeMedal from "../assets/bronze.png";
 import title from "../assets/leaderboard-title-doodle.svg";
 import LeaderboardCard from "../components/LeaderboardCard.jsx";
+import { gsap } from "gsap";
 
 const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [setLoading] = useState(true);
+
+  const bearRef = useRef(null);
+
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: -50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "bounce.out" }
+    );
+  }, []);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -32,6 +43,20 @@ const Leaderboard = () => {
   return (
     <div className="bg-blue-200 min-h-screen">
       <TopNavbar />
+
+
+      {/* <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+        <iframe
+          src="https://www.onlinegames.io/cat-simulator/embed"
+          className="absolute top-0 left-0 w-[100%] h-[100%]"
+          frameBorder="0"
+          allowFullScreen
+          title="An Average Day at the Cat Cafe"
+        ></iframe>
+      </div> */}  <div ref={bearRef} className="w-32 h-32">
+        🐻
+      </div>
+
 
       <div className="flex justify-center">
         <img src={title} alt="Leaderboard" className="w-2/5 h-auto" />
