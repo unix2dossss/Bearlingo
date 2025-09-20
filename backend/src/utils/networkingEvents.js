@@ -40,8 +40,7 @@ export const predefinedNetworkingEvents = [
         costType: "Free",
         description: " Talk 1: Software Engineering is a Team Sport by Jim Buchan. The talk will explore the following questions. Why is most Software Engineering mainly done in teams? Is it so hard? How should I act and behave to be a useful team member? What conditions will grow and maintain a healthy team?. Talk 2: How We Built Canva's MCP Server (Yes, You Can Build One Too!) by Anran Niu & William Guo. MCP (Model Context Protocol) is your exciting gateway to supercharging your AI workflows and unlocking incredible new possibilities. Join us for a behind-the-scenes look at how Canva teams build and use MCP servers to 10x productivity. We will demo our MCP server, share real workflow transformations, and most importantly - point you towards how to build your own MCP server from scratch. Perfect for junior developers ready to add more AI superpowers to their toolkit.",
         time: "6:00PM - 7:30PM"
-    }, 
-    const events = [
+    },
     {
         name: "Auckland AI & Machine Learning Meetup",
         type: "Meetup",
@@ -92,5 +91,4 @@ export const predefinedNetworkingEvents = [
         description: "Hands-on hack night where junior developers can build small AI projects, collaborate with peers, and receive mentorship from industry professionals. Bring your laptop and ideas!",
         time: "6:00PM - 9:00PM"
     }
-
 ];
