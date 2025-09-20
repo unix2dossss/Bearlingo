@@ -96,9 +96,10 @@ export const updateEventsToAttend = async (req, res) => {
 
         const attendingEventIds = req.body.attendingEventIds;
         const userEvents = await events.findOne({ user: userId });
+
         console.log("attendingEventIds: ", attendingEventIds);
         if (!userEvents) {
-            return res.status(400).json({ message: "Your events are not found" });
+            return createEventsToAttend(req, res);
         }
 
         attendingEventIds.forEach(updateEvent => {
@@ -127,5 +128,3 @@ export const updateEventsToAttend = async (req, res) => {
     }
 };
 
-
-// export const doesUserHaveEvents // Check if user has an events saved indatabse
