@@ -24,7 +24,6 @@ export const addLinkedInProfile = async (req, res) => {
     catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
-
 };
 
 
@@ -32,7 +31,7 @@ export const updateLinkedInProfile = async (req, res) => {
     try {
         const userId = req.user._id;
         const { firstName, lastName, professionalHeadline, currentRole, keySkills, objective } = req.body;
-        const linkedInProfile = await linkedinprofile.findOne({ user: userID });
+        const linkedInProfile = await linkedinprofile.findOne({ user: userId });
 
         if (!linkedInProfile) {
             return res.status(404).json({ message: "LinkedIn Profile not found" });
@@ -42,8 +41,20 @@ export const updateLinkedInProfile = async (req, res) => {
         linkedInProfile.lastName = lastName ?? linkedInProfile.lastName;
         linkedInProfile.professionalHeadline = professionalHeadline ?? linkedInProfile.professionalHeadline;
         linkedInProfile.currentRole = currentRole ?? linkedInProfile.currentRole;
-        linkedInProfile.keySkills = keySkills ?? linkedInProfile.keySkills;
         linkedInProfile.objective = objective ?? linkedInProfile.objective;
+
+        const skillKeys = Object.keys(req.body.keySkills); // e.g., ["keySkill2", "keySkill5"] from the req.body in JSON format
+        console.log("skillKeys: ", skillKeys);
+        for (let i = 0; i < skillKeys.length; i++) {
+            const skill = skillKeys[i];
+            console.log("skill: ", skill)
+            console.log("req.body.keySkills[skill]", req.body.keySkills[skill]);
+
+            // Only update if the field exists in schema so user does not send any string e.g keySkill9 which is invalid
+            if (linkedInProfile.keySkills.hasOwnProperty(skill)) {
+                linkedInProfile.keySkills[skill] = req.body.keySkills[skill] ?? linkedInProfile.keySkills[skill];
+            }
+        }
 
         await linkedInProfile.save();
         return res.status(201).json({ message: "Linked In Profile Updated Succesfully!" });
