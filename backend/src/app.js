@@ -6,6 +6,7 @@ import usersRoutes from "./routes/usersRoutes.js";
 import modulesRoutes from "./routes/modulesRoutes.js";
 import cvRoutes from "./routes/cvRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
+import networkingRoutes from "./routes/networkingRoutes.js";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -32,6 +33,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/users/me/cv", cvRoutes);
 app.use("/api/users/me/interview", interviewRoutes);
 app.use("/api/modules", modulesRoutes);
+app.use("/api/users/me/networking", networkingRoutes);
 
 // Connect to MongoDB and start the server
 console.log("Connecting to MongoDB: ", process.env.MONGO_URI);

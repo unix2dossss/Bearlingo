@@ -15,6 +15,7 @@ const authenticate = async (req, res, next) => {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET);
                 //Fetch the user by id and attach to req.user but exclude the password
                 req.user = await User.findById(decoded.userId).select("-password");
+                console.log("Toke  sucessfuly created!");
                 next();
             } catch (error) {
                 res.status(401);

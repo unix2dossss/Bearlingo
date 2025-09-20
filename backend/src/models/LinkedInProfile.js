@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import User from './User';
+import User from './User.js';
 
 const LinkedInProfileSchema = new mongoose.Schema(
     {
@@ -16,6 +16,11 @@ const LinkedInProfileSchema = new mongoose.Schema(
             keySkill1: { type: String, required: true },
             keySkill2: { type: String },
             keySkill3: { type: String },
+            keySkill4: { type: String },
+            keySkill5: { type: String },
+            keySkill6: { type: String },
+            keySkill7: { type: String },
+            keySkill8: { type: String },
         },
         objective: { type: String, required: true }
 
