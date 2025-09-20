@@ -1,9 +1,13 @@
 import linkedinprofile from "../models/LinkedInProfile.js";
 import events from "../models/AttendedEvent.js";
-import User from "../models/User.js";
+import networkingReflection from "../models/networkingReflection.js";
 
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
+    // Check if id is valid
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
     try {
         console.log("Incoming request body:", req.body);
         console.log("Authenticated user:", req.user);
@@ -30,8 +34,11 @@ export const createLinkedInProfile = async (req, res) => {
 
 
 export const updateLinkedInProfile = async (req, res) => {
+    const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
     try {
-        const userId = req.user._id;
         const { firstName, lastName, professionalHeadline, currentRole, keySkills, objective } = req.body;
         const linkedInProfile = await linkedinprofile.findOne({ user: userId });
 
@@ -45,7 +52,7 @@ export const updateLinkedInProfile = async (req, res) => {
         linkedInProfile.currentRole = currentRole ?? linkedInProfile.currentRole;
         linkedInProfile.objective = objective ?? linkedInProfile.objective;
 
-        const skillKeys = Object.keys(req.body.keySkills); // e.g., ["keySkill2", "keySkill5"] from the req.body in JSON format
+        const skillKeys = Object.keys(keySkills); // e.g., ["keySkill2", "keySkill5"] from the req.body in JSON format
         console.log("skillKeys: ", skillKeys);
         for (let i = 0; i < skillKeys.length; i++) {
             const skill = skillKeys[i];
@@ -68,6 +75,9 @@ export const updateLinkedInProfile = async (req, res) => {
 
 export const createEventsToAttend = async (req, res) => {
     const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
     try {
         const { attendingEventIds } = req.body;
         if (!attendingEventIds || attendingEventIds.length === 0) {
@@ -83,7 +93,7 @@ export const createEventsToAttend = async (req, res) => {
             message: "Events saved succesfully!",
         });
 
-    } catch {
+    } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 
@@ -92,8 +102,10 @@ export const createEventsToAttend = async (req, res) => {
 
 export const updateEventsToAttend = async (req, res) => {
     const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
     try {
-
         const attendingEventIds = req.body.attendingEventIds;
         const userEvents = await events.findOne({ user: userId });
 
@@ -116,13 +128,30 @@ export const updateEventsToAttend = async (req, res) => {
                 userEvents.attendingEventIds.push(updateEvent);
             }
         });
-
         await userEvents.save();
-
         return res.status(201).json({ message: "Your events are updated!" });
 
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
 
+export const createReflection = async (req, res) => {
+    const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+    try {
+        const { responses, event } = req.body; // Javascript does not destructure nested properties using dot notation
 
+        const newNetworkingReflection = new networkingReflection({
+            user: userId,
+            responses,
+            event
+        });
+
+        await newNetworkingReflection.save();
+        return res.status(201).json({ message: "Reflection saved!" });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
