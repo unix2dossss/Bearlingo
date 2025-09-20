@@ -1,6 +1,7 @@
 import linkedinprofile from "../models/LinkedInProfile.js";
 import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";
+import definedQuestions from "../utils/networkingReflectionQs.js";
 
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
@@ -143,6 +144,21 @@ export const createReflection = async (req, res) => {
     }
     try {
         const { responses, event } = req.body; // Javascript does not destructure nested properties using dot notation
+
+        if (!responses || responses.length === 0) {
+            return res.status(400).json({ message: "No responses provided" });
+        }
+
+
+        // Check each response's question then the answer is valid
+        for (const response of responses) {
+            if (!definedQuestions.includes(response.question)) {
+                return res.status(400).json({ message: "Invalid question submitted" });
+            }
+            if (response.answer < 1 || response.answer > 5) {
+                return res.status(400).json({ message: "Answer must be between 1 and 5" });
+            }
+        }
 
         const newNetworkingReflection = new networkingReflection({
             user: userId,
