@@ -1,7 +1,8 @@
 import linkedinprofile from "../models/LinkedInProfile.js";
 import events from "../models/AttendedEvent.js";
+import User from "../models/User.js";
 
-export const addLinkedInProfile = async (req, res) => {
+export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
     try {
         console.log("Incoming request body:", req.body);
@@ -87,3 +88,44 @@ export const createEventsToAttend = async (req, res) => {
     }
 
 };
+
+
+export const updateEventsToAttend = async (req, res) => {
+    const userId = req.user._id;
+    try {
+
+        const attendingEventIds = req.body.attendingEventIds;
+        const userEvents = await events.findOne({ user: userId });
+        console.log("attendingEventIds: ", attendingEventIds);
+        if (!userEvents) {
+            return res.status(400).json({ message: "Your events are not found" });
+        }
+
+        attendingEventIds.forEach(updateEvent => {
+            console.log("updateEvent: ", updateEvent);
+            const idx = userEvents.attendingEventIds.findIndex(
+                e => e.eventId === updateEvent.eventId
+            ); // Checking if an event exists in the database for the user (hence idx == -1 would mean that it is not in the user's events saved in the database)
+
+            if (idx !== -1) {
+                // Update existing event status
+                userEvents.attendingEventIds[idx].status = updateEvent.status;
+            } else {
+                // Or push new event if not in the list yet
+                userEvents.attendingEventIds.push(updateEvent);
+            }
+        });
+
+        await userEvents.save();
+
+        return res.status(201).json({ message: "Your events are updated!" });
+
+
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
+// export const doesUserHaveEvents // Check if user has an events saved indatabse
