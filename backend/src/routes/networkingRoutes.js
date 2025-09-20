@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post("/linkedin-profile", authenticate, networkingController.addLinkedInProfile);
 router.put("/linkedin-profile", authenticate, networkingController.updateLinkedInProfile);
+router.post("/events", authenticate, networkingController.createEventsToAttend);
 
 export default router;

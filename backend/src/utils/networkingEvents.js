@@ -2,6 +2,7 @@
 export const predefinedNetworkingEvents = [
 
     {
+        id: 1,
         name: "Summer of Tech 2025 Info Session",
         type: "Webinar",
         date: "2025-09-10",
@@ -12,6 +13,7 @@ export const predefinedNetworkingEvents = [
         time: "12:00PM - 1:00PM"
     },
     {
+        id: 2,
         name: "SIRIS APPS AI Innovation Meetup",
         type: "Seminar",
         date: "2025-09-27",
@@ -22,6 +24,7 @@ export const predefinedNetworkingEvents = [
         time: "10:00AM - 11:30AM"
     },
     {
+        id: 3,
         name: "The Science of Software Engineering",
         type: "Seminar",
         date: "2025-10-2",
@@ -32,6 +35,7 @@ export const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
+        id: 4,
         name: "JuniorDev Auckland Meet",
         type: "Meetup",
         date: "2025-10-1",
@@ -42,6 +46,7 @@ export const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
+        id: 5,
         name: "Auckland AI & Machine Learning Meetup",
         type: "Meetup",
         date: "2025-10-05",
@@ -52,6 +57,7 @@ export const predefinedNetworkingEvents = [
         time: "5:30PM - 7:30PM"
     },
     {
+        id: 6,
         name: "Women in Tech: AI & Innovation",
         type: "Workshop",
         date: "2025-10-10",
@@ -62,6 +68,7 @@ export const predefinedNetworkingEvents = [
         time: "6:00PM - 8:00PM"
     },
     {
+        id: 7,
         name: "Auckland Tech Innovators Meetup",
         type: "Meetup",
         date: "2025-10-15",
@@ -72,6 +79,7 @@ export const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
+        id: 8,
         name: "AI & Data Science Evening",
         type: "Seminar",
         date: "2025-10-20",
@@ -82,6 +90,7 @@ export const predefinedNetworkingEvents = [
         time: "5:30PM - 7:00PM"
     },
     {
+        id: 9,
         name: "Junior Dev AI Hack Night",
         type: "Hackathon",
         date: "2025-10-25",

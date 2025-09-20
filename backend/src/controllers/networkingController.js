@@ -1,4 +1,5 @@
 import linkedinprofile from "../models/LinkedInProfile.js";
+import events from "../models/AttendedEvent.js";
 
 export const addLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
@@ -62,4 +63,27 @@ export const updateLinkedInProfile = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
+};
+
+export const createEventsToAttend = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const { attendingEventIds } = req.body;
+        if (!attendingEventIds || attendingEventIds.length === 0) {
+            return res.status(400).json({ message: "You must select at least one event!" });
+        }
+        const attendingEvents = new events({
+            user: userId,
+            attendingEventIds
+        });
+
+        await attendingEvents.save();
+        return res.status(201).json({
+            message: "Events saved succesfully!",
+        });
+
+    } catch {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+
 };
