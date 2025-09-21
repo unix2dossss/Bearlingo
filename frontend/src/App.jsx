@@ -10,8 +10,9 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Journal from './pages/Journal';
 import Test1 from './pages/Journal-redone'
-import { Routes, Route } from 'react-router-dom';
 import InterviewModule from './pages/InterviewmodulePages/InterviewModule';
+import NetworkingModule from './pages/NetworkingModulePages/NetworkingModule';
+import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Journal" element={<Journal />} />
         <Route path="/test" element={<Test1 />} />
+        <Routre path="/NetworkingModule" element={<Networking />} />
       </Routes>
     </div>
   )
