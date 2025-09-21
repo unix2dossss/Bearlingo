@@ -3,8 +3,9 @@ import linkedinprofile from "../models/LinkedInProfile.js";
 import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";
 import definedQuestions from "../utils/networkingReflectionQs.js";
+import linkedinpost from "../models/LinkedInPost.js";
 
-// NEED TO ADD HELPER FOR UPDATING THE STREAK!!!!
+// NEED TO ADD HELPER FOR UPDATING THE STREAK!!!! Weeks 9 - 10 add validation for fields from body e.g. if event exists for the user in database when created a post to the related event!! Also when creating an new instance of a schema (POST request) e.g. linkedinpost check if the user already has a post of the same user id and event then it will jsut need to be updated (PUT request)
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
     // Check if id is valid
@@ -112,13 +113,11 @@ export const updateEventsToAttend = async (req, res) => {
         const attendingEventIds = req.body.attendingEventIds;
         const userEvents = await events.findOne({ user: userId });
 
-        console.log("attendingEventIds: ", attendingEventIds);
         if (!userEvents) {
             return createEventsToAttend(req, res);
         }
 
         attendingEventIds.forEach(updateEvent => {
-            console.log("updateEvent: ", updateEvent);
             const idx = userEvents.attendingEventIds.findIndex(
                 e => e.eventId === updateEvent.eventId
             ); // Checking if an event exists in the database for the user (hence idx == -1 would mean that it is not in the user's events saved in the database)
@@ -147,7 +146,7 @@ export const getEvents = async (req, res) => {
     try {
 
         const userEvents = await events.find({ user: userId });
-        return res.status(200).json({ message: "Events retrieved" })
+        return res.status(200).json({ message: "Events retrieved", events: userEvents });
     } catch (error) {
         return res.status(200).json({ message: "Server error", error: error.message })
     }
@@ -189,4 +188,52 @@ export const createReflection = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+export const createLinkedInPost = async (req, res) => {
+    const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+    try {
+        const { event, whyAttend, whatLearned, howApply, hashtags } = req.body;
+        const linkedInPost = new linkedinpost({
+            user: userId,
+            event,
+            whyAttend,
+            whatLearned,
+            howApply,
+            hashtags
+        });
+        await linkedInPost.save();
+        return res.status(201).json({ message: "LinkedIn post created succesfully!" });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
+export const updateLinkedInPost = async (req, res) => {
+    const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    } try {
+        const { event, whyAttend, whatLearned, howApply, hashtags } = req.body;
+        const linkedInPost = await linkedinpost.findOne({ user: userId }, { event: event });
+        if (!linkedInPost) {
+            return createLinkedInPost(req, res);
+        }
+        linkedInPost.whyAttend = whyAttend ?? linkedInPost.whyAttend;
+        linkedInPost.whatLearned = whatLearned ?? linkedInPost.whatLearned;
+        linkedInPost.howApply = howApply ?? linkedInPost.howApply;
+        linkedInPost.hashtags = hashtags ?? linkedInPost.hashtags;
+
+        await linkedInPost.save();
+        return res.status(201).json({ message: "LinkedIn post created succesfully!" });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+
+}
 
