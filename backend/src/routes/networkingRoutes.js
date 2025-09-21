@@ -18,5 +18,5 @@ router.post("/reflection", authenticate, networkingController.createReflection);
 // ---------- LinkedIn Post Routes ----------
 router.post("/linkedin-post", authenticate, networkingController.createLinkedInPost);
 router.put("/linkedin-post", authenticate, networkingController.updateLinkedInPost);
-// http://localhost:8080/api/users/me/networking/events
+
 export default router;
