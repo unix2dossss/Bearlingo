@@ -1,5 +1,5 @@
 
-export const predefinedNetworkingEvents = [
+const predefinedNetworkingEvents = [
 
     {
         id: 1,
@@ -101,3 +101,5 @@ export const predefinedNetworkingEvents = [
         time: "6:00PM - 9:00PM"
     }
 ];
+
+export default predefinedNetworkingEvents;

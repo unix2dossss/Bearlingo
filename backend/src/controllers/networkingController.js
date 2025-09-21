@@ -3,6 +3,7 @@ import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";
 import definedQuestions from "../utils/networkingReflectionQs.js";
 
+// NEED TO ADD HELPER FOR UPDATING THE STREAK!!!!
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
     // Check if id is valid
@@ -136,6 +137,21 @@ export const updateEventsToAttend = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+export const getEvents = async (req, res) => {
+    const userId = req.user._id;
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+    try {
+
+        const userEvents = await events.find({ user: userId });
+        return res.status(200).json({ message: "Events retrieved" })
+    } catch (error) {
+        return res.status(200).json({ message: "Server error", error: error.message })
+    }
+
+}
 
 export const createReflection = async (req, res) => {
     const userId = req.user._id;
