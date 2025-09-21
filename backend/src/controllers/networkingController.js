@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import linkedinprofile from "../models/LinkedInProfile.js";
 import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";

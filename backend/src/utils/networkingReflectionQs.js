@@ -5,4 +5,10 @@ const allowedQuestions = [
     "I have a clear next step to follow up with people I met"
 ];
 
+const linkedInPostQuestions = [
+    "Why did you attend?",
+    "What did you learn / experience?",
+    "How will you apply what you learnt?"
+]
+
 export default allowedQuestions;
