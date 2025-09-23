@@ -13,7 +13,7 @@ const ReflectionSchema = new mongoose.Schema(
             type: String,
             required: true,
             maxLength: 100,
-            default: "Untitled Entry"
+            default: "Untitled Reflection"
         },
         // Q1: What is this reflection about?
         about: { type: String, required: true },
