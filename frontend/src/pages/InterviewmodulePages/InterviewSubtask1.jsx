@@ -123,8 +123,8 @@ export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
   };
 
   // Progress Bar calculation
-const progressPercentRaw = subtaskAlreadyCompleted ? 100:((index + 1) / total) * 100;
-const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
+  const progressPercentRaw = subtaskAlreadyCompleted ? 100 : ((index + 1) / total) * 100;
+  const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
 
 
 
@@ -141,24 +141,24 @@ const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
       </button>
 
       {/* Progress bar */}
-<div className="w-full mt-8 mb-10">
-  <div className="flex justify-between text-sm mb-1">
-    <span className="font-semibold text-gray-700">
-      Progress {subtaskAlreadyCompleted ? total : index + 1} of {total}
-    </span>
-  </div>
+      <div className="w-full mt-8 mb-10">
+        <div className="flex justify-between text-sm mb-1">
+          <span className="font-semibold text-gray-700">
+            Progress {subtaskAlreadyCompleted ? total : index + 1} of {total}
+          </span>
+        </div>
 
-  <div className="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-    <div
-      className="absolute left-0 top-0 h-full bg-[#43a047] transition-[width] duration-300 ease-in-out"
-      style={{ width: `${progressPercent}%` }}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(progressPercent)}
-      role="progressbar"
-    />
-  </div>
-</div>
+        <div className="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="absolute left-0 top-0 h-full bg-[#43a047] transition-[width] duration-300 ease-in-out"
+            style={{ width: `${progressPercent}%` }}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progressPercent)}
+            role="progressbar"
+          />
+        </div>
+      </div>
 
 
       {/* Flashcard */}
@@ -214,7 +214,7 @@ const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
   min-w-[120px]
   ${subtaskAlreadyCompleted && index === total - 1 ? "opacity-60 cursor-not-allowed" : ""}`}
           onClick={handleNext}
-          disabled={subtaskAlreadyCompleted && index === total - 1} 
+          disabled={subtaskAlreadyCompleted && index === total - 1}
         >
           {index === total - 1 ? "Finish" : "Next"}
         </button>
