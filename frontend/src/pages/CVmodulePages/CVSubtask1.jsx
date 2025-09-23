@@ -9,7 +9,7 @@ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 import ProgressPills from "../../components/CVModuleComponent/Task1Progress";
 
-const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
+const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete}) => {
   const [step, setStep] = useState(0);
   const [personal, setPersonal] = useState({
     firstName: "",
@@ -212,6 +212,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       setDbAboutMe(aboutMe);
 
       setIsSubmitted(true); // allow closing/leaving
+      onTaskComplete?.();
       onClose(false, true); // hasChanges = false, force = true, bypass ConfirmLeave check
       // Get subtaskId by module name, level number and subtask sequence number
       let subtaskId;
@@ -227,6 +228,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
         const done = await completeTask(subtaskId);
         if (done?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
+          onTaskComplete?.();
         }
       } catch (err) {
         console.error("Failed to complete task", err);

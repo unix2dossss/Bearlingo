@@ -18,7 +18,7 @@ import ProgressPills from "../../components/CVModuleComponent/CVTask2/Task2Progr
  * Uses your existing SkillsView, ProjectsView, ExperiencesView.
  * Progress pills intentionally omitted (as requested).
  */
-export default function CVSubtask2({ setIsSubmitted, onClose }) {
+export default function CVSubtask2({ setIsSubmitted, onClose, onTaskComplete }) {
   // const { setUser } = useUserStore?.() ?? { setUser: () => {} };
 
   // ───────────────────────────────────────────
@@ -392,6 +392,7 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
     setDbExperiences(normalizeExperiences(experiences));
 
     setIsSubmitted(true); // allow closing/leaving
+    onTaskComplete?.();
     onClose(false, true); // hasChange = false, force = true, bypass ConfirmLeave check
 
     // Get subtaskId by module name, level number and subtask sequence number
@@ -409,6 +410,7 @@ export default function CVSubtask2({ setIsSubmitted, onClose }) {
       // Check if subtask is completed and display appropriate message
       if (res.data.message === "Well Done! You completed the subtask") {
         toast.success("Task 2 completed!");
+        onTaskComplete?.();
       }
     } catch (err) {
       console.error("Failed to complete task", err);
