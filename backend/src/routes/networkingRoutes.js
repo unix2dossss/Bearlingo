@@ -15,8 +15,8 @@ router.put("/events", authenticate, networkingController.updateEventsToAttend);
 router.get("/events", authenticate, networkingController.getEventsToAttend);
 
 // ---------- Reflection Routes ----------
-router.post("/reflection", authenticate, networkingController.createReflection);
-router.get("/reflection", authenticate, networkingController.createReflection);
+router.post("/reflections", authenticate, networkingController.createReflection);
+router.get("/reflections", authenticate, networkingController.getReflections);
 
 // ---------- LinkedIn Post Routes ----------
 router.post("/linkedin-post", authenticate, networkingController.createLinkedInPost);

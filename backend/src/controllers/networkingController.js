@@ -81,7 +81,7 @@ export const updateLinkedInProfile = async (req, res) => {
         }
 
         await linkedInProfile.save();
-        return res.status(201).json({ message: "Linked In Profile Updated Succesfully!" });
+        return res.status(201).json({ message: "Linked In profile updated succesfully!" });
 
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
@@ -116,7 +116,13 @@ export const createEventsToAttend = async (req, res) => {
 };
 
 export const getEventsToAttend = async (req, res) => {
-
+    const userId = req.user._id;
+    try {
+        const eventsToAttend = await events.find({ user: userId });
+        return res.status(200).json({ message: "Events found succesfully!", eventsToAttend: eventsToAttend });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
 };
 
 export const updateEventsToAttend = async (req, res) => {
@@ -153,20 +159,6 @@ export const updateEventsToAttend = async (req, res) => {
     }
 };
 
-export const getEvents = async (req, res) => {
-    const userId = req.user._id;
-    if (!mongoose.isValidObjectId(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-    }
-    try {
-
-        const userEvents = await events.find({ user: userId });
-        return res.status(200).json({ message: "Events retrieved", events: userEvents });
-    } catch (error) {
-        return res.status(200).json({ message: "Server error", error: error.message })
-    }
-
-}
 
 export const createReflection = async (req, res) => {
     const userId = req.user._id;
@@ -199,6 +191,16 @@ export const createReflection = async (req, res) => {
 
         await newNetworkingReflection.save();
         return res.status(201).json({ message: "Reflection saved!" });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const getReflections = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const reflections = await networkingReflection.find({ user: userId });
+        return res.status(200).json({ message: "Reflections found succesfully!", reflections: reflections });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
