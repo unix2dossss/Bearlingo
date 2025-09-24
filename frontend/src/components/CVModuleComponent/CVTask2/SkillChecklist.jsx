@@ -18,7 +18,8 @@ export default function SkillsView({
       <div className="mt-5 rounded-2xl border border-gray-300 p-6 md:p-7">
         <div className="flex items-center justify-between mb-3">
           <p className="text-gray-600 font-semibold">
-            Skills ({selectedSkills.length}/{maxSkills}) <label className="text-red-500">*</label>
+            Skills ({selectedSkills.length}/{maxSkills}){" "}
+            <span className="required-asterisk" aria-hidden="true">*</span>
           </p>
         </div>
 

@@ -12,6 +12,9 @@
 .main-container {
   overflow: hidden;
 }
+.required-asterisk {
+  color: #ef4444 !important; /* red-500 with !important */
+}
 
 .main-container,
 .main-container * {
