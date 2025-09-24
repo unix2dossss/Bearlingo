@@ -14,6 +14,9 @@ import Drawers from '../../assets/CVDrawers.svg';
 import DrawersLocked from '../../assets/CVDrawersB.svg';
 import Desk from '../../assets/CVDesk.svg';
 import DeskLocked from '../../assets/CVDeskB.svg';
+import Bookcase from '../../assets/CVBook.svg';
+import BookcaseLocked from '../../assets/CVBookB.svg';
+import Bear from '../../assets/Bear.svg';
 import { gsap } from "gsap";
 
 
@@ -91,15 +94,16 @@ const CVModule = () => {
 
     const drawersLockedRef = useRef(null);
     const drawersUnlockedRef = useRef(null);
+    const bookcaseLockedRef = useRef(null);
+    const bookcaseUnlockedRef = useRef(null);
 
     useEffect(() => {
       if (task2Complete) {
-        // Fade out locked drawers
+        // --- Animate Drawers ---
         gsap.to(drawersLockedRef.current, {
           opacity: 0,
           duration: 0.5,
           onComplete: () => {
-            // Bounce in unlocked drawers
             gsap.set(drawersUnlockedRef.current, {
               opacity: 0,
               scale: 0.5,
@@ -116,16 +120,39 @@ const CVModule = () => {
             });
           },
         });
-      } else {
-        // Fade in locked window
-        gsap.set(drawersUnlockedRef.current, { opacity: 0 });
-        gsap.to(drawersLockedRef.current, {
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out",
+
+        // --- Animate Bookcase ---
+        gsap.to(bookcaseLockedRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            gsap.set(bookcaseUnlockedRef.current, {
+              opacity: 0,
+              scale: 0.5,
+              rotation: 15,
+              y: 300,
+            });
+            gsap.to(bookcaseUnlockedRef.current, {
+              opacity: 1,
+              scale: 1,
+              rotation: 0,
+              y: 0,
+              duration: 1.5,
+              ease: "elastic.out(1, 0.5)",
+            });
+          },
         });
-      }
-    }, [task2Complete]);
+
+  } else {
+    // Reset to locked state (drawers + bookcase)
+    gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
+    gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
+      opacity: 1,
+      duration: 0.6,
+      ease: "power2.out",
+    });
+  }
+}, [task2Complete]);
 
     const deskLockedRef = useRef(null);
     const deskUnlockedRef = useRef(null);
@@ -164,6 +191,34 @@ const CVModule = () => {
         });
       }
     }, [task3Complete]);
+    
+    const bearRef = useRef(null);
+
+    useEffect(() => {
+      // Bear pop
+      gsap.fromTo(
+        bearRef.current,
+        { y: 200 },
+        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+      );
+
+      // Bubble pop-in
+      gsap.fromTo(
+        ".speech-bubble",
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+      );
+
+      // Gentle bear bob
+      gsap.to(bearRef.current, {
+        y: -15,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2,
+      });
+    }, []);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
@@ -248,18 +303,18 @@ const CVModule = () => {
       />
 
       {/* Subtask 3 Object: Desk */}
-      <div className="relative">
+      <div className="relative w-full flex justify-center">
         <img
           ref={deskLockedRef}
           src={DeskLocked}
           alt="Locked CV Desk"
-          className="absolute top-[200px] left-1/2 -translate-x-1/2 w-[33vw] max-w-[800px] h-auto"
+          className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
         />
         <img
           ref={deskUnlockedRef}
           src={Desk}
           alt="Unlocked CV Desk"
-          className="absolute top-[200px] left-1/2 -translate-x-1/2 w-[33vw] max-w-[800px] h-auto"
+          className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
         />
       </div>
 
@@ -269,39 +324,44 @@ const CVModule = () => {
           ref={drawersLockedRef}
           src={DrawersLocked}
           alt="Locked CV Drawers"
-          className="absolute top-[200px] right-0 w-[33vw] max-w-[800px] h-auto"
+          className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30"
         />
         <img
           ref={drawersUnlockedRef}
           src={Drawers}
           alt="Unlocked CV Drawers"
-          className="absolute top-[200px] right-0 w-[33vw] max-w-[800px] h-auto"
+          className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30"
+        />
+        <img
+          ref={bookcaseLockedRef}
+          src={BookcaseLocked}
+          alt="Locked CV Desk"
+          className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+        />
+        <img
+          ref={bookcaseUnlockedRef}
+          src={Bookcase}
+          alt="Locked CV Desk"
+          className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
         />
       </div>
-
+      
       {/* Subtask 1 Object: Windows */}
       <div className="relative">
         <img
           ref={windowLockedRef}
           src={WindowLocked}
           alt="Locked CV Window"
-          className="absolute left-1/2 -translate-x-1/2 w-[600px] z-20"
+          className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
         />
         <img
           ref={windowUnlockedRef}
           src={Window}
           alt="Unlocked CV Window"
-          className="absolute left-1/2 -translate-x-1/2 w-[600px] z-20"
+          className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
         />
       </div>
 
-
-        <div className="relative z-10 flex flex-col md:flex-row h-full bottom-0">
-          {/* Main Workspace */}
-          <main className="flex-1 flex flex-col justify-center items-center p-6 space-y-6 bottom-0">
-            
-          </main>
-        </div>
       </div>
       {/* Bottom Button Container */}
       <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
@@ -324,6 +384,26 @@ const CVModule = () => {
           >
             Task 3
           </button>
+
+          {/* Bear + Speech Bubble Container */}
+          <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start">
+            {/* Speech Bubble */}
+            <div className="relative bg-white text-black font-semibold px-4 py-2 rounded-2xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
+              Time to build our CV!
+              {/* Bubble Tail */}
+              <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md"></div>
+            </div>
+
+            {/* Bear Peeking */}
+            <img
+              ref={bearRef}
+              src={Bear}
+              alt="Bear peeking"
+              className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
+            />
+          </div>
+
+
         </div>
       </div>
 
