@@ -39,15 +39,19 @@ router.delete("/journals/:id", authenticate, usersController.deleteJournalEntry)
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
+
 // -- New Journal - Goals Routes --
 router.post("/goals", authenticate, usersController.createGoal);
 router.get("/goals", authenticate, usersController.getGoals);
+
 // -- New Journal - Reflections Routes --
 router.post("/reflections", authenticate, usersController.createReflection);
 router.get("/reflections", authenticate, usersController.getReflections);
+
 // -- New Journal - Notes Routes --
 router.post("/notes", authenticate, usersController.createNote);
 router.get("/notes", authenticate, usersController.getNotes);
+
 
 // ---------- Leaderboard Routes ----------
 router.get("/leaderboard", usersController.getLeaderboard); // For the time being I will get rud of authenticate middleware as not all of the components have been made yet
