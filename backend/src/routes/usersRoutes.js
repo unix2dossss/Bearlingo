@@ -7,39 +7,39 @@ import * as usersController from "../controllers/usersController.js";
 //middlewares
 import { authenticate } from "../middlewares/authMiddleware.js";
 import {
-  validateRegisterInputs,
-  validateLoginInputs,
-  validateProfileUpdateInputs,
-  handleValidationErrors
+    validateRegisterInputs,
+    validateLoginInputs,
+    validateProfileUpdateInputs,
+    handleValidationErrors
 } from "../middlewares/inputValidators.js";
 
 const router = express.Router();
 
 // ---------- Auth Routes ----------
 router.post(
-  "/register",
-  validateRegisterInputs,
-  handleValidationErrors,
-  usersController.registerUser
+    "/register",
+    validateRegisterInputs,
+    handleValidationErrors,
+    usersController.registerUser
 );
 router.post("/login", validateLoginInputs, handleValidationErrors, usersController.loginUser);
 router.post("/logout", usersController.logoutUser);
 router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` }),
-  usersController.googleCallback
+    "/auth/google/callback",
+    passport.authenticate("google", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` }),
+    usersController.googleCallback
 );
 router.get("/current-user", authenticate, usersController.getCurrentUser);
 
 // ---------- Profile Routes ----------
 router.get("/profile", authenticate, usersController.getUserProfile);
 router.put(
-  "/profile",
-  authenticate,
-  validateProfileUpdateInputs,
-  handleValidationErrors,
-  usersController.updateUserProfile
+    "/profile",
+    authenticate,
+    validateProfileUpdateInputs,
+    handleValidationErrors,
+    usersController.updateUserProfile
 );
 
 // ---------- User Management Routes ----------

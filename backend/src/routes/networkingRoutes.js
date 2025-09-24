@@ -21,6 +21,6 @@ router.get("/reflections", authenticate, networkingController.getReflections);
 // ---------- LinkedIn Post Routes ----------
 router.post("/linkedin-post", authenticate, networkingController.createLinkedInPost);
 router.put("/linkedin-post", authenticate, networkingController.updateLinkedInPost);
-router.get("/reflection", authenticate, networkingController.createReflection);
+router.get("/linkedin-post", authenticate, networkingController.getLinkedInPost);
 
 export default router;

@@ -7,6 +7,9 @@ import linkedinpost from "../models/LinkedInPost.js";
 import LinkedInProfile from "../models/LinkedInProfile.js";
 
 // NEED TO ADD HELPER FOR UPDATING THE STREAK!!!! Weeks 9 - 10 add validation for fields from body e.g. if event exists for the user in database when created a post to the related event!! Also when creating an new instance of a schema (POST request) e.g. linkedinpost check if the user already has a post of the same user id and event then it will jsut need to be updated (PUT request)
+
+// -------- LinkedIn profile handlers --------
+
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
     // Check if id is valid
@@ -46,7 +49,6 @@ export const getLinkedInProfile = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-
 
 export const updateLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
@@ -88,6 +90,8 @@ export const updateLinkedInProfile = async (req, res) => {
     }
 };
 
+
+// -------- Events to attend handlers --------
 
 export const createEventsToAttend = async (req, res) => {
     const userId = req.user._id;
@@ -160,6 +164,8 @@ export const updateEventsToAttend = async (req, res) => {
 };
 
 
+// -------- Networking reflections handlers --------
+
 export const createReflection = async (req, res) => {
     const userId = req.user._id;
     if (!mongoose.isValidObjectId(userId)) {
@@ -206,6 +212,9 @@ export const getReflections = async (req, res) => {
     }
 };
 
+
+// -------- LinkedIn post handlers --------
+
 export const createLinkedInPost = async (req, res) => {
     const userId = req.user._id;
     if (!mongoose.isValidObjectId(userId)) {
@@ -229,6 +238,15 @@ export const createLinkedInPost = async (req, res) => {
     }
 };
 
+export const getLinkedInPost = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const linkedInPost = await linkedinpost.findOne({ user: userId });
+        return res.status(200).json({ message: "LinkedIn post found succesfully!", linkedInPost: linkedInPost });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
 
 export const updateLinkedInPost = async (req, res) => {
     const userId = req.user._id;
