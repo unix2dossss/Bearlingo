@@ -9,10 +9,11 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 import { normalizeNames, formatDateAndMonth, updateUserStreak } from "../utils/helpers.js";
 import mongoose from "mongoose";
+import passport from "passport";
 
 // -------------------- Auth Controllers --------------------
 
-// Registering a new user
+// Registering a new user through the registration form
 export const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, username, email, password, linkedIn } = req.body;
@@ -58,7 +59,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Logging in a user
+// Logging in a user through the login form
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
@@ -89,16 +90,36 @@ export const loginUser = async (req, res) => {
 // Logging out a user
 export const logoutUser = (req, res) => {
   try {
-    res.cookie("jwt", "", {
-      httpOnly: true,
-      expires: new Date(0), // Set the cookie to expire immediately
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
-    return res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        expires: new Date(0), // Set the cookie to expire immediately
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
+      return res.status(200).json({ message: "Logged out successfully" });
+   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
+};
+
+// Google authentication
+
+export const googleCallback = (req, res) => {
+  try {
+    const token = generateToken(res, req.user._id);
+    // Successful authentication, redirect home page
+    res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}`);
+  } catch (error) {
+    console.error("Google authentication error:", error);
+    res.redirect(`${process.env.CLIENT_URL}/login?error=google_failed`);
+  }
+};
+
+export const getCurrentUser = (req, res) => {
+  res.json({
+    success: true,
+    user: req.user
+  });
 };
 
 // Getting a user's profile

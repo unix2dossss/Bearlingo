@@ -2,6 +2,7 @@ import React from 'react'
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AuthSuccess from './pages/AuthSuccess';
 import CvModule from './pages/CVmodulePages/CVModule';
 import FirstTimePg1 from './pages/FirstTimePages/FirstTimePg1';
 import FirstTimePg2 from './pages/FirstTimePages/FirstTimePg2';
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
         <Route path="/CvModule" element={<CvModule />} />
         <Route path="/InterviewModule" element={<InterviewModule />} />
         <Route path="/Welcome" element={<FirstTimePg1 />} />

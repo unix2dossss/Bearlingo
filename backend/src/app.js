@@ -1,6 +1,7 @@
 import express from "express";
-import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
+dotenv.config();
+import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
 import usersRoutes from "./routes/usersRoutes.js";
 import modulesRoutes from "./routes/modulesRoutes.js";
@@ -9,8 +10,12 @@ import interviewRoutes from "./routes/interviewRoutes.js";
 import networkingRoutes from "./routes/networkingRoutes.js";
 import cors from "cors";
 import morgan from "morgan";
+import passport from "passport";
 
-dotenv.config();
+// Passport configuration
+import "./config/passport.js";
+// import "./models/User.js";
+
 const app = express();
 
 // Middleware
@@ -24,6 +29,8 @@ app.use(cors({
 // Logging info with morgan middleware
 app.use(morgan("dev"));
 
+// Passport middleware
+app.use(passport.initialize());
 
 // Routes
 app.get('/test', (req, res) => {

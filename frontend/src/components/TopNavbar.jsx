@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useUserStore } from "../store/user";
 import { Flame, Star, User } from "lucide-react";
-import Logo from '../assets/Logo1.svg';
-
+import Logo from "../assets/Logo1.svg";
 import api from "../lib/axios";
 import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
@@ -53,7 +52,10 @@ const TopNavbar = () => {
   return (
     <nav className="navbar bg-transparent px-4 py-2 flex justify-between items-center">
       {/* left: brand */}
-      <img src={Logo} alt="Logo" className="h-13 w-auto" />
+      {/* <img src={Logo} alt="Logo" className="h-13 w-auto" /> */}
+      <Link to="/">
+        <img src={Logo} alt="Logo" className="h-13 w-auto cursor-pointer" />
+      </Link>
 
       {/* right: stats + profile */}
       <div className="flex-none flex items-center gap-3 mr-6">
@@ -93,12 +95,20 @@ const TopNavbar = () => {
             }`}
           >
             <li>
-              <Link to="/profile" className="w-full hover:bg-gray-200" onClick={() => setOpen(false)}>
+              <Link
+                to="/profile"
+                className="w-full hover:bg-gray-200"
+                onClick={() => setOpen(false)}
+              >
                 Profile
               </Link>
             </li>
             <li>
-              <button onClick={handleLogout} className="w-full text-red-500 hover:bg-gray-200" type="button">
+              <button
+                onClick={handleLogout}
+                className="w-full text-red-500 hover:bg-gray-200"
+                type="button"
+              >
                 Log out
               </button>
             </li>
