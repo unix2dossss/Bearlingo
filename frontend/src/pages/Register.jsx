@@ -282,16 +282,17 @@ const Register = () => {
                         </p>
                       )}
                     </div>
-                    <div className="card-actions justify-center mb-2 h-20">
-                      <button type="submit" className="btn btn-primary w-40 h-18" disable={loading}>
+                    <div className="card-actions justify-center mb-8">
+                      <button type="submit" className="btn btn-primary w-80 h-18" disable={loading}>
                         {loading ? "Registering ..." : "Register"}
                       </button>
                     </div>
 
+                    <div className="divider text-gray-500 text-sm w-80 mx-auto">Or</div>
+
                     {/* Google Login */}
                     <OAuth />
-
-                    <p className="text-center text-sm">
+                    <p className="text-center text-sm mb-8">
                       Already have an account?{" "}
                       <Link to="/login" className="text-primary">
                         Login here

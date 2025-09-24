@@ -11,7 +11,7 @@ const OAuth = () => {
     <div variant="outlined" className="card-actions justify-center mb-2 h-14">
       <button
         type="button"
-        className="btn bg-white border-1 border-gray-300 w-60 h-18"
+        className="btn bg-white border-1 border-gray-300 w-80 h-18"
         onClick={handleGoogleClick}
       >
         {/* <AiFillGoogleCircle className="w-6 h-6 mr-1" /> */}

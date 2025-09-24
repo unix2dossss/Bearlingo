@@ -100,11 +100,13 @@ const Login = () => {
                   />
                 </div>
 
-                <div className="card-actions justify-center mb-2 h-14">
-                  <button type="submit" className="btn btn-primary w-40 h-18" disabled={loading}>
+                <div className="card-actions justify-center mb-8">
+                  <button type="submit" className="btn btn-primary w-80 h-18" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </button>
                 </div>
+
+                <div className="divider text-gray-500 text-sm w-80 mx-auto">Or</div>
 
                 {/* Google Login */}
                 <OAuth />
