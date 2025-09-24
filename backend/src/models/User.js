@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true,
       unique: true
     },
     email: {
@@ -29,10 +28,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null
     },
+    // For normal users
     password: {
       type: String,
-      required: true,
       select: false // Exclude password from queries by default
+    },
+    // For Google users
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true // Allow null values
     },
     xp: {
       type: Number,
@@ -71,7 +76,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Delete associated data when user is deleted
-userSchema.pre("deleteOne", { document: true, query: false }, async function(next) {
+userSchema.pre("deleteOne", { document: true, query: false }, async function (next) {
   const userId = this._id;
   await UserProgress.deleteMany({ user: userId });
   await JournalEntry.deleteMany({ user: userId });
@@ -80,6 +85,5 @@ userSchema.pre("deleteOne", { document: true, query: false }, async function(nex
   await CompanyResearch.deleteMany({ user: userId });
   next();
 });
-
 
 export default mongoose.model("User", userSchema);
