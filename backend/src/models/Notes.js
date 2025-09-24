@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Have a feature where you can check of goals
+// Have a feature where you can check 
 const GoalsSchema = new mongoose.Schema(
     {
 
@@ -17,8 +17,6 @@ const GoalsSchema = new mongoose.Schema(
         },
         // Q1: What is this reflection about?
         goal: { type: String, required: true },
-        isCompleted: { type: Boolean, default: false },
-
     },
 
     // For date set
