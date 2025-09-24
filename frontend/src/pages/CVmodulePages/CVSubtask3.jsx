@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {} }) => {
+const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskComplete}) => {
   const { completeTask } = useUserStore();
   const [downloading, setDownloading] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -21,6 +21,7 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {} }) => {
       }
 
       setIsSubmitted(true);
+      onTaskComplete?.();
       onClose(false, true);
     } catch (err) {
       console.error("Failed to complete Subtask 3:", err);

@@ -4,6 +4,7 @@ import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";
 import definedQuestions from "../utils/networkingReflectionQs.js";
 import linkedinpost from "../models/LinkedInPost.js";
+import LinkedInProfile from "../models/LinkedInProfile.js";
 
 // NEED TO ADD HELPER FOR UPDATING THE STREAK!!!! Weeks 9 - 10 add validation for fields from body e.g. if event exists for the user in database when created a post to the related event!! Also when creating an new instance of a schema (POST request) e.g. linkedinpost check if the user already has a post of the same user id and event then it will jsut need to be updated (PUT request)
 export const createLinkedInProfile = async (req, res) => {
@@ -33,6 +34,16 @@ export const createLinkedInProfile = async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const getLinkedInProfile = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const linkedInProfile = await LinkedInProfile.findOne({ user: userId });
+        return res.status(200).json({ message: "Linked In Profile Retrieved Succesfully!", linkedInProfile: linkedInProfile });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -77,6 +88,7 @@ export const updateLinkedInProfile = async (req, res) => {
     }
 };
 
+
 export const createEventsToAttend = async (req, res) => {
     const userId = req.user._id;
     if (!mongoose.isValidObjectId(userId)) {
@@ -103,6 +115,9 @@ export const createEventsToAttend = async (req, res) => {
 
 };
 
+export const getEventsToAttend = async (req, res) => {
+
+};
 
 export const updateEventsToAttend = async (req, res) => {
     const userId = req.user._id;
