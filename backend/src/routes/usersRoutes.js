@@ -39,6 +39,9 @@ router.delete("/journals/:id", authenticate, usersController.deleteJournalEntry)
 router.get("/journals", authenticate, usersController.getAllJournalEntries);
 router.get("/journals/:year/:month", authenticate, usersController.getJournalsByMonth);
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
+// -- New Journal Routes --
+router.post("/goals", authenticate, usersController.createGoal);
+router.get("/goals", authenticate, usersController.getGoals);
 
 // ---------- Leaderboard Routes ----------
 router.get("/leaderboard", usersController.getLeaderboard); // For the time being I will get rud of authenticate middleware as not all of the components have been made yet

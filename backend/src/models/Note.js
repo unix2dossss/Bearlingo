@@ -23,4 +23,4 @@ const NotesSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model("GoalEntry", GoalsSchema);
+export default mongoose.model("NoteEntry", NotesSchema);
