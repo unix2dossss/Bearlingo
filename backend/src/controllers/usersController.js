@@ -480,7 +480,7 @@ export const createGoal = async (req, res) => {
       isCompleted // current date
     });
     const savedEntry = await newEntry.save();
-    return res.status(201).json(savedEntry);
+    return res.status(201).json({ message: "Goal created succesfully!", savedEntry: savedEntry });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
 
@@ -502,6 +502,56 @@ export const getGoals = async (req, res) => {
   }
 };
 
+// Creating a reflection
+export const createReflection = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    let { title, about, whatWentWell, improvement, rating, feeling } = req.body;
+    const { emoji, text } = req.body.feeling;
+    title = title?.trim();
+    if (!title) {
+      return res.status(400).json({ message: "Please give your journal a title before saving." });
+    }
+
+    if (feeling.emoji < 1 || feeling.emoji > 10 || rating < 1 || rating > 10) {
+      return res.status(400).json({ message: "Invalid response. Submit a value between 1 and 10 inclusive" });
+    }
+
+    const newReflection = new Reflection({
+      user: userId,
+      title: title,
+      about: about,
+      feeling: {
+        emoji: emoji,
+        text: text // if text is undefined it won't be saved
+      },
+      whatWentWell: whatWentWell,
+      improvement: improvement,
+      rating: rating
+    });
+
+    const reflection = await newReflection.save();
+    return res.status(201).json({ message: "Reflection created succesfully!", reflection: reflection });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Obtaining all reflections of a user
+export const getReflections = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const reflections = await Reflection.find({ user: userId });
+    if (!reflections) {
+      return res.status(200).json({ message: "No reflections exist!" });
+    }
+    return res.status(200).json({ message: "Reflections retrieved succesfully!", reflections: reflections });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Creating
 
 // Creating a new journal entry
 export const createJournalEntry = async (req, res) => {
@@ -668,7 +718,6 @@ export const updateJournalEntry = async (req, res) => {
 export const getLeaderboard = async (req, res) => {
   //const userId = req.user._id; Removed for now
   // Check if id is valid
-  console.log("IN LEADERBOARD BACKEND ENDPOINT");
   /* if (!mongoose.isValidObjectId(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   } */
