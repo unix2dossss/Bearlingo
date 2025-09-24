@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // Have a feature where you can check 
-const GoalsSchema = new mongoose.Schema(
+const NotesSchema = new mongoose.Schema(
     {
 
         user: {
@@ -13,10 +13,10 @@ const GoalsSchema = new mongoose.Schema(
             type: String,
             required: true,
             maxLength: 100,
-            default: "Untitled Goal"
+            default: "New Note"
         },
         // Q1: What is this reflection about?
-        goal: { type: String, required: true },
+        thoughts: { type: String, required: true },
     },
 
     // For date set
