@@ -551,7 +551,41 @@ export const getReflections = async (req, res) => {
   }
 };
 
-// Creating
+// Creating a new note
+export const createNote = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    let { title, thoughts } = req.body;
+    title = title?.trim();
+    if (!title) {
+      return res.status(400).json({ message: "Please give your journal a title before saving." });
+    }
+    const newNote = new Note({
+      user: userId,
+      title: title,
+      thoughts: thoughts
+    })
+
+    const savedNote = await newNote.save();
+    return res.status(201).json({ message: "Note created succesfully!", note: savedNote });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Retrieving notes
+export const getNotes = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const notes = await Note.find({ user: userId });
+    if (!notes) {
+      return res.status(200).json({ message: "No reflections exist!" });
+    }
+    return res.status(200).json({ message: "Reflections retrieved succesfully!", notes: notes });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 // Creating a new journal entry
 export const createJournalEntry = async (req, res) => {

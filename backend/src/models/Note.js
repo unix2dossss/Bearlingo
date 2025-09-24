@@ -15,7 +15,7 @@ const NotesSchema = new mongoose.Schema(
             maxLength: 100,
             default: "New Note"
         },
-        // Q1: What is this reflection about?
+        // Q1: What is this note about?
         thoughts: { type: String, required: true },
     },
 
