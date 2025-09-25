@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from "react";
-import Navbar from "../../components/TopNavbar";
+import TopNavbar from "../../components/TopNavbar";
 import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
 import CVSubtask1 from "./CVSubtask1";
 import CVSubtask2 from "./CVSubtask2";
@@ -292,7 +292,7 @@ const CVModule = () => {
         
         {/* Top Navbar */}
       <div className="relative z-10">
-        <Navbar />
+        <TopNavbar />
       </div>
 
       {/* Purple Floor */}

@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import Navbar from "../../components/TopNavbar";
+import TopNavbar from "../../components/TopNavbar";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
@@ -104,7 +104,7 @@ const InterviewModule = () => {
       />
       {/* Top Navbar */}
       <div className="relative z-10">
-        <Navbar />
+        <TopNavbar />
       </div>
 
         <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
