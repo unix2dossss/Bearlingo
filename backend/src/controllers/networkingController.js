@@ -5,7 +5,7 @@ import networkingReflection from "../models/networkingReflection.js";
 import definedQuestions from "../utils/networkingReflectionQs.js";
 import linkedinpost from "../models/LinkedInPost.js";
 import LinkedInProfile from "../models/LinkedInProfile.js";
-
+import allEvents from "../utils/networkingEvents.js";
 // NEED TO ADD HELPER FOR UPDATING THE STREAK!!!! Weeks 9 - 10 add validation for fields from body e.g. if event exists for the user in database when created a post to the related event!! Also when creating an new instance of a schema (POST request) e.g. linkedinpost check if the user already has a post of the same user id and event then it will jsut need to be updated (PUT request)
 
 // -------- LinkedIn profile handlers --------
@@ -270,5 +270,20 @@ export const updateLinkedInPost = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 
-}
+};
+
+
+
+// -------- Getting all events handler --------
+
+export const getAllEvents = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const allEventsFromBackend = allEvents;
+        return res.status(200).json({ message: "All events retrieved succesfully!", allEventsFromBackend: allEventsFromBackend });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 
