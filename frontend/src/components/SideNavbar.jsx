@@ -15,15 +15,16 @@ const SideNavbar = () => {
 
   return (
     <div
-      className={`fixed left-4 top-8 bottom-8 bg-[#526E7A] flex flex-col rounded-2xl
-      ${isOpen ? "w-64 p-4" : "w-16 items-center p-2"} 
+      className={`fixed left-4 top-28 bottom-8 bg-[#526E7A] flex flex-col rounded-2xl
+      ${isOpen ? "w-64 p-4" : "w-20 items-center p-2"} 
       shadow-[6px_6px_2px_1px_#92A8B5]
       transition-all duration-300`}
     >
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full bg-[#EAEEF0] hover:bg-slate-100 self-end shadow-[5px_0px_2px_1px_#B0BEC5]"
+        className={`p-2 rounded-full bg-[#EAEEF0] hover:bg-slate-100 mt-3 
+        ${isOpen ? "self-end shadow-[5px_0px_2px_1px_#B0BEC5]" : "self-center shadow-[3px_0px_2px_1px_#B0BEC5]"}`}
       >
         {isOpen ? <ChevronLeft /> : <ChevronRight />}
       </button>
