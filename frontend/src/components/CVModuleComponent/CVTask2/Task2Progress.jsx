@@ -8,6 +8,7 @@ export default function ProgressPills({ step = 0 }) {
       <div className={dot(step >= 0)} />
       <div className={dot(step >= 1)} />
       <div className={dot(step >= 2)} />
+      <div className={dot(step >= 3)} />
     </div>
   );
 }
