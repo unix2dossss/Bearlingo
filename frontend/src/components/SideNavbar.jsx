@@ -11,6 +11,8 @@ const SideNavbar = () => {
     { id: 3, label: "Interview", path: "/InterviewModule" },
     { id: 4, label: "Journal", path: "/Journal" },
     { id: 5, label: "Leaderboard", path: "/Leaderboard" },
+    // { id: 6, label: "Test", path: "/test2" },
+    // { id: 7, label: "Test-test", path: "/test" },
   ];
 
   return (
@@ -35,24 +37,22 @@ const SideNavbar = () => {
             <NavLink
               key={item.id}
               to={item.path}
-              className={({ isActive }) =>
-                `relative flex items-center px-4 py-3 rounded-lg font-bold text-white transition
-                ${
-                  isActive
-                    ? "bg-slate-700 border border-white"
-                    : "bg-[#78909C] hover:bg-slate-400 shadow-[4px_3px_0px_0px_#EAEEF0]"
-                }`
-              }
+              className="relative flex items-center px-4 py-3 rounded-lg font-bold text-white transition bg-[#78909C] hover:bg-slate-400 shadow-[4px_3px_0px_0px_#EAEEF0]"
             >
 
               <span
-                className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${
-                  window.location.pathname === item.path
-                    ? "bg-green-400 text-slate-800"
+                className={`w-12 h-8 flex items-center rounded-full font-bold relative transition-colors duration-300
+                  ${window.location.pathname === item.path
+                    ? "bg-[#7FDE6C] text-slate-800"
                     : "bg-slate-300 text-slate-700"
-                }`}
+                  }`}
               >
-                {item.id}
+                <span
+                  className={`absolute w-10 h-8 flex items-center justify-center rounded-full bg-white text-black text-sm transition-all duration-300
+                    ${window.location.pathname === item.path ? "translate-x-2" : "translate-x-0"}`}
+                >
+                  {item.id}
+                </span>
               </span>
 
               <span className="ml-4">{item.label}</span>
