@@ -1,116 +1,154 @@
-import { React, useState } from 'react';
-import TopNavbar from "../../components/TopNavbar";
-import Bear from "../../assets/Bear.svg";
-import { ArrowLeftIcon } from "lucide-react";
-import { Link } from "react-router";
+import React, { useState, useEffect } from "react";
+import Navbar from '../components/TopNavbar';
+import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
+import { useUserStore } from "../../store/user";
+import { useNavigate } from "react-router-dom";
+
+import NetworkingSubtask1 from "./NetworkingSubtask1";
+import NetworkingSubtask2 from "./NetworkingSubtask2";
+import NetworkingSubtask3 from "./NetworkingSubtask3";
+import Floor from "../../assets/CVFloor.svg"; 
 
 const NetworkingModule = () => {
+  const [showSubtask, setShowSubtask] = useState(false);
+  const [selectedSubtask, setSelectedSubtask] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showConfirmLeave, setShowConfirmLeave] = useState(false);
 
-    const [selectedSubtask, setSelectedSubtask] = useState(false);
-    const [showSubtask, setShowSubtask] = useState(false);
+  const navigate = useNavigate();
+  const user = useUserStore((state) => state.user);
 
-    const handleSubtaskClick = (task) => {
-        setSelectedSubtask(task);
-        if (task == false) {
-            setShowSubtask(false);
-        }
-        else {
-            setShowSubtask(true);
-        }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) {
+        await useUserStore.getState().fetchUser();
+      }
 
+      const currentUser = useUserStore.getState().user;
+      if (!currentUser) {
+        navigate("/login");
+      }
     };
+    fetchUserData();
+  }, [navigate, user]);
 
-    // Render the selected subtask
-    const renderSubtask = () => {
-        switch (selectedSubtask) {
-            case "subtask1":
-                return (
-                    <NetworkingSubtask1
-                        task={selectedSubtask}
-                        isSubmitted={isSubmitted}
-                        setIsSubmitted={setIsSubmitted}
-                        onClose={handleClose}
-                        onTaskComplete={() => setTask1Complete(true)}
-                    />
-                );
-            case "subtask2":
-                return (
-                    <NetworkingSubtask2
-                        isSubmitted={isSubmitted}
-                        setIsSubmitted={setIsSubmitted}
-                        onClose={handleClose}
-                        onTaskComplete={() => setTask2Complete(true)}
-                    />
-                );
-            case "subtask3":
-                return <NetworkingSubtask3
-                    onClose={handleClose}
-                    setIsSubmitted={setIsSubmitted}
-                    onTaskComplete={() => setTask3Complete(true)}
-                />;
-            default:
-                return null;
-        }
-    };
-    return (
-        <>
-            <div className="relative min-h-screen flex flex-col">
-                {/* Background
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage: `url("src/assets/CVFloor.svg")`
-                    }}
-                />
-                 */}
-                {/* Top Navbar */}
-                <div className="relative z-10">
-                    <TopNavbar />
-                </div>
+  const handleSubtaskClick = (task) => {
+    setSelectedSubtask(task);
+    setShowSubtask(true);
+  };
 
+  const handleClose = (hasChanges, force = false) => {
+    if (force) {
+      setShowSubtask(false);
+      setSelectedSubtask(null);
+      return;
+    }
+    if (hasChanges) {
+      setShowConfirmLeave(true);
+    } else {
+      setShowSubtask(false);
+      setSelectedSubtask(null);
+    }
+  };
 
-                {!showSubtask &&
+  const confirmLeave = () => {
+    setShowConfirmLeave(false);
+    setShowSubtask(false);
+    setSelectedSubtask(null);
+    setIsSubmitted(false);
+  };
 
-                    <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
-                        {/* Main Workspace */}
-                        <div className="flex space-x-48 mb-[51px]">
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask1")}
-                            >
-                                Task 1
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask2")}
-                            >
-                                Task 2
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask3")}
-                            >
-                                Task 3
-                            </button>
-                        </div>
-                    </div>
-                }
+  const renderSubtask = () => {
+    switch (selectedSubtask) {
+      case "subtask1":
+        return (
+          <NetworkingSubtask1
+            isSubmitted={isSubmitted}
+            setIsSubmitted={setIsSubmitted}
+            onClose={handleClose}
+          />
+        );
+      case "subtask2":
+        return (
+          <NetworkingSubtask2
+            isSubmitted={isSubmitted}
+            setIsSubmitted={setIsSubmitted}
+            onClose={handleClose}
+          />
+        );
+      case "subtask3":
+        return (
+          <NetworkingSubtask3
+            isSubmitted={isSubmitted}
+            setIsSubmitted={setIsSubmitted}
+            onClose={handleClose}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-                {showSubtask && selectedSubtask == "subtask1" &&
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-row min-w-0  border border-red-500 gap-4 p-4">
-                        <button className="btn btn-ghost mb-6" onClick={() => handleSubtaskClick(false)}>
-                            <ArrowLeftIcon className="size-5" />
-                            Back to subtasks
-                        </button>
-                        <div className="flex flex-1 border border-green-400">
-                            <div className="border border-red-500 mt-36"><img className="h-[700px] w-[700px]" src={Bear} alt=" Bear Mascot" /></div>
-                        </div>
-                        <div className="flex-1 border border-black">Questions</div>
-                    </div>
-                }
-            </div>
-        </>
-    )
-}
+  return (
+    <div className="relative min-h-screen flex flex-col">
+      {/* Background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${Floor})`,
+        }}
+      />
+
+      {/* Top Navbar */}
+      <div className="relative z-10">
+        <Navbar />
+      </div>
+
+      {/* Task Buttons */}
+      <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">
+        <div className="flex space-x-48 mb-[51px]">
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask1")}
+          >
+            Task 1
+          </button>
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask2")}
+          >
+            Task 2
+          </button>
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            onClick={() => handleSubtaskClick("subtask3")}
+          >
+            Task 3
+          </button>
+        </div>
+      </div>
+
+      {/* Subtask Modal */}
+      {showSubtask && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#4f9cf9]">
+            <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Leave Dialog */}
+      {showConfirmLeave && (
+        <ConfirmLeaveDialog
+          isOpen={showConfirmLeave}
+          title="Your changes will be lost!"
+          message="Please finish the task to save your progress."
+          onConfirm={confirmLeave}
+          onCancel={() => setShowConfirmLeave(false)}
+        />
+      )}
+    </div>
+  );
+};
 
 export default NetworkingModule;
