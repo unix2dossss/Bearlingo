@@ -201,13 +201,13 @@ const Register = () => {
                         }}
                       ></input>
                       {usernameFocus && !usernameRegex.test(username) && (
-                        <p className="validator-hint text-sm text-red-600 mt-1">
+                        <p className="validator-hint text-sm text-red-600 mt-2">
                           Username must be 3–20 characters (letters, numbers, _, -, space)
                         </p>
                       )}
                       {/* Show an error if username is already taken  */}
                       {errors.username && (
-                        <p className="text-sm text-red-600 mt-1">{errors.username[0]}</p>
+                        <p className="text-sm text-red-600 mt-2">{errors.username[0]}</p>
                       )}
                     </div>
                     {/* <div className="form-control mb-4">
@@ -235,13 +235,13 @@ const Register = () => {
                         value={email}
                         onFocus={() => setEmailFocus(true)}
                         onBlur={() => setEmailFocus(false)}
-                        onChange={(e) => { 
+                        onChange={(e) => {
                           setEmail(e.target.value);
                           setErrors((prev) => ({ ...prev, email: null })); // clear email error
                         }}
                       ></input>
                       {emailFocus && !emailRegex.test(email) && (
-                        <p className="validator-hint text-sm text-red-600 mt-1">
+                        <p className="validator-hint text-sm text-red-600 mt-2">
                           Please use a valid email address
                         </p>
                       )}
@@ -270,12 +270,34 @@ const Register = () => {
                           onChange={(e) => setPassword(e.target.value)}
                         />
                         {focused && !passwordPattern.test(password) && (
-                          <p className="validator-hint text-sm text-red-600 mt-1">
-                            Must be more than 8 characters, including:
-                            <br />
-                            At least one number. At least one lowercase letter. At least one
-                            uppercase letter
-                          </p>
+                          // <p className="validator-hint text-sm text-gray-500 mt-1">
+                          //   Must be at least 8 characters long.
+                          //   <br />
+                          //   Should include a number, a lowercase and
+                          //   <br /> an uppercase letter.
+                          // </p>
+                          <ul className="text-sm mt-2 space-y-1 bg-base-100 p-3 rounded-md shadow-sm">
+                            <li
+                              className={password.length >= 8 ? "text-green-600" : "text-red-600"}
+                            >
+                              {password.length >= 8 ? "✔" : "✖"} At least 8 characters
+                            </li>
+                            <li
+                              className={/[0-9]/.test(password) ? "text-green-600" : "text-red-600"}
+                            >
+                              {/[0-9]/.test(password) ? "✔" : "✖"} At least one number
+                            </li>
+                            <li
+                              className={/[a-z]/.test(password) ? "text-green-600" : "text-red-600"}
+                            >
+                              {/[a-z]/.test(password) ? "✔" : "✖"} At least one lowercase letter
+                            </li>
+                            <li
+                              className={/[A-Z]/.test(password) ? "text-green-600" : "text-red-600"}
+                            >
+                              {/[A-Z]/.test(password) ? "✔" : "✖"} At least one uppercase letter
+                            </li>
+                          </ul>
                         )}
                       </div>
 
@@ -297,12 +319,17 @@ const Register = () => {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        {focused2 && !passwordPattern.test(confirmPassword) && (
+                        {/* {focused2 && !passwordPattern.test(confirmPassword) && (
                           <p className="validator-hint text-sm text-red-600 mt-1">
                             Must be more than 8 characters, including:
                             <br />
                             At least one number. At least one lowercase letter. At least one
                             uppercase letter
+                          </p>
+                        )} */}
+                        {focused2 && confirmPassword && confirmPassword !== password && (
+                          <p className="validator-hint text-sm text-red-600 mt-2">
+                            Passwords do not match
                           </p>
                         )}
                       </div>

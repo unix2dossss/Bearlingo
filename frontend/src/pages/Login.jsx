@@ -10,8 +10,9 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [usernameFocus, setUsernameFocus] = useState(false);
-  const usernameRegex = /^[\w\s-]{3,20}$/;
+  // const [usernameFocus, setUsernameFocus] = useState(false);
+  const [_, setUsernameFocus] = useState(false);
+  // const usernameRegex = /^[\w\s-]{3,20}$/;
   const navigate = useNavigate();
 
   const { fetchUser } = useUserStore();
@@ -40,7 +41,7 @@ const Login = () => {
       //const user = useUserStore((state) => state.user);
       navigate("/Welcome"); // This should navigate to login page
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 401 && error.response.data.message === 'Incorrect password') {
         toast.error("Incorrect password! Please try again");
       } else if (error.response && error.response.data.message == "User not found") {
         toast.error("User not found");
@@ -80,11 +81,11 @@ const Login = () => {
                     onChange={(e) => setUsername(e.target.value)}
                   />
 
-                  {usernameFocus && !usernameRegex.test(username) && (
+                  {/* {usernameFocus && !usernameRegex.test(username) && (
                     <p className="validator-hint text-sm text-red-600 mt-1">
                       Username must be 3–20 characters
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="form-control mb-4">
