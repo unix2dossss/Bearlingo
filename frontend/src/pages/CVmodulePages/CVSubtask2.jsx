@@ -4,14 +4,24 @@ import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
+
+// If your three files live in a /views folder, change imports to:
+// import SkillsView from "./views/SkillsView";
+// import ProjectsView from "./views/ProjectsView";
+// import ExperiencesView from "./views/ExperiencesView";
 import SkillsView from "../../components/CVModuleComponent/SkillChecklist";
 import ProjectsView from "../../components/CVModuleComponent/CVTask2/Projects";
 import ExperiencesView from "../../components/CVModuleComponent/CVTask2/Experiences";
 import ProgressPills from "../../components/CVModuleComponent/CVTask2/Task2Progress";
 
-
+/** Subtask 2 — Skills & Experience Checklist (container)
+ * Uses your existing SkillsView, ProjectsView, ExperiencesView.
+ * Progress pills intentionally omitted (as requested).
+ */
 export default function CVSubtask2({ setIsSubmitted, onClose, onTaskComplete }) {
+  // const { setUser } = useUserStore?.() ?? { setUser: () => {} };
 
+  // ───────────────────────────────────────────
   // Step state: 0 = Skills, 1 = Projects, 2 = Experiences, 3 = Review/Submit
   const [step, setStep] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);

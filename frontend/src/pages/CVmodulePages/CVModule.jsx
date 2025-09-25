@@ -292,7 +292,7 @@ const CVModule = () => {
         
         {/* Top Navbar */}
       <div className="relative z-10">
-        <Navbar />
+        <TopNavbar />
       </div>
 
       {/* Purple Floor */}
