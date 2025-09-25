@@ -21,6 +21,7 @@ const Register = () => {
   const [focused2, setFocused2] = useState(false);
   const [usernameFocus, setUsernameFocus] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
+  const [errors, setErrors] = useState({});
   const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
   // ---- Regex helpers ----
@@ -124,7 +125,13 @@ const Register = () => {
       navigate("/login"); // This should navigate to login page
     } catch (error) {
       console.log("Error in registering", error);
-      toast.error("Failed to register! Please try again");
+
+      // Handle backend validation errors
+      if (error.response && error.response.data && error.response.data.errors) {
+        setErrors(error.response.data.errors); // set backend validation errors
+      } else {
+        toast.error("Failed to register! Please try again");
+      }
     } finally {
       setLoading(false);
     }
@@ -188,12 +195,19 @@ const Register = () => {
                         value={username}
                         onFocus={() => setUsernameFocus(true)}
                         onBlur={() => setUsernameFocus(false)}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => {
+                          setUsername(e.target.value);
+                          setErrors((prev) => ({ ...prev, username: null })); // clear username error
+                        }}
                       ></input>
                       {usernameFocus && !usernameRegex.test(username) && (
                         <p className="validator-hint text-sm text-red-600 mt-1">
                           Username must be 3–20 characters (letters, numbers, _, -, space)
                         </p>
+                      )}
+                      {/* Show an error if username is already taken  */}
+                      {errors.username && (
+                        <p className="text-sm text-red-600 mt-1">{errors.username[0]}</p>
                       )}
                     </div>
                     {/* <div className="form-control mb-4">
@@ -221,12 +235,19 @@ const Register = () => {
                         value={email}
                         onFocus={() => setEmailFocus(true)}
                         onBlur={() => setEmailFocus(false)}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => { 
+                          setEmail(e.target.value);
+                          setErrors((prev) => ({ ...prev, email: null })); // clear email error
+                        }}
                       ></input>
                       {emailFocus && !emailRegex.test(email) && (
                         <p className="validator-hint text-sm text-red-600 mt-1">
                           Please use a valid email address
                         </p>
+                      )}
+                      {/* Show an error if email is already taken  */}
+                      {errors.email && (
+                        <p className="text-sm text-red-600 mt-1">{errors.email[0]}</p>
                       )}
                     </div>
                     <div className="flex gap-4">
