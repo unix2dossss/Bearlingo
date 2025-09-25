@@ -13,6 +13,51 @@ const SideNavbar = () => {
     { id: 5, label: "Leaderboard", path: "/Leaderboard" },
   ];
 
+  return (
+    <div
+      className={`h-screen bg-slate-600 shadow-lg flex flex-col ${
+        isOpen ? "w-64 p-4" : "w-16 items-center"
+      } transition-all duration-300`}
+    >
+
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 rounded-full bg-slate-500 hover:bg-slate-400 mb-6 self-end"
+      >
+        {isOpen ? <ChevronLeft /> : <ChevronRight />}
+      </button>
+
+      <nav className="flex flex-col gap-4">
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.id}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center justify-between px-4 py-3 rounded-lg font-bold text-white transition
+              ${
+                isActive
+                  ? "bg-slate-700 border border-white"
+                  : "bg-slate-500 hover:bg-slate-400"
+              }`
+            }
+          >
+            <span
+              className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${
+                window.location.pathname === item.path
+                  ? "bg-green-400 text-slate-800"
+                  : "bg-slate-300 text-slate-700"
+              }`}
+            >
+              {item.id}
+            </span>
+
+            {isOpen && <span className="ml-4">{item.label}</span>}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
+  );
+
 };
 
 export default SideNavbar;
