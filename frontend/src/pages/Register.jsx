@@ -12,7 +12,8 @@ const Register = () => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [linkedIn, setLinkedIn] = useState("");
+  // const [linkedIn, setLinkedIn] = useState("");
+  const [linkedIn, _] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ const Register = () => {
   const nameRegex = /^[A-Za-z\s]{2,30}$/;
   const usernameRegex = /^[\w\s-]{3,20}$/;
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i; ///^[^\s@]+@gmail\.com$/;
-  const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
+  // const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
 
   const navigate = useNavigate();
 
@@ -76,10 +77,10 @@ const Register = () => {
       return false;
     }
 
-    if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
-      toast.error("Please enter a valid LinkedIn URL.");
-      return false;
-    }
+    // if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
+    //   toast.error("Please enter a valid LinkedIn URL.");
+    //   return false;
+    // }
 
     return true;
   };
@@ -195,7 +196,7 @@ const Register = () => {
                         </p>
                       )}
                     </div>
-                    <div className="form-control mb-4">
+                    {/* <div className="form-control mb-4">
                       <label className="label">
                         <span className="label-text">LinkedIn URL (Optional)</span>
                       </label>
@@ -206,7 +207,7 @@ const Register = () => {
                         value={linkedIn}
                         onChange={(e) => setLinkedIn(e.target.value)}
                       ></input>
-                    </div>
+                    </div> */}
                     <div className="form-control mb-4">
                       <label className="label">
                         <span className="label-text">
@@ -228,61 +229,65 @@ const Register = () => {
                         </p>
                       )}
                     </div>
-                    <div className="form-control mb-4">
-                      <label className="label">
-                        <span className="label-text">
-                          Password <span className="label-text text-red-600">*</span>
-                        </span>
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="Password"
-                        className="input validator input-bordered"
-                        minlength="8"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                        onFocus={() => setFocused(true)} // show hint on focus
-                        onBlur={() => setFocused(false)} // hide hint on blur
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      ></input>
-                      {focused && !passwordPattern.test(password) && (
-                        <p className="validator-hint text-sm text-red-600 mt-1">
-                          Must be more than 8 characters, including:
-                          <br />
-                          At least one number. At least one lowercase letter. At least one uppercase
-                          letter
-                        </p>
-                      )}
+                    <div className="flex gap-4">
+                      <div className="form-control mb-4 w-full">
+                        <label className="label">
+                          <span className="label-text">
+                            Password <span className="label-text text-red-600">*</span>
+                          </span>
+                        </label>
+                        <input
+                          type="password"
+                          placeholder="Password"
+                          className="input validator input-bordered"
+                          minLength="8"
+                          pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                          title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                          onFocus={() => setFocused(true)} // show hint on focus
+                          onBlur={() => setFocused(false)} // hide hint on blur
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {focused && !passwordPattern.test(password) && (
+                          <p className="validator-hint text-sm text-red-600 mt-1">
+                            Must be more than 8 characters, including:
+                            <br />
+                            At least one number. At least one lowercase letter. At least one
+                            uppercase letter
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="form-control mb-4 w-full">
+                        <label className="label">
+                          <span className="label-text">
+                            Confirm Password <span className="label-text text-red-600">*</span>
+                          </span>
+                        </label>
+                        <input
+                          type="password"
+                          placeholder="Confirm Password"
+                          className="input validator input-bordered"
+                          minLength="8"
+                          pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                          title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                          onFocus={() => setFocused2(true)}
+                          onBlur={() => setFocused2(false)}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        {focused2 && !passwordPattern.test(confirmPassword) && (
+                          <p className="validator-hint text-sm text-red-600 mt-1">
+                            Must be more than 8 characters, including:
+                            <br />
+                            At least one number. At least one lowercase letter. At least one
+                            uppercase letter
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="form-control mb-4">
-                      <label className="label">
-                        <span className="label-text">
-                          Confirm Password <span className="label-text text-red-600">*</span>
-                        </span>
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        className="input validator input-bordered"
-                        minlength="8"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                        onFocus={() => setFocused2(true)}
-                        onBlur={() => setFocused2(false)}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                      ></input>
-                      {focused2 && !passwordPattern.test(confirmPassword) && (
-                        <p className="validator-hint text-sm text-red-600 mt-1">
-                          Must be more than 8 characters, including:
-                          <br />
-                          At least one number. At least one lowercase letter. At least one uppercase
-                          letter
-                        </p>
-                      )}
-                    </div>
-                    <div className="card-actions justify-center mb-8">
+
+                    <div className="card-actions justify-center mt-2 mb-6">
                       <button type="submit" className="btn btn-primary w-80 h-18" disable={loading}>
                         {loading ? "Registering ..." : "Register"}
                       </button>
@@ -292,7 +297,7 @@ const Register = () => {
 
                     {/* Google Login */}
                     <OAuth />
-                    <p className="text-center text-sm mb-8">
+                    <p className="text-center text-sm mt-6">
                       Already have an account?{" "}
                       <Link to="/login" className="text-primary">
                         Login here

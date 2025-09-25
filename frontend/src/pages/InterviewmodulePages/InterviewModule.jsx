@@ -104,7 +104,7 @@ const InterviewModule = () => {
       />
       {/* Top Navbar */}
       <div className="fixed top-0 inset-x-0 z-[100]">
-        <Navbar />
+        <TopNavbar />
       </div>
 
         <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-10">

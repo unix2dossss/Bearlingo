@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from '../components/TopNavbar';
+import Navbar from '../../components/TopNavbar';
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
