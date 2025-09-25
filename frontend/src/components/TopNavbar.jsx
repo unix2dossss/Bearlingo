@@ -38,7 +38,7 @@ const TopNavbar = () => {
   const handleLogout = async () => {
     try {
       setOpen(false);
-      await api.get("/users", { withCredentials: true });
+      await api.post("/users/logout", null, { withCredentials: true });
       // Clear local store
       useUserStore.getState().clearUser();
       toast.success("Logged out successfully!");
