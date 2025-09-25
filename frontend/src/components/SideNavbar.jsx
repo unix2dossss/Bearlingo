@@ -15,9 +15,9 @@ const SideNavbar = () => {
 
   return (
     <div
-      className={`h-screen bg-slate-600 shadow-lg flex flex-col ${
-        isOpen ? "w-64 p-4" : "w-16 items-center"
-      } transition-all duration-300`}
+      className={`fixed left-4 top-8 bottom-8 bg-slate-600 shadow-2xl flex flex-col rounded-2xl 
+      ${isOpen ? "w-64 p-4" : "w-16 items-center p-2"} 
+      transition-all duration-300`}
     >
 
       <button
