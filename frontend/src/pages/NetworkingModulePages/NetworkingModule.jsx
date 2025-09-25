@@ -10,10 +10,12 @@ const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
     const [showSubtask, setShowSubtask] = useState(false);
-    const fetchEvents = async (e) => {
+
+    const fetchAllEvents = async (e) => { }
+    const fetchEventsOfUser = async (e) => {
         try {
-            await api.post(
-                "/users/register",
+            await api.get(
+                "/users/me/networking/events",
                 {
                     firstName,
                     lastName,
