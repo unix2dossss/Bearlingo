@@ -36,11 +36,11 @@ const SideNavbar = () => {
               key={item.id}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center justify-between px-4 py-3 rounded-lg font-bold text-white transition
+                `relative flex items-center px-4 py-3 rounded-lg font-bold text-white transition
                 ${
                   isActive
                     ? "bg-slate-700 border border-white"
-                    : "bg-slate-500 hover:bg-slate-400"
+                    : "bg-[#78909C] hover:bg-slate-400 shadow-[4px_3px_0px_0px_#EAEEF0]"
                 }`
               }
             >
