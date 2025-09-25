@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import TopNavbar from "../../components/TopNavbar";
+import Navbar from "../../components/TopNavbar";
 import Bear from "../../assets/Bear.svg";
 import { ArrowLeftIcon } from "lucide-react";
 import { Link } from "react-router";
@@ -64,8 +64,8 @@ const NetworkingModule = () => {
                 />
                  */}
                 {/* Top Navbar */}
-                <div className="relative z-10">
-                    <TopNavbar />
+                <div className="fixed top-0 inset-x-0 z-[100]">
+                    <Navbar />
                 </div>
 
 
