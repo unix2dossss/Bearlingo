@@ -120,7 +120,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose }) => {
   };
 
   return (
-  <div className="relative flex flex-col h-full">
+  <div className="flex flex-col h-full">
     {/* Sticky Close Button */}
     <div className="sticky top-0 z-50 flex justify-end bg-white p-2">
       <button

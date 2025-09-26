@@ -24,12 +24,12 @@
   justify-content: center;
   align-items: center;
   padding: 1.5rem;
-  color: white;
+  color: #FFFFFF;
 }
 .card-front {
-  background: linear-gradient(to bottom right, #9e81d7, #5a50b8);
+  background: linear-gradient(to bottom right, #4f9cf9, #3d86ea);
 }
 .card-back {
-  background: linear-gradient(to bottom right, #79B66F, #307d34);
+  background: linear-gradient(to bottom right, #4f9cf9, #3d86ea);
   transform: rotateY(180deg);
 }

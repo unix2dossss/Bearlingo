@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../components/TopNavbar';
+import TopNavbar from '../components/TopNavbar';
 import ComputerFrame from '../assets/computer-screen.png';
 import ComputerBackground from '../assets/pastel.jpg';
 import { useState } from "react";

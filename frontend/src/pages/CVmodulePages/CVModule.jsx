@@ -1,3 +1,4 @@
+// src/pages/CVModule/CVModule.jsx
 import { React, useState, useEffect, useRef } from "react";
 import TopNavbar from "../../components/TopNavbar";
 import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
@@ -19,6 +20,15 @@ import BookcaseLocked from '../../assets/CVBookB.svg';
 import Bear from '../../assets/Bear.svg';
 import { gsap } from "gsap";
 
+// ⬇️ NEW: Resume uploader
+import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
+
+/* THEME */
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
 
 const CVModule = () => {
   const [showSubtask, setShowSubtask] = useState(false);
@@ -29,210 +39,157 @@ const CVModule = () => {
   const [task2Complete, setTask2Complete] = useState(false);
   const [task3Complete, setTask3Complete] = useState(false);
 
+  // Landing intro modal (already existed)
+  const [showLandingIntro, setShowLandingIntro] = useState(false);
+  const [dontShowLandingAgain, setDontShowLandingAgain] = useState(false);
 
+  // ⬇️ NEW: Resume modal state
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [dontShowResumeAgain, setDontShowResumeAgain] = useState(false);
 
   const navigate = useNavigate();
   const currentUser = useUserStore.getState().user;
-  console.log("User:", currentUser);
-
-  // Check if user is logged in and redirect if not
   const user = useUserStore((state) => state.user);
-
-
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) {
         await useUserStore.getState().fetchUser();
       }
-
       const currentUser = useUserStore.getState().user;
       if (!currentUser) {
-        navigate("/login"); // redirect if still not logged in
+        navigate("/login");
       }
     };
     fetchUserData();
   }, [navigate, user]);
 
-    const windowLockedRef = useRef(null);
-    const windowUnlockedRef = useRef(null);
+  // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
+  useEffect(() => {
+    const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
+    if (!skipResume) {
+      setShowResumeModal(true);
+      return;
+    }
+    const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
+    if (!skipIntro) setShowLandingIntro(true);
+  }, []);
 
-    useEffect(() => {
-      if (task1Complete) {
-        // Fade out locked window
-        gsap.to(windowLockedRef.current, {
-          opacity: 0,
-          duration: 0.5,
-          onComplete: () => {
-            // Bounce in unlocked window
-            gsap.set(windowUnlockedRef.current, {
-              opacity: 0,
-              scale: 0.5,
-              rotation: -30,
-              y: -300,
-            });
-            gsap.to(windowUnlockedRef.current, {
-              opacity: 1,
-              scale: 1,
-              rotation: 0,
-              y: 0,
-              duration: 1.5,
-              ease: "bounce.out",
-            });
-          },
-        });
-      } else {
-        // Fade in locked window
-        gsap.set(windowUnlockedRef.current, { opacity: 0 });
-        gsap.to(windowLockedRef.current, {
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out",
-        });
-      }
-    }, [task1Complete]);
+  // ⬇️ NEW: lock body scroll when any modal is open
+  useEffect(() => {
+    const anyModalOpen = showResumeModal || showLandingIntro || showSubtask || showConfirmLeave;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = anyModalOpen ? "hidden" : prev || "";
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
+  }, [showResumeModal, showLandingIntro, showSubtask, showConfirmLeave]);
 
-    const drawersLockedRef = useRef(null);
-    const drawersUnlockedRef = useRef(null);
-    const bookcaseLockedRef = useRef(null);
-    const bookcaseUnlockedRef = useRef(null);
+  // Anim refs
+  const windowLockedRef = useRef(null);
+  const windowUnlockedRef = useRef(null);
+  const drawersLockedRef = useRef(null);
+  const drawersUnlockedRef = useRef(null);
+  const bookcaseLockedRef = useRef(null);
+  const bookcaseUnlockedRef = useRef(null);
+  const deskLockedRef = useRef(null);
+  const deskUnlockedRef = useRef(null);
+  const bearRef = useRef(null);
 
-    useEffect(() => {
-      if (task2Complete) {
-        // --- Animate Drawers ---
-        gsap.to(drawersLockedRef.current, {
-          opacity: 0,
-          duration: 0.5,
-          onComplete: () => {
-            gsap.set(drawersUnlockedRef.current, {
-              opacity: 0,
-              scale: 0.5,
-              rotation: -30,
-              y: -300,
-            });
-            gsap.to(drawersUnlockedRef.current, {
-              opacity: 1,
-              scale: 1,
-              rotation: 0,
-              y: 0,
-              duration: 1.5,
-              ease: "bounce.out",
-            });
-          },
-        });
-
-        // --- Animate Bookcase ---
-        gsap.to(bookcaseLockedRef.current, {
-          opacity: 0,
-          duration: 0.5,
-          onComplete: () => {
-            gsap.set(bookcaseUnlockedRef.current, {
-              opacity: 0,
-              scale: 0.5,
-              rotation: 15,
-              y: 300,
-            });
-            gsap.to(bookcaseUnlockedRef.current, {
-              opacity: 1,
-              scale: 1,
-              rotation: 0,
-              y: 0,
-              duration: 1.5,
-              ease: "elastic.out(1, 0.5)",
-            });
-          },
-        });
-
-  } else {
-    // Reset to locked state (drawers + bookcase)
-    gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
-    gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-      opacity: 1,
-      duration: 0.6,
-      ease: "power2.out",
-    });
-  }
-}, [task2Complete]);
-
-    const deskLockedRef = useRef(null);
-    const deskUnlockedRef = useRef(null);
-
-    useEffect(() => {
-      if (task3Complete) {
-        // Fade out locked desk
-        gsap.to(deskLockedRef.current, {
-          opacity: 0,
-          duration: 0.5,
-          onComplete: () => {
-            // Bounce in unlocked drawers
-            gsap.set(deskUnlockedRef.current, {
-              opacity: 0,
-              scale: 0.5,
-              rotation: -30,
-              y: -300,
-            });
-            gsap.to(deskUnlockedRef.current, {
-              opacity: 1,
-              scale: 1,
-              rotation: 0,
-              y: 0,
-              duration: 1.5,
-              ease: "bounce.out",
-            });
-          },
-        });
-      } else {
-        // Fade in locked desk
-        gsap.set(deskUnlockedRef.current, { opacity: 0 });
-        gsap.to(deskLockedRef.current, {
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out",
-        });
-      }
-    }, [task3Complete]);
-    
-    const bearRef = useRef(null);
-
-    useEffect(() => {
-      // Bear pop
-      gsap.fromTo(
-        bearRef.current,
-        { y: 200 },
-        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
-      );
-
-      // Bubble pop-in
-      gsap.fromTo(
-        ".speech-bubble",
-        { opacity: 0, scale: 0.5 },
-        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
-      );
-
-      // Gentle bear bob
-      gsap.to(bearRef.current, {
-        y: -15,
-        duration: 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 2,
+  useEffect(() => {
+    if (task1Complete) {
+      gsap.to(windowLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          gsap.set(windowUnlockedRef.current, {
+            opacity: 0,
+            scale: 0.5,
+            rotation: -30,
+            y: -300,
+          });
+          gsap.to(windowUnlockedRef.current, {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out",
+          });
+        },
       });
-    }, []);
+    } else {
+      gsap.set(windowUnlockedRef.current, { opacity: 0 });
+      gsap.to(windowLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+    }
+  }, [task1Complete]);
+
+  useEffect(() => {
+    if (task2Complete) {
+      gsap.to(drawersLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          gsap.set(drawersUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
+          gsap.to(drawersUnlockedRef.current, {
+            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+          });
+        },
+      });
+      gsap.to(bookcaseLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          gsap.set(bookcaseUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: 15, y: 300 });
+          gsap.to(bookcaseUnlockedRef.current, {
+            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "elastic.out(1, 0.5)",
+          });
+        },
+      });
+    } else {
+      gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
+      gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
+        opacity: 1, duration: 0.6, ease: "power2.out",
+      });
+    }
+  }, [task2Complete]);
+
+  useEffect(() => {
+    if (task3Complete) {
+      gsap.to(deskLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          gsap.set(deskUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
+          gsap.to(deskUnlockedRef.current, {
+            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+          });
+        },
+      });
+    } else {
+      gsap.set(deskUnlockedRef.current, { opacity: 0 });
+      gsap.to(deskLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+    }
+  }, [task3Complete]);
+
+  useEffect(() => {
+    gsap.fromTo(bearRef.current, { y: 200 }, { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 });
+    gsap.fromTo(".speech-bubble", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 });
+    gsap.to(bearRef.current, { y: -15, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2 });
+  }, []);
 
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
     setShowSubtask(true);
   };
+
   const handleClose = (hasChanges, force = false) => {
-    // Allow force close
     if (force) {
       setShowSubtask(false);
       setSelectedSubtask(null);
       return;
     }
     if (hasChanges) {
-      // show confirm popup
       setShowConfirmLeave(true);
     } else {
       setShowSubtask(false);
@@ -240,17 +197,13 @@ const CVModule = () => {
     }
   };
 
-  // If user clicked "Leave", allow them to leave
   const confirmLeave = () => {
     setShowConfirmLeave(false);
     setShowSubtask(false);
     setSelectedSubtask(null);
-
-    // Reset submission state if needed
     setIsSubmitted(false);
   };
 
-  // Render the selected subtask
   const renderSubtask = () => {
     switch (selectedSubtask) {
       case "subtask1":
@@ -260,7 +213,7 @@ const CVModule = () => {
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
-           onTaskComplete={() => setTask1Complete(true)}
+            onTaskComplete={() => setTask1Complete(true)}
           />
         );
       case "subtask2":
@@ -269,100 +222,121 @@ const CVModule = () => {
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
-           onTaskComplete={() => setTask2Complete(true)}
+            onTaskComplete={() => setTask2Complete(true)}
           />
         );
       case "subtask3":
-        return <CVSubtask3 
-          onClose={handleClose} 
-          setIsSubmitted={setIsSubmitted}
-          onTaskComplete={() => setTask3Complete(true)}
-        />;
+        return (
+          <CVSubtask3
+            onClose={handleClose}
+            setIsSubmitted={setIsSubmitted}
+            onTaskComplete={() => setTask3Complete(true)}
+          />
+        );
       default:
         return null;
     }
   };
 
+  // ⬇️ NEW: close Resume modal & optionally show landing intro
+  const closeLandingIntro = (startTaskKey = null) => {
+    if (dontShowLandingAgain) localStorage.setItem("cv_landing_intro_skip", "1");
+    setShowLandingIntro(false);
+    if (startTaskKey) handleSubtaskClick(startTaskKey);
+  };
+
+  const closeResumeModal = (openIntroAfter = true) => {
+    if (dontShowResumeAgain) localStorage.setItem("cv_resume_prompt_skip", "1");
+    setShowResumeModal(false);
+
+    if (openIntroAfter) {
+      const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
+      if (!skipIntro) setShowLandingIntro(true);
+    }
+  };
+
+  // ⬇️ NEW: After successful upload → never show resume modal again
+  const handleResumeUploaded = async () => {
+    localStorage.setItem("cv_resume_prompt_skip", "1");
+    setDontShowResumeAgain(true);
+    setShowResumeModal(false);
+    // If you want to show the landing intro after upload, uncomment:
+    // setShowLandingIntro(true);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-    
-
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
-        
         {/* Top Navbar */}
-      <div className="relative z-10">
-        <TopNavbar />
+        <div className="relative z-10">
+          <TopNavbar />
+        </div>
+
+        {/* Purple Floor */}
+        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+
+        {/* Subtask 3 Object: Desk */}
+        <div className="relative w-full flex justify-center">
+          <img
+            ref={deskLockedRef}
+            src={DeskLocked}
+            alt="Locked CV Desk"
+            className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+          />
+          <img
+            ref={deskUnlockedRef}
+            src={Desk}
+            alt="Unlocked CV Desk"
+            className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+          />
+        </div>
+
+        {/* Subtask 2 Object: Drawer + Bookcase */}
+        <div className="relative">
+          <img
+            ref={drawersLockedRef}
+            src={DrawersLocked}
+            alt="Locked CV Drawers"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30"
+          />
+          <img
+            ref={drawersUnlockedRef}
+            src={Drawers}
+            alt="Unlocked CV Drawers"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30"
+          />
+          <img
+            ref={bookcaseLockedRef}
+            src={BookcaseLocked}
+            alt="Locked CV Bookcase"
+            className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+          />
+          <img
+            ref={bookcaseUnlockedRef}
+            src={Bookcase}
+            alt="Unlocked CV Bookcase"
+            className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+          />
+        </div>
+
+        {/* Subtask 1 Object: Windows */}
+        <div className="relative">
+          <img
+            ref={windowLockedRef}
+            src={WindowLocked}
+            alt="Locked CV Window"
+            className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+          />
+          <img
+            ref={windowUnlockedRef}
+            src={Window}
+            alt="Unlocked CV Window"
+            className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+          />
+        </div>
       </div>
 
-      {/* Purple Floor */}
-      <img
-        src={Floor}
-        alt="Welcome"
-        className="absolute bottom-0 left-0 w-full h-auto"
-      />
-
-      {/* Subtask 3 Object: Desk */}
-      <div className="relative w-full flex justify-center">
-        <img
-          ref={deskLockedRef}
-          src={DeskLocked}
-          alt="Locked CV Desk"
-          className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-        />
-        <img
-          ref={deskUnlockedRef}
-          src={Desk}
-          alt="Unlocked CV Desk"
-          className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-        />
-      </div>
-
-      {/* Subtask 2 Object: Drawer */}
-      <div className="relative">
-        <img
-          ref={drawersLockedRef}
-          src={DrawersLocked}
-          alt="Locked CV Drawers"
-          className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30"
-        />
-        <img
-          ref={drawersUnlockedRef}
-          src={Drawers}
-          alt="Unlocked CV Drawers"
-          className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30"
-        />
-        <img
-          ref={bookcaseLockedRef}
-          src={BookcaseLocked}
-          alt="Locked CV Desk"
-          className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
-        />
-        <img
-          ref={bookcaseUnlockedRef}
-          src={Bookcase}
-          alt="Locked CV Desk"
-          className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
-        />
-      </div>
-      
-      {/* Subtask 1 Object: Windows */}
-      <div className="relative">
-        <img
-          ref={windowLockedRef}
-          src={WindowLocked}
-          alt="Locked CV Window"
-          className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
-        />
-        <img
-          ref={windowUnlockedRef}
-          src={Window}
-          alt="Unlocked CV Window"
-          className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
-        />
-      </div>
-
-      </div>
       {/* Bottom Button Container */}
       <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
         <div className="flex space-x-6">
@@ -385,16 +359,12 @@ const CVModule = () => {
             Task 3
           </button>
 
-          {/* Bear + Speech Bubble Container */}
+          {/* Bear + Speech Bubble */}
           <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
-            {/* Speech Bubble */}
-            <div className="relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
+            <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
               Time to build our CV!
-              {/* Bubble Tail */}
-              <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md"></div>
+              <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md" />
             </div>
-
-            {/* Bear Peeking */}
             <img
               ref={bearRef}
               src={Bear}
@@ -402,12 +372,126 @@ const CVModule = () => {
               className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
             />
           </div>
-
-
         </div>
       </div>
 
-      {/* Modal for CVSubtask1 */}
+      {/* ⬇️ NEW: Resume Upload Landing Modal */}
+      {showResumeModal && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative">
+            {/* Close X */}
+            <button
+              onClick={() => closeResumeModal(true)}
+              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
+              aria-label="Close"
+            >
+              ✖
+            </button>
+
+            {/* Header */}
+            <div className="px-6 pt-6">
+              <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
+                Quick step: Upload your resume
+              </h3>
+              <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
+                This helps us personalize your CV building experience.
+              </p>
+            </div>
+
+            {/* ResumeUpload component */}
+            <div className="pb-2">
+              <ResumeUpload
+                // If you want to hit your default API routes, no props are needed.
+                // Provide onUpload to mark the modal as done after a successful upload:
+                onUpload={handleResumeUploaded}
+              />
+            </div>
+
+            {/* Footer: Don't show again / Skip */}
+            <div className="px-6 pb-6 -mt-2 flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={dontShowResumeAgain}
+                  onChange={(e) => setDontShowResumeAgain(e.target.checked)}
+                />
+                Don’t show this again
+              </label>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => closeResumeModal(true)}
+                  className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
+                  style={{ borderColor: COLORS.primary, color: COLORS.primary }}
+                >
+                  Skip for now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Landing Intro Modal (your existing one) */}
+      {showLandingIntro && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+            {/* Close X */}
+            <button
+              onClick={() => closeLandingIntro()}
+              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
+              aria-label="Close"
+            >
+              ✖
+            </button>
+
+            <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
+              Welcome to the CV Builder
+            </h3>
+            <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
+              Quick heads-up before you start
+            </p>
+
+            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 my-4">
+              <li>There are 3 tasks: Skills, Projects, and Review.</li>
+              <li>You can save and come back anytime.</li>
+              <li>We’ll guide you step-by-step and auto-validate fields.</li>
+            </ul>
+
+            <label className="flex items-center gap-2 text-sm text-gray-600 mb-4 select-none">
+              <input
+                type="checkbox"
+                className="h-4 w-4"
+                checked={dontShowLandingAgain}
+                onChange={(e) => setDontShowLandingAgain(e.target.checked)}
+              />
+              Don’t show this again
+            </label>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => closeLandingIntro()}
+                className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
+                style={{ borderColor: COLORS.primary, color: COLORS.primary }}
+              >
+                Explore
+              </button>
+              <button
+                onClick={() => closeLandingIntro("subtask1")}
+                className="h-10 px-5 rounded-full font-bold text-sm text-white"
+                style={{ backgroundColor: COLORS.primary }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
+              >
+                Start Task 1
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Subtask Modal */}
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#4f9cf9]">
@@ -415,7 +499,8 @@ const CVModule = () => {
           </div>
         </div>
       )}
-      {/* Confirmation Modal */}
+
+      {/* Confirm Leave */}
       {showConfirmLeave && (
         <ConfirmLeaveDialog
           isOpen={showConfirmLeave}

@@ -12,7 +12,7 @@ const FlashCard = ({ question, answer, flipped, onFlip, questionNumber }) => {
         </div>
         <div className="card-back">
           <p className="text-xl font-bold">Answer</p>
-          <p className="mt-3 text-lg">{answer}</p>
+          <p className="mt-3 text-md text-justify">{answer}</p>
           <span className="absolute bottom-3 right-3 text-sm opacity-80">Click to flip back</span>
         </div>
       </div>
