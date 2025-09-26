@@ -223,10 +223,10 @@ const NetworkingModule = () => {
                         <div className="flex flex-wrap gap-2 min-h-screen overflow-y-auto border border-green-400 p-2">
                             {Array.isArray(allEvents) &&
                                 allEvents.map((item, index) => (
-                                    <div key={index} className="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-200 p-4">
-                                        <div className="flex flex-col md:flex-row gap-4">
+                                    <div key={index} className="bg-base-100 shadow-md hover:shadow-xl transition-all duration-200 p-2 border border-red-950 w-[32%] h-[500px] flex gap-3">
+                                        <div className="flex flex-col gap-2 border border-black">
                                             {/* Optional image placeholder */}
-                                            <div className="flex-shrink-0 w-full md:w-48 h-32 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                                            <div className="flex-shrink-0 w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
                                                 Event
                                             </div>
 
@@ -234,13 +234,15 @@ const NetworkingModule = () => {
                                             <div className="flex-1 flex flex-col gap-2">
                                                 <h2 className="text-xl font-bold">{item.name}</h2>
                                                 <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                                                    <span className="badge badge-outline">{item.type}</span>
-                                                    <span className="badge badge-outline">{item.costType}</span>
+                                                    <span className="badge badge-neutral">{item.type}</span>
+                                                    <span className="badge badge-neutral">{item.costType}</span>
                                                 </div>
                                                 <p className="text-gray-700 text-sm">{item.date} · {item.time}</p>
                                                 <p className="text-gray-600 text-sm">{item.location}</p>
-                                                <p className="mt-2 text-gray-700 text-sm line-clamp-4">{item.description}</p>
-                                                <div className="mt-auto pt-2">
+                                                <p className="mt-2 text-gray-700 text-sm max-h-24 overflow-y-auto pr-2">
+                                                    {item.description}
+                                                </p>
+                                                <div className="mt-2 pt-2">
                                                     <a
                                                         href={item.link}
                                                         target="_blank"
