@@ -5,13 +5,58 @@ import { ArrowLeftIcon } from "lucide-react";
 import { gsap } from "gsap";
 import { Link } from "react-router";
 import api from "../../lib/axios";
+import toast from 'react-hot-toast';
+import { useUserStore } from "../../store/user";
+import { useNavigate } from "react-router-dom";
 
 const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
     const [showSubtask, setShowSubtask] = useState(false);
+    const [allEvents, setAllEvents] = useState("");
+    const [userInfo, setUserInfo] = useState("");
+    const navigate = useNavigate();
 
-    const fetchAllEvents = async (e) => { }
+    const user = useUserStore((state) => state.user);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) {
+                await useUserStore.getState().fetchUser();
+            }
+
+            const currentUser = useUserStore.getState().user;
+            if (!currentUser) {
+                navigate("/login"); // redirect if still not logged in
+            } else {
+                setUserInfo(currentUser);
+                console.log(currentUser);
+            }
+        };
+        fetchUserData();
+    }, [navigate]);
+
+    const fetchAllEvents = async (e) => {
+        try {
+            const events = await api.get(
+                "/users/me/networking/all-events",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userInfo?.token}` // or Sending token back to backend CHECK ON THE BACKEND CONNECTION
+                    }
+                }
+            );
+            toast.success("Events obtained sucessfully!");
+            const eventsOnly = events.data.allEventsFromBackend;
+            console.log(eventsOnly);
+            setAllEvents(eventsOnly);
+
+        } catch (error) {
+            console.log("Error in obtaining events", error);
+            toast.error("Error in obtaining events");
+        }
+    };
     const fetchEventsOfUser = async (e) => {
         try {
             await api.get(
@@ -36,6 +81,12 @@ const NetworkingModule = () => {
             toast.error("Failed to register! Please try again");
         }
     }
+
+    useEffect(() => {
+        if (showSubtask && selectedSubtask === "subtask2") {
+            fetchAllEvents(); // ✅ only runs when condition is true
+        }
+    }, [showSubtask, selectedSubtask]);
 
     // Animate bear when Subtask 1 opens
     useEffect(() => {
@@ -168,10 +219,28 @@ const NetworkingModule = () => {
                             <ArrowLeftIcon className="size-5" />
                             Back to subtasks
                         </button>
-                        <div className="flex flex-1 border border-green-400">
-                            <div className="border border-red-500 mt-36"><img className="bear h-[700px] w-[700px]" src={Bear} alt=" Bear Mascot" /></div>
+                        <div className="flex flex-1 border border-green-400 flex-row gap-3">
+                            {Array.isArray(allEvents) && allEvents.map((item, index) => {
+                                return (
+
+                                    <div key={index} className="flex-1 card card-side bg-base-100 shadow-sm h-[20%] w-[40%] overflow-x-scroll">
+                                        <figure>
+                                            <img
+                                                src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+                                                alt="Movie" />
+                                        </figure>
+                                        <div className="card-body">
+                                            <h2 className="card-title">New movie is released!</h2>
+                                            <p>.</p>
+                                            <div className="card-actions justify-end">
+                                                <button className="btn btn-primary">Watch</button>
+                                            </div>
+                                        </div>
+
+                                    </div >
+                                )
+                            })}
                         </div>
-                        <div className="flex-1 border border-black">Questions</div>
                     </div>
                 }
             </div>
