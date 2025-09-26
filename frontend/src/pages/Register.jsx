@@ -148,12 +148,12 @@ const Register = () => {
             </Link>
 
             <div className="flex items-center justify-center">
-              <div className="card bg-base-100 w-[850px] justify-center">
+              <div className="card bg-base-100 w-full max-w-4xl mx-auto">
                 <div className="card-body">
                   <h2 className="card-title text-2xl mb flex justify-center">Sign Up</h2>
                   <form onSubmit={handleSubmit}>
-                    <div className="flex gap-4">
-                      <div className="form-control mb-4 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="form-control w-full">
                         <label className="label">
                           <span className="label-text">
                             First Name <span className="label-text text-red-600">*</span>
@@ -162,12 +162,12 @@ const Register = () => {
                         <input
                           type="text"
                           placeholder="First Name"
-                          className="input input-bordered"
+                          className="input input-bordered w-full"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                         ></input>
                       </div>
-                      <div className="form-control mb-4 w-full">
+                      <div className="form-control w-full">
                         <label className="label">
                           <span className="label-text">
                             Last Name <span className="label-text text-red-600">*</span>
@@ -176,7 +176,7 @@ const Register = () => {
                         <input
                           type="text"
                           placeholder="Last Name"
-                          className="input input-bordered"
+                          className="input input-bordered w-full"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                         ></input>
@@ -191,7 +191,7 @@ const Register = () => {
                       <input
                         type="text"
                         placeholder="Username"
-                        className="input input-bordered"
+                        className="input input-bordered w-full"
                         value={username}
                         onFocus={() => setUsernameFocus(true)}
                         onBlur={() => setUsernameFocus(false)}
@@ -231,7 +231,7 @@ const Register = () => {
                       <input
                         type="email"
                         placeholder="Email"
-                        className="input input-bordered"
+                        className="input input-bordered w-full"
                         value={email}
                         onFocus={() => setEmailFocus(true)}
                         onBlur={() => setEmailFocus(false)}
@@ -250,8 +250,8 @@ const Register = () => {
                         <p className="text-sm text-red-600 mt-1">{errors.email[0]}</p>
                       )}
                     </div>
-                    <div className="flex gap-4">
-                      <div className="form-control mb-4 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div className="form-control">
                         <label className="label">
                           <span className="label-text">
                             Password <span className="label-text text-red-600">*</span>
@@ -260,7 +260,7 @@ const Register = () => {
                         <input
                           type="password"
                           placeholder="Password"
-                          className="input validator input-bordered"
+                          className="input validator input-bordered w-full"
                           minLength="8"
                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                           title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
@@ -301,7 +301,7 @@ const Register = () => {
                         )}
                       </div>
 
-                      <div className="form-control mb-4 w-full">
+                      <div className="form-control">
                         <label className="label">
                           <span className="label-text">
                             Confirm Password <span className="label-text text-red-600">*</span>
@@ -335,13 +335,13 @@ const Register = () => {
                       </div>
                     </div>
 
-                    <div className="card-actions justify-center mt-2 mb-6">
-                      <button type="submit" className="btn btn-primary w-80 h-18" disable={loading}>
+                    <div className="card-actions justify-center mt-6 mb-6">
+                      <button type="submit" className="btn btn-primary w-full md:w-80 h-18" disable={loading}>
                         {loading ? "Registering ..." : "Register"}
                       </button>
                     </div>
 
-                    <div className="divider text-gray-500 text-sm w-80 mx-auto">Or</div>
+                    <div className="divider text-gray-500 text-sm w-full md:w-80 mx-auto">Or</div>
 
                     {/* Google Login */}
                     <OAuth />

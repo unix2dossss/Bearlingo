@@ -74,7 +74,7 @@ const Login = () => {
                   <input
                     type="text"
                     placeholder="Username"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={username}
                     onFocus={() => setUsernameFocus(true)}
                     onBlur={() => setUsernameFocus(false)}
@@ -95,19 +95,19 @@ const Login = () => {
                   <input
                     type="password"
                     placeholder="Password"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
 
-                <div className="card-actions justify-center mb-8">
-                  <button type="submit" className="btn btn-primary w-80 h-18" disabled={loading}>
+                <div className="card-actions justify-center mt-6 mb-8">
+                  <button type="submit" className="btn btn-primary w-full md:w-80 h-18" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </button>
                 </div>
 
-                <div className="divider text-gray-500 text-sm w-80 mx-auto">Or</div>
+                <div className="divider text-gray-500 text-sm w-full md:w-80 mx-auto">Or</div>
 
                 {/* Google Login */}
                 <OAuth />
