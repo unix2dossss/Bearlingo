@@ -213,36 +213,52 @@ const NetworkingModule = () => {
                     </div>
                 }
 
-                {showSubtask && selectedSubtask == "subtask2" &&
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-row min-w-0  border border-red-500 gap-4 p-4">
+                {showSubtask && selectedSubtask === "subtask2" && (
+                    <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4">
                         <button className="btn btn-ghost mb-6" onClick={() => handleSubtaskClick(false)}>
                             <ArrowLeftIcon className="size-5" />
                             Back to subtasks
                         </button>
-                        <div className="flex flex-1 border border-green-400 flex-row gap-3">
-                            {Array.isArray(allEvents) && allEvents.map((item, index) => {
-                                return (
 
-                                    <div key={index} className="flex-1 card card-side bg-base-100 shadow-sm h-[20%] w-[40%] overflow-x-scroll">
-                                        <figure>
-                                            <img
-                                                src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-                                                alt="Movie" />
-                                        </figure>
-                                        <div className="card-body">
-                                            <h2 className="card-title">New movie is released!</h2>
-                                            <p>.</p>
-                                            <div className="card-actions justify-end">
-                                                <button className="btn btn-primary">Watch</button>
+                        <div className="flex flex-wrap gap-2 min-h-screen overflow-y-auto border border-green-400 p-2">
+                            {Array.isArray(allEvents) &&
+                                allEvents.map((item, index) => (
+                                    <div key={index} className="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-200 p-4">
+                                        <div className="flex flex-col md:flex-row gap-4">
+                                            {/* Optional image placeholder */}
+                                            <div className="flex-shrink-0 w-full md:w-48 h-32 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                                                Event
+                                            </div>
+
+                                            {/* Event details */}
+                                            <div className="flex-1 flex flex-col gap-2">
+                                                <h2 className="text-xl font-bold">{item.name}</h2>
+                                                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                                                    <span className="badge badge-outline">{item.type}</span>
+                                                    <span className="badge badge-outline">{item.costType}</span>
+                                                </div>
+                                                <p className="text-gray-700 text-sm">{item.date} · {item.time}</p>
+                                                <p className="text-gray-600 text-sm">{item.location}</p>
+                                                <p className="mt-2 text-gray-700 text-sm line-clamp-4">{item.description}</p>
+                                                <div className="mt-auto pt-2">
+                                                    <a
+                                                        href={item.link}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary btn-sm"
+                                                    >
+                                                        View Event
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                    </div >
-                                )
-                            })}
+
+                                ))}
                         </div>
                     </div>
-                }
+                )}
             </div>
         </>
     )
