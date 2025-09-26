@@ -386,9 +386,9 @@ const CVModule = () => {
           </button>
 
           {/* Bear + Speech Bubble Container */}
-          <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start">
+          <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
             {/* Speech Bubble */}
-            <div className="relative bg-white text-black font-semibold px-4 py-2 rounded-2xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
+            <div className="relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
               Time to build our CV!
               {/* Bubble Tail */}
               <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md"></div>

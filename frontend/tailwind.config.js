@@ -12,12 +12,15 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'register-bg': "url('/src/assets/login-page1.jpg')", // adjust path
-      }
+        'register-bg': "url('/src/assets/login-page1.jpg')",
+      },
+      
     },
-  },
+},
+
   plugins: [daisyui, flowbiteReact],
   daisyui: {
     themes: ["winter"]
   }
 }
+
