@@ -10,8 +10,9 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [usernameFocus, setUsernameFocus] = useState(false);
-  const usernameRegex = /^[\w\s-]{3,20}$/;
+  // const [usernameFocus, setUsernameFocus] = useState(false);
+  const [_, setUsernameFocus] = useState(false);
+  // const usernameRegex = /^[\w\s-]{3,20}$/;
   const navigate = useNavigate();
 
   const { fetchUser } = useUserStore();
@@ -40,7 +41,7 @@ const Login = () => {
       //const user = useUserStore((state) => state.user);
       navigate("/Welcome"); // This should navigate to login page
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 401 && error.response.data.message === 'Incorrect password') {
         toast.error("Incorrect password! Please try again");
       } else if (error.response && error.response.data.message == "User not found") {
         toast.error("User not found");
@@ -73,18 +74,18 @@ const Login = () => {
                   <input
                     type="text"
                     placeholder="Username"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={username}
                     onFocus={() => setUsernameFocus(true)}
                     onBlur={() => setUsernameFocus(false)}
                     onChange={(e) => setUsername(e.target.value)}
                   />
 
-                  {usernameFocus && !usernameRegex.test(username) && (
+                  {/* {usernameFocus && !usernameRegex.test(username) && (
                     <p className="validator-hint text-sm text-red-600 mt-1">
                       Username must be 3–20 characters
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="form-control mb-4">
@@ -94,19 +95,19 @@ const Login = () => {
                   <input
                     type="password"
                     placeholder="Password"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
 
-                <div className="card-actions justify-center mb-8">
-                  <button type="submit" className="btn btn-primary w-80 h-18" disabled={loading}>
+                <div className="card-actions justify-center mt-6 mb-8">
+                  <button type="submit" className="btn btn-primary w-full md:w-80 h-18" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </button>
                 </div>
 
-                <div className="divider text-gray-500 text-sm w-80 mx-auto">Or</div>
+                <div className="divider text-gray-500 text-sm w-full md:w-80 mx-auto">Or</div>
 
                 {/* Google Login */}
                 <OAuth />
