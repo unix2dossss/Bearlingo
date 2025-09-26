@@ -1,11 +1,13 @@
 import React from "react";
 import CVuploadBox from "../../components/CVModuleComponent/CVuploadBox";
+import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
 export default function PersonalInfoCard({ personal, setPersonal }) {
 
   return (
     <div>
-      <CVuploadBox />
+      {/* <CVuploadBox /> */}
+      <ResumeUpload />
       {/* header */}
       <div className="pt-4 pb-2 px-8 text-center">
         <h2 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">

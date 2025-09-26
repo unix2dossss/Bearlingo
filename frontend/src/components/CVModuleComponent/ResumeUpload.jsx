@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import api from "../../lib/axios";
 import { toast } from "react-hot-toast";
+import { useUserStore } from "../../store/user";
 
 const PRIMARY = "#4f9cf9";
 const MUTED = "#767687";
@@ -47,10 +48,16 @@ export default function ResumeUpload({
     return true;
   };
 
+  const currentUser = useUserStore.getState().user;
+    const firstName = currentUser?.firstName;
+    const lastName = currentUser?.lastName;
+
   const defaultUpload = async (file) => {
     const fd = new FormData();
-    fd.append("resume", file);
-    const res = await api.post("/users/me/cv/resume", fd, {
+    fd.append("cv", file);
+    fd.append("firstName", firstName);
+    fd.append("lastName", lastName);
+    const res = await api.post("/users/me/cv/upload", fd, {
       withCredentials: true,
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -59,7 +66,7 @@ export default function ResumeUpload({
 
   const defaultRemove = async () => {
     // Adjust if your API differs (DELETE or POST to a remove endpoint)
-    await api.delete("/users/me/cv/resume", { withCredentials: true });
+    await api.delete("/users/me/cv/upload", { withCredentials: true });
   };
 
   const defaultAddUrl = async (url) => {
