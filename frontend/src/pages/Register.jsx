@@ -335,7 +335,7 @@ const Register = () => {
                       </div>
                     </div>
 
-                    <div className="card-actions justify-center mt-6 mb-6">
+                    <div className="card-actions justify-center mt-6 mb-8">
                       <button type="submit" className="btn btn-primary w-full md:w-80 h-18" disable={loading}>
                         {loading ? "Registering ..." : "Register"}
                       </button>
