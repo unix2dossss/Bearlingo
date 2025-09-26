@@ -13,6 +13,7 @@ router.get("/linkedin-profile", authenticate, networkingController.getLinkedInPr
 router.post("/events", authenticate, networkingController.createEventsToAttend);
 router.put("/events", authenticate, networkingController.updateEventsToAttend);
 router.get("/events", authenticate, networkingController.getEventsToAttend);
+router.get("/all-events", authenticate, networkingController.getAllEvents);
 
 // ---------- Reflection Routes ----------
 router.post("/reflections", authenticate, networkingController.createReflection);
