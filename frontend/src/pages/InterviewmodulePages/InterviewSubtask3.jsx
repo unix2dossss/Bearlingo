@@ -7,7 +7,7 @@ import { useUserStore } from "../../store/user";
 
 const ACCENT = "#43a047"; // Interview theme color (green)
 
-const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
+const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplete }) => {
   const [whatWentWell, setWhatWentWell] = useState("");
   const [whatWasDifficult, setWhatWasDifficult] = useState("");
   const [improvementPlan, setImprovementPlan] = useState("");
@@ -125,6 +125,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
       setDbImprovementPlan(improvementPlan);
 
       setIsSubmitted?.(true);
+      onTaskComplete?.();
       onClose?.(false, true); // no unsaved changes, force close (same pattern as Subtask 1)
 
 
@@ -136,6 +137,8 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose }) => {
         const done = await completeTask(subtaskId);
         if (done?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 3 completed!");
+          onTaskComplete?.();
+
         }
       } catch (err) {
         console.error("Failed to complete task", err);
