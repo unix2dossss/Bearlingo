@@ -18,6 +18,7 @@ const NetworkingModule = () => {
     const [userEvents, setUserEvents] = useState("");
     const [attendedEvents, setAttendedEvents] = useState([]);
     const [attended, setAttended] = useState(false);
+    const [tempButtonChange, setTempButtonChange] = useState()
 
 
     const navigate = useNavigate();
@@ -65,7 +66,7 @@ const NetworkingModule = () => {
     };
 
     useEffect(() => {
-        if (selectedSubtask === "subtask2") {
+        if (showSubtask && selectedSubtask === "subtask2") {
             const fetchEventsOfUser = async () => {
                 try {
                     const res = await api.get("/users/me/networking/events", {
@@ -141,8 +142,25 @@ const NetworkingModule = () => {
                         withCredentials: true,
                     });
 
+                // Update frontend state immediately by checking its previous / cuurent state hence (prev - the current userEvents state at the moment this update runs)
+                setUserEvents((prev) => {
+                    // If the user has no events then create a new Event object
+                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "attended" }] }];
+                    // Creates a shallow copy of the first object in prev.
+                    const updated = { ...prev[0] };
+                    // Searches in attendingEventIds array to see if this event already exists in the state. Returns index of -1 if teh event does not already exist
+                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+                    if (idx !== -1) {
+                        updated.attendingEventIds[idx].status = "attended";
+                    } else {
+                        updated.attendingEventIds.push({ eventId, status: "attended" });
+                    }
+                    // Returns a new array with the updated object which updates userEvents state and  triggers a re-render of the component
+                    return [updated];
+                });
+
             } catch (error) {
-                console.log("Error for updating events: ", events);
+                console.log("Error in updating events: ", events);
                 toast.error("Events were not updated");
             }
         }
@@ -158,8 +176,21 @@ const NetworkingModule = () => {
                         withCredentials: true,
                     });
 
+                setUserEvents((prev) => {
+
+                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "going" }] }];
+                    const updated = { ...prev[0] };
+                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+                    if (idx !== -1) {
+                        updated.attendingEventIds[idx].status = "going";
+                    } else {
+                        updated.attendingEventIds.push({ eventId, status: "going" });
+                    }
+                    return [updated];
+                });
+
             } catch (error) {
-                console.log("Error for updating events: ", events);
+                console.log("Error in updating events: ", events);
                 toast.error("Events were not updated");
             }
         }
