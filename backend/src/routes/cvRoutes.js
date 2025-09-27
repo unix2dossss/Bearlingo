@@ -2,6 +2,7 @@ import express from "express";
 
 //middlewares
 import { authenticate } from "../middlewares/authMiddleware.js";
+import { upload } from "../middlewares/fileUploadMiddleware.js";
 
 //controllers
 import * as cvController from "../controllers/cvController.js";
@@ -15,5 +16,8 @@ router.post("/work-experience", authenticate, cvController.addWorkExperience);
 router.get("/", authenticate, cvController.getCV);
 router.get("/preview", authenticate, cvController.getPreviewCV);
 router.get("/download", authenticate, cvController.downloadCV);
+router.post("/upload", authenticate, upload.single("cv"), cvController.uploadCV);
+router.delete("/delete", authenticate, cvController.deleteCV);
+router.get("/pdf", authenticate, cvController.getPdfCVFromDB);
 
 export default router;

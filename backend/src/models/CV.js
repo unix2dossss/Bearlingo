@@ -11,12 +11,10 @@ const cvSchema = new mongoose.Schema(
     // Personal Information
     firstName: {
       type: String,
-      required: true,
       trim: true
     },
     lastName: {
       type: String,
-      required: true,
       trim: true
     },
     contact: {
@@ -27,7 +25,6 @@ const cvSchema = new mongoose.Schema(
       },
       email: {
         type: String,
-        required: true,
         lowercase: true,
         trim: true
       },
@@ -84,7 +81,15 @@ const cvSchema = new mongoose.Schema(
         endYear: { type: String, required: true }, // allow "Present"
         contribution: { type: String, required: true } // ~2–3 sentences
       }
-    ]
+    ],
+    cvFile: {
+      data: Buffer, // the PDF bytes
+      filename: String,
+      contentType: String,
+      size: Number,
+      uploadedAt: Date
+    },
+    cvUrl: String // URL/key got from storing PDF in S3 (Amazon Simple Storage Service) object store
   },
   {
     timestamps: true
