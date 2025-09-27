@@ -89,18 +89,6 @@ const cvSchema = new mongoose.Schema(
       size: Number,
       uploadedAt: Date
     },
-    // Raw extracted text from PDF/DOCX
-    rawText: { type: String },
-
-    // JSON Resume skeleton (basic, work, education, skills)
-    resumeJSON: { type: Object },
-
-    // Rewritten bullet points or improved text
-    improvedText: { type: String },
-
-    // Feedback from rule-based checks
-    feedback: { type: [String], default: [] },
-
     cvUrl: { type: String } // URL/key got from storing PDF in S3 (Amazon Simple Storage Service) object store
   },
   {
