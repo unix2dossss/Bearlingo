@@ -20,6 +20,16 @@ const NetworkingModule = () => {
     const [attended, setAttended] = useState(false);
     const [tempButtonChange, setTempButtonChange] = useState()
 
+    const speechForSubtask1 = [
+        "Hi there! 👋",
+        "Welcome to the first subtask of the Networking Module!",
+        "This will only take a few minutes — you'll create a simple LinkedIn profile like this one.",
+        "Complete this task to earn XPs and advance your career!",
+        "Choose one of the suggested headlines or create your own.",
+        "Which university are you attending?",
+        "Select all skills that apply — both technical and soft skills.",
+        "What is your career goal?"
+    ];
 
     const navigate = useNavigate();
 
@@ -96,17 +106,18 @@ const NetworkingModule = () => {
     // Animate bear when Subtask 1 opens
     useEffect(() => {
         if (showSubtask && selectedSubtask === "subtask1") {
-            const tl = gsap.timeline();
+            const tl = gsap.timeline({ defaults: { duration: 0.8, ease: "power3.out" } });
+
+            // 1. Scale up from tiny and rotate while fading in
             tl.fromTo(
                 ".bear",
-                { y: -50, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.7 }
+                { scale: 0, rotation: -180, opacity: 0, x: -200, y: -100 },
+                { scale: 1, rotation: 0, opacity: 1, x: 0, y: 0, duration: 1.2 }
             );
-            tl.to(".bear", { rotation: 50, yoyo: true, repeat: 2, duration: 0.5 });
-            tl.from(".bear", { rotation: 50, yoyo: true, repeat: 2, duration: 0.5 });
-            tl.to(".bear", { rotation: -50, yoyo: true, repeat: 2, duration: 0.5 });
-            tl.from(".bear", { rotation: -50, yoyo: true, repeat: 2, duration: 0.5 });
-            tl.to(".bear", { rotation: 50, yoyo: true, repeat: 2, duration: 0.5 });
+
+            // 2. Bounce slightly with a yoyo effect
+            tl.to(".bear", { y: -30, duration: 0.4, yoyo: true, repeat: 1, ease: "power2.inOut" });
+
         }
     }, [showSubtask, selectedSubtask]);
 
@@ -263,7 +274,7 @@ const NetworkingModule = () => {
                 }
 
                 {showSubtask && selectedSubtask === "subtask2" && (
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4">
+                    <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4 mt-2">
                         <div>
                             <button className="btn btn-ghost mb-2 " onClick={() => handleSubtaskClick(false)}>
                                 <ArrowLeftIcon className="size-5" />
@@ -282,8 +293,7 @@ const NetworkingModule = () => {
                                     allEvents.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 
-                   rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 flex flex-col overflow-hidden group"
+                                            className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 flex flex-col overflow-hidden group"
                                         >
                                             {/* Image / banner */}
                                             <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-500 font-bold text-lg">
