@@ -75,6 +75,7 @@ const NetworkingModule = () => {
                     setUserEvents(res.data.eventsToAttend); // <- update your state
                     toast.success("User events obtained successfully");
                     console.log("User events:", res.data.eventsToAttend);
+                    console.log("userEvents usesState: ", userEvents);
                 } catch (error) {
                     console.error("User events were not fetched", error);
                     toast.error("User events were not fetched");
@@ -84,10 +85,6 @@ const NetworkingModule = () => {
             fetchEventsOfUser();
         }
     }, [selectedSubtask]);
-
-    const handleAttendance = (eventId) => {
-
-    }
 
     useEffect(() => {
         if (showSubtask && selectedSubtask === "subtask2") {
@@ -123,38 +120,52 @@ const NetworkingModule = () => {
 
     };
 
-    // Render the selected subtask
-    const renderSubtask = () => {
-        switch (selectedSubtask) {
-            case "subtask1":
-                return (
-                    <NetworkingSubtask1
-                        task={selectedSubtask}
-                        isSubmitted={isSubmitted}
-                        setIsSubmitted={setIsSubmitted}
-                        onClose={handleClose}
-                        onTaskComplete={() => setTask1Complete(true)}
-                    />
-                );
-            case "subtask2":
-                return (
-                    <NetworkingSubtask2
-                        isSubmitted={isSubmitted}
-                        setIsSubmitted={setIsSubmitted}
-                        onClose={handleClose}
-                        onTaskComplete={() => setTask2Complete(true)}
-                    />
-                );
-            case "subtask3":
-                return <NetworkingSubtask3
-                    onClose={handleClose}
-                    setIsSubmitted={setIsSubmitted}
-                    onTaskComplete={() => setTask3Complete(true)}
-                />;
-            default:
-                return null;
-        }
+    // Safely extract attendingEventIds for easier use, ? ensures that if userEvents[0] is null the program won't crash
+    const attendingEventIds = userEvents[0]?.attendingEventIds || [];
+
+    // Helper function to get the status of a specific event
+    const getEventStatus = (eventId) => {
+        return attendingEventIds.find(ev => ev.eventId === eventId)?.status || null;
     };
+
+    const handleAttendance = async (eventId, buttonState) => {
+        if (buttonState == 'going') {
+            try {
+                const res = await api.put("/users/me/networking/events", {
+                    attendingEventIds: [{
+                        eventId: eventId,
+                        status: "attended"
+                    }]
+                },
+                    {
+                        withCredentials: true,
+                    });
+
+            } catch (error) {
+                console.log("Error for updating events: ", events);
+                toast.error("Events were not updated");
+            }
+        }
+        else if (buttonState == 'default') {
+            try {
+                const res = await api.put("/users/me/networking/events", {
+                    attendingEventIds: [{
+                        eventId: eventId,
+                        status: "going"
+                    }]
+                },
+                    {
+                        withCredentials: true,
+                    });
+
+            } catch (error) {
+                console.log("Error for updating events: ", events);
+                toast.error("Events were not updated");
+            }
+        }
+
+    }
+
     return (
         <>
             <div className="relative min-h-screen flex flex-col">
@@ -263,10 +274,7 @@ const NetworkingModule = () => {
                                                 <h3 className="mt-2 text-purple-700 font-semibold">Description</h3>
 
                                                 {/* Scrollable description */}
-                                                <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg
-                          shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] 
-                          scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 
-                          hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
+                                                <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
                                                     <p className="text-gray-700 text-sm">
                                                         {item.description}
                                                     </p>
@@ -286,14 +294,17 @@ const NetworkingModule = () => {
 
                                                     {/* Attendance button */}
                                                     <button
-                                                        className={`btn btn-sm w-full transition-transform duration-200 
-                ${attended ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-md'} 
-                hover:scale-105`}
+                                                        className={`btn btn-sm w-full transition-transform duration-200 ${getEventStatus(item.id) === 'going' ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : getEventStatus(item.id) == 'attended' ? 'bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed' : 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-md'} hover:scale-105`}
                                                         onClick={() => {
-                                                            handleAttendance(item.id);
+                                                            getEventStatus(item.id) === 'going' ? handleAttendance(item.id, 'going') : handleAttendance(item.id, 'default');
                                                         }}
+                                                        disabled={getEventStatus(item.id) === 'attended'}
                                                     >
-                                                        {attended ? 'Locked In 🫡' : 'Going to Attend'}
+                                                        {getEventStatus(item.id) === 'attended'
+                                                            ? 'Attended ✅'
+                                                            : getEventStatus(item.id) === 'going'
+                                                                ? 'Locked In 🫡'
+                                                                : 'Going to Attend'}
                                                     </button>
                                                 </div>
                                             </div>
