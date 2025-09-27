@@ -16,16 +16,13 @@ const NetworkingModule = () => {
     const [showSubtask, setShowSubtask] = useState(false);
     const [allEvents, setAllEvents] = useState("");
     const [userEvents, setUserEvents] = useState("");
-    const [attendedEvents, setAttendedEvents] = useState([]);
-    const [attended, setAttended] = useState(false);
-    const [tempButtonChange, setTempButtonChange] = useState()
     const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
-    const [waitingForInput, setWaitingForInput] = useState(false);
     const [animationDone, setAnimationDone] = useState(false);
-    const [headline, setHeadline] = useState("");
-    const [customHeadline, setCustomHeadline] = useState(""); // value typed in the input
     const [university, setUniversity] = useState("");
     const [selectedSkills, setSelectedSkills] = useState([]);
+    const [careerGoal, setCareerGoal] = useState("");
+    const [selectedHeadline, setSelectedHeadline] = useState(""); // default empty or ""
+    const [customHeadline, setCustomHeadline] = useState(""); // default empty
 
     const navigate = useNavigate();
 
@@ -58,7 +55,8 @@ const NetworkingModule = () => {
         "Choose one of the suggested headlines or create your own.",
         "Which university are you attending?",
         "Select top four skills that apply — both technical and soft skills.",
-        "What is your career goal?"
+        "What is your career goal?",
+        "Congratulations! You have finished your linked in profile! Nice job 🔥"
     ];
 
     const allSkills = [
@@ -300,26 +298,29 @@ const NetworkingModule = () => {
                     </div>
                 }
 
+
+                {/* SUBTASK  1 */}
+
                 {showSubtask && selectedSubtask == "subtask1" &&
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-row min-w-0  border border-red-500 gap-4 p-4">
+                    <div className="bg-yellow-200 relative min-h-screen flex flex-row min-w-0 gap-4 p-4">
                         <button className="btn btn-ghost mb-6" onClick={() => handleSubtaskClick(false)}>
                             <ArrowLeftIcon className="size-5" />
                             Back to subtasks
                         </button>
-                        <div className="flex flex-1 border border-green-400">
+                        <div className="flex flex-1 border">
 
-                            <div className="border border-red-500 mt-20">
+                            <div className="mt-20">
                                 {animationDone &&
                                     <div key={currentSpeechIndex} // ensures React replaces the bubble so GSAP can animate it.
                                         className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center">
                                         <div className="chat-bubble">
-                                            {speechForSubtask1[currentSpeechIndex]}
+                                            {currentSpeechIndex == 0 ? `Hi ${userInfo.username}! 👋` : speechForSubtask1[currentSpeechIndex]}
                                         </div>
                                     </div>}
 
 
                                 {/* "Next" button */}
-                                {animationDone && (
+                                {animationDone && !(currentSpeechIndex == 8) && (
                                     <button
                                         className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
                                         onClick={handleNext}
@@ -331,7 +332,7 @@ const NetworkingModule = () => {
                                 <img className="bear h-[700px] w-[700px]" src={Bear} alt=" Bear Mascot" />
                             </div>
                         </div>
-                        <div className="flex-1 border border-black">
+                        <div className="flex-1">
                             Questions
                             {currentSpeechIndex == 2 &&
                                 <div className="flex justify-center mt-32">
@@ -371,13 +372,17 @@ const NetworkingModule = () => {
                             }
 
 
-                            {currentSpeechIndex == 4 &&
-                                <div className="border border-red-500  flex flex-col items-center justify-center gap-10 mt-[30%] h-[40%]">
-                                    <select defaultValue="Pick a headline"
-                                        value={headline} // controlled component
-                                        onChange={(e) => setSelectedHeadline(e.target.value)} // update state when user selects
-                                        className="select w-[70%]">
-                                        <option disabled={true}>Pick a headline</option>
+                            {currentSpeechIndex == 4 && (
+                                <div className="border border-red-500 flex flex-col items-center justify-center gap-10 mt-[30%] h-[40%]">
+                                    {/* Dropdown for predefined headlines */}
+                                    <select
+                                        value={selectedHeadline} // controlled by a separate state
+                                        onChange={(e) => setSelectedHeadline(e.target.value)} // update selectedHeadline
+                                        className="select w-[70%]"
+                                    >
+                                        <option disabled value="">
+                                            Pick a headline
+                                        </option>
                                         <option>Aspiring Software Engineer | Computer Science Student</option>
                                         <option>Computer Science Undergraduate | Passionate About AI & Machine Learning</option>
                                         <option>Future Full-Stack Developer | Tech Enthusiast</option>
@@ -387,25 +392,31 @@ const NetworkingModule = () => {
                                         <option>Computer Science Enthusiast | Passionate About Data Science</option>
                                         <option>CS Student | Interested in Cybersecurity & Ethical Hacking</option>
                                     </select>
-                                    <div className="flex flex-row gap-1">
+
+                                    {/* Input for custom headline */}
+                                    <div className="flex flex-row gap-1 w-[70%]">
                                         <input
                                             type="text"
                                             placeholder="Enter headline here"
-                                            className="input w-[90%]"
+                                            className="input flex-1"
                                             value={customHeadline}
                                             onChange={(e) => setCustomHeadline(e.target.value)}
                                         />
-                                        <button className="btn"
+                                        <button
+                                            className="btn"
                                             onClick={() => {
                                                 if (customHeadline.trim() !== "") {
-                                                    setHeadline(customHeadline); // update headline with input value
-                                                    setCustomHeadline(""); //  clear input
+                                                    setSelectedHeadline(customHeadline); // save input into selectedHeadline
+                                                    setCustomHeadline(""); // clear input
                                                     toast.success("Headline saved!");
                                                 }
-                                            }} >Enter</button>
+                                            }}
+                                        >
+                                            Enter
+                                        </button>
                                     </div>
                                 </div>
-                            }
+                            )}
 
 
                             {currentSpeechIndex == 5 &&
@@ -421,7 +432,7 @@ const NetworkingModule = () => {
                                         <button className="btn"
                                             onClick={() => {
                                                 if (university.trim() !== "") {
-                                                    setUniversity(customHeadline); // update headline with input value
+                                                    setUniversity(university); // update headline with input value
                                                     toast.success("Unversity saved!");
                                                 }
                                             }} >Submit</button>
@@ -431,26 +442,94 @@ const NetworkingModule = () => {
 
 
                             {currentSpeechIndex == 6 &&
-                                <div className="flex flex-col items-center gap-2 border border-red-500">
+                                <div className="flex flex-col items-center gap-2 border border-red-500 mt-[40%]">
                                     <label className="font-semibold">Select Your Skills</label>
                                     <select
                                         multiple
-                                        className="select border p-2 w-[70%] h-40"
+                                        size={10} // number of visible options
+                                        className="select border border-red-500 p-2 w-[70%] text-lg"
                                         value={selectedSkills}
                                         onChange={handleSkillChange}
                                     >
-                                        {allSkills.map((skill, idx) => (
-                                            <option key={idx} value={skill}>
+                                        {allSkills.map((skill, index) => (
+                                            <option key={index} value={skill}>
                                                 {skill}
                                             </option>
                                         ))}
                                     </select>
                                     <p className="mt-2">Selected Skills: {selectedSkills.join(", ")}</p>
-                                </div>}
+                                    <button className="btn"
+                                        onClick={() => {
+                                            toast.success("Skills saved!");
+                                        }
+                                        } >Submit</button>
+                                </div>
+                            }
+
+                            {currentSpeechIndex == 7 &&
+                                <div className="border border-red-400 mt-[50%]">
+                                    <div className="flex flex-row gap-1">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter career goal here"
+                                            className="input w-[90%]"
+                                            value={careerGoal}
+                                            onChange={(e) => setCareerGoal(e.target.value)}
+                                        />
+                                        <button className="btn"
+                                            onClick={() => {
+                                                if (careerGoal.trim() !== "") {
+                                                    setCareerGoal(careerGoal);
+                                                    toast.success("Career goal saved!");
+                                                }
+                                            }} >Enter</button>
+                                    </div>
+                                </div>
+                            }
+                            {currentSpeechIndex == 8 &&
+                                <div className="flex justify-center mt-32">
+                                    <div className="card bg-base-100 w-96 shadow-sm">
+
+                                        <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
+                                            <div className="card-body space-y-6">
+                                                {/* Profile Info */}
+                                                <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
+                                                    <h1 className="text-2xl font-bold text-gray-900">{userInfo.firstName} {userInfo.lastName}</h1>
+                                                    <p className="text-gray-600 mt-1">{selectedHeadline}</p>
+                                                    <p className="text-gray-500 mt-2 text-sm">{university}</p>
+                                                </div>
+
+                                                {/* Key Skills */}
+                                                <div>
+                                                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {selectedSkills.map((skill, index) => {
+                                                            return <span key={index} className="badge badge-outline">{skill}</span>
+
+                                                        })}
+
+                                                    </div>
+                                                </div>
+
+                                                {/* Career Goals */}
+                                                <div>
+                                                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
+                                                    <p className="text-gray-600 text-sm">
+                                                        {careerGoal}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
 
                     </div>
                 }
+
+
+                {/* SUBTASK  2 */}
 
                 {showSubtask && selectedSubtask === "subtask2" && (
                     <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4 mt-2">
