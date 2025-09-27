@@ -18,5 +18,8 @@ router.get("/preview", authenticate, cvController.getPreviewCV);
 router.get("/download", authenticate, cvController.downloadCV);
 router.post("/upload", authenticate, upload.single("cv"), cvController.uploadCV);
 router.get("/pdf", authenticate, cvController.getPdfCVFromDB);
+router.get("/feedback", authenticate, cvController.getFeedback);
+router.post("/rewrite", authenticate, cvController.rewriteCV);
+router.get("/improved-cv", authenticate, cvController.improveCV);
 
 export default router;
