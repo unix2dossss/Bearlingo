@@ -264,11 +264,16 @@ const NetworkingModule = () => {
 
                 {showSubtask && selectedSubtask === "subtask2" && (
                     <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4">
-                        <button className="btn btn-ghost mb-6" onClick={() => handleSubtaskClick(false)}>
-                            <ArrowLeftIcon className="size-5" />
-                            Back to subtasks
-                        </button>
-                        <h2>Attend an event and earn points!</h2>
+                        <div>
+                            <button className="btn btn-ghost mb-2 " onClick={() => handleSubtaskClick(false)}>
+                                <ArrowLeftIcon className="size-5" />
+                                Back to subtasks
+                            </button>
+                        </div>
+                        <h2 className="text-2xl font-bold text-black-800 mb-4">
+                            🎉 Join an Event & Earn Points!
+                            Participate, learn, and get rewarded for attending events!
+                        </h2>
                         <div className="border-4 border-yellow-500 rounded-3xl
                 shadow-[0_0_20px_4px_rgba(236,72,153,0.6)] overflow-hidden">
 
