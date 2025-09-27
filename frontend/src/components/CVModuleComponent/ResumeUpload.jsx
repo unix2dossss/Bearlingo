@@ -66,7 +66,7 @@ export default function ResumeUpload({
 
   const defaultRemove = async () => {
     // Adjust if your API differs (DELETE or POST to a remove endpoint)
-    await api.delete("/users/me/cv/upload", { withCredentials: true });
+    await api.delete("/users/me/cv/delete", { withCredentials: true });
   };
 
   const defaultAddUrl = async (url) => {
