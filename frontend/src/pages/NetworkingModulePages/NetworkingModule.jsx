@@ -220,48 +220,66 @@ const NetworkingModule = () => {
                             Back to subtasks
                         </button>
 
-                        <div className="flex flex-wrap gap-2 min-h-screen overflow-y-auto border border-green-400 p-2">
+                        <div className="carousel w-full p-4 space-x-4">
                             {Array.isArray(allEvents) &&
                                 allEvents.map((item, index) => (
-                                    <div key={index} className="bg-base-100 shadow-md hover:shadow-xl transition-all duration-200 p-2 border border-red-950 w-[32%] h-[500px] flex gap-3">
-                                        <div className="flex flex-col gap-2 border border-black">
-                                            {/* Optional image placeholder */}
-                                            <div className="flex-shrink-0 w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
-                                                Event
+                                    <div
+                                        key={index}
+                                        className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 
+                   rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 flex flex-col overflow-hidden group"
+                                    >
+                                        {/* Image / banner */}
+                                        <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-500 font-bold text-lg">
+                                            {item.type}
+                                        </div>
+
+                                        {/* Event content */}
+                                        <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
+                                            <h2 className="text-xl font-bold text-purple-800 group-hover:text-purple-900 transition-colors duration-200">
+                                                {item.name}
+                                            </h2>
+
+                                            {/* Badges */}
+                                            <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                                                <span className="badge badge-neutral">{item.type}</span>
+                                                <span className="badge badge-neutral">{item.costType}</span>
                                             </div>
 
-                                            {/* Event details */}
-                                            <div className="flex-1 flex flex-col gap-2">
-                                                <h2 className="text-xl font-bold">{item.name}</h2>
-                                                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                                                    <span className="badge badge-neutral">{item.type}</span>
-                                                    <span className="badge badge-neutral">{item.costType}</span>
-                                                </div>
-                                                <p className="text-gray-700 text-sm">{item.date} · {item.time}</p>
-                                                <p className="text-gray-600 text-sm">{item.location}</p>
-                                                <p className="mt-2 text-gray-700 text-sm max-h-24 overflow-y-auto pr-2">
+                                            {/* Date / Time / Location */}
+                                            <p className="text-gray-700 text-sm">📅 {item.date} · {item.time}</p>
+                                            <p className="text-gray-600 text-sm">📍 {item.location}</p>
+
+                                            {/* Description header */}
+                                            <h3 className="mt-2 text-purple-700 font-semibold">Description</h3>
+
+                                            {/* Scrollable description */}
+                                            <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg
+                          shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] 
+                          scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 
+                          hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
+                                                <p className="text-gray-700 text-sm">
                                                     {item.description}
                                                 </p>
-                                                <div className="mt-2 pt-2">
-                                                    <a
-                                                        href={item.link}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="btn btn-primary btn-sm"
-                                                    >
-                                                        View Event
-                                                    </a>
-                                                </div>
+                                            </div>
+
+                                            {/* Button */}
+                                            <div className="mt-2 pt-2">
+                                                <a
+                                                    href={item.link}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="btn btn-primary btn-sm w-full hover:scale-105 hover:shadow-lg transition-transform duration-200"
+                                                >
+                                                    View Event
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-
-
                                 ))}
                         </div>
                     </div>
                 )}
-            </div>
+            </div >
         </>
     )
 }
