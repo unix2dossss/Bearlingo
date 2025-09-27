@@ -42,7 +42,7 @@ function ActionButton({
   );
 }
 
-export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
+export default function InterviewSubtask1({ setIsSubmitted, onClose, onTaskComplete }) {
   const questions = [
     { q: "Tell me about yourself", a: "I’m a Computer Science graduate with a strong foundation in software development, data structures, and databases. During my studies, I worked on several projects, including developing a full-stack web application and implementing algorithms to solve real-world problems. I’m passionate about learning new technologies and applying them to build practical, user-focused solutions." },
     { q: "What are your strengths?", a: "I would say my biggest strengths are problem-solving, adaptability, and collaboration. In team projects, I often take initiative to break down complex problems into smaller tasks, and I enjoy working with others to find efficient solutions. I’m also quick to learn new tools or frameworks when needed." },
@@ -80,22 +80,22 @@ export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
       setIndex((i) => i + 1);
       setFlipped(false);
       setIsDirty(true);
-      return;
-    }
-    // Finish
-    try {
-      const subtaskId = await getSubtaskBySequenceNumber("Interview", 1, 1);
-      const res = await completeTask(subtaskId);
-      if (res?.data?.message === "Well Done! You completed the subtask") {
-        toast.success("Task 1 completed!");
+    } else {
+      try {
+        const subtaskId = await getSubtaskBySequenceNumber("Interview", 1, 1);
+        const res = await completeTask(subtaskId);
+        if (res?.data?.message === "Well Done! You completed the subtask") {
+          toast.success("Task 1 completed!");
+        }
+        setSubtaskAlreadyCompleted(true);
+        setIsSubmitted(true);
+        setIsDirty(false);
+        onTaskComplete?.();
+        onClose(false, true);
+      } catch (err) {
+        console.error("Failed to complete subtask", err);
+        toast.error("Could not mark task complete.");
       }
-      setSubtaskAlreadyCompleted(true);
-      setIsSubmitted?.(true);
-      setIsDirty(false);
-      onClose?.(false, true);
-    } catch (err) {
-      console.error("Failed to complete subtask", err);
-      toast.error("Could not mark task complete.");
     }
   };
 

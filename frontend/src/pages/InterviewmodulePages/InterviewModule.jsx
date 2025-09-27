@@ -8,6 +8,8 @@ import Desk from '../../assets/IDesk.svg';
 import Sofa from '../../assets/ISofa.svg';
 import Wall from '../../assets/IWall.svg';
 import WallLocked from '../../assets/IWallB.svg';
+import DeskLocked from '../../assets/IDeskB.svg';
+import SofaLocked from '../../assets/ISofaB.svg';
 import { gsap } from "gsap";
 
 // Import Interview subtasks
@@ -30,6 +32,8 @@ const InterviewModule = () => {
   const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmLeave, setShowConfirmLeave] = useState(false);
+  const [task1Complete, setTask1Complete] = useState(false);
+  const [task2Complete, setTask2Complete] = useState(false);
   const [task3Complete, setTask3Complete] = useState(false);
 
   const navigate = useNavigate();
@@ -87,6 +91,7 @@ const InterviewModule = () => {
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
+            onTaskComplete={() => setTask1Complete(true)}
           />
         );
       case "subtask2":
@@ -95,6 +100,7 @@ const InterviewModule = () => {
             isSubmitted={isSubmitted}
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
+            onTaskComplete={() => setTask2Complete(true)}
           />
         );
       case "subtask3":
@@ -110,6 +116,82 @@ const InterviewModule = () => {
         return null;
     }
   };
+
+  const deskLockedRef = useRef(null);
+  const deskUnlockedRef = useRef(null);
+
+    useEffect(() => {
+          if (task1Complete) {
+            // Fade out locked desk
+            gsap.to(deskLockedRef.current, {
+              opacity: 0,
+              duration: 0.5,
+              onComplete: () => {
+                // Bounce in unlocked drawers
+                gsap.set(deskUnlockedRef.current, {
+                  opacity: 0,
+                  scale: 0.5,
+                  rotation: -30,
+                  y: -300,
+                });
+                gsap.to(deskUnlockedRef.current, {
+                  opacity: 1,
+                  scale: 1,
+                  rotation: 0,
+                  y: 0,
+                  duration: 1.5,
+                  ease: "bounce.out",
+                });
+              },
+            });
+          } else {
+            // Fade in locked desk
+            gsap.set(deskUnlockedRef.current, { opacity: 0 });
+            gsap.to(deskLockedRef.current, {
+              opacity: 1,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          }
+        }, [task1Complete]);
+
+  const sofaLockedRef = useRef(null);
+  const sofaUnlockedRef = useRef(null);
+
+    useEffect(() => {
+          if (task2Complete) {
+            // Fade out locked desk
+            gsap.to(sofaLockedRef.current, {
+              opacity: 0,
+              duration: 0.5,
+              onComplete: () => {
+                // Bounce in unlocked drawers
+                gsap.set(sofaUnlockedRef.current, {
+                  opacity: 0,
+                  scale: 0.5,
+                  rotation: -30,
+                  y: -300,
+                });
+                gsap.to(sofaUnlockedRef.current, {
+                  opacity: 1,
+                  scale: 1,
+                  rotation: 0,
+                  y: 0,
+                  duration: 1.5,
+                  ease: "bounce.out",
+                });
+              },
+            });
+          } else {
+            // Fade in locked desk
+            gsap.set(sofaUnlockedRef.current, { opacity: 0 });
+            gsap.to(sofaLockedRef.current, {
+              opacity: 1,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          }
+        }, [task2Complete]);
 
   const wallLockedRef = useRef(null);
   const wallUnlockedRef = useRef(null);
@@ -152,9 +234,7 @@ const InterviewModule = () => {
   return (
     <div className="relative min-h-screen flex flex-col">
       {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-[#deffbd]"
-      />
+      <div className="absolute inset-0 bg-cover bg-center bg-[#deffbd]" />
       
       {/* Top Navbar */}
       <div className="fixed top-0 inset-x-0 z-[100]">
@@ -185,40 +265,56 @@ const InterviewModule = () => {
         />
       </div>
             
-      <div className="absolute top-[42vh] left-1/2 -translate-x-1/2 flex justify-between w-[70%] max-w-[1400px] z-30">
-        {/* Subtask 1 Object: Desk */}
-        <img 
-          src={Desk} 
-          alt="Desk" 
-          className="w-[32vw] max-w-[400px] h-auto" 
+      {/* Subtask 1 Object: Desk */}
+
+      <div className="relative w-full flex justify-center">
+        <img
+          ref={deskLockedRef}
+          src={DeskLocked}
+          alt="Locked CV Desk"
+          className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
         />
-        {/* Subtask 2 Object: Sofa */}
-        <div className="flex flex-col justify-end">
-          <img 
-            src={Sofa} 
-            alt="Sofa" 
-            className="w-[50vw] max-w-[500px] h-auto" 
-          />
-        </div>
+        <img
+          ref={deskUnlockedRef}
+          src={Desk}
+          alt="Unlocked CV Desk"
+          className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+        />
+      </div>
+
+      {/* Subtask 2 Object: Sofa */}         
+      <div className="relative w-full flex justify-center">
+        <img
+          ref={sofaLockedRef}
+          src={SofaLocked}
+          alt="Locked CV Desk"
+          className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+        />
+        <img
+          ref={sofaUnlockedRef}
+          src={Sofa}
+          alt="Unlocked CV Desk"
+          className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+        />
       </div>
 
       {/* Bottom Button Container */}
       <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
         <div className="flex space-x-6">
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask1")}
           >
             Task 1
           </button>
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask2")}
           >
             Task 2
           </button>
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask3")}
           >
             Task 3
