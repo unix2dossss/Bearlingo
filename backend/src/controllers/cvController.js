@@ -409,6 +409,22 @@ export const uploadCV = async (req, res) => {
   }
 };
 
+// Delete cvFile (has CV PDF information) from CV record
+export const deleteCV = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found" });
+    }
+    cv.cvFile = null;
+    await cv.save();
+    res.json({ message: "CV deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 // For small CVs, just store in DB
 export const getPdfCVFromDB = async (req, res) => {
