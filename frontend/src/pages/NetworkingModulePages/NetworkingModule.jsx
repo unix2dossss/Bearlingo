@@ -242,9 +242,27 @@ const NetworkingModule = () => {
                 console.log("Error in updating events: ", events);
                 toast.error("Events were not updated");
             }
+        };
+
+        useEffect(() => {
+            if (currentSpeechIndex === 8) {
+                submitLinkedInProfile();
+            }
+        }, [currentSpeechIndex]);
+
+
+
+
+        const submitLinkedInProfile = async () => {
+            try {
+
+            } catch (error) {
+                toast.error("Could not submit linked-inprofile")
+            }
+
         }
 
-    }
+    };
 
     return (
         <>
@@ -487,6 +505,7 @@ const NetworkingModule = () => {
                                 </div>
                             }
                             {currentSpeechIndex == 8 &&
+
                                 <div className="flex justify-center mt-32">
                                     <div className="card bg-base-100 w-96 shadow-sm">
 
