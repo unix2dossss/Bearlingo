@@ -12,9 +12,14 @@ import { useNavigate } from "react-router-dom";
 const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
+    const [userInfo, setUserInfo] = useState(false);
     const [showSubtask, setShowSubtask] = useState(false);
     const [allEvents, setAllEvents] = useState("");
-    const [userInfo, setUserInfo] = useState("");
+    const [userEvents, setUserEvents] = useState("");
+    const [attendedEvents, setAttendedEvents] = useState([]);
+    const [attended, setAttended] = useState(false);
+
+
     const navigate = useNavigate();
 
     const user = useUserStore((state) => state.user);
@@ -35,6 +40,7 @@ const NetworkingModule = () => {
         };
         fetchUserData();
     }, [navigate]);
+
 
     const fetchAllEvents = async (e) => {
         try {
@@ -57,29 +63,30 @@ const NetworkingModule = () => {
             toast.error("Error in obtaining events");
         }
     };
-    const fetchEventsOfUser = async (e) => {
-        try {
-            await api.get(
-                "/users/me/networking/events",
-                {
-                    firstName,
-                    lastName,
-                    username,
-                    email,
-                    password,
-                    confirmPassword,
-                    linkedIn: linkedIn.trim() === "" ? undefined : linkedIn.trim()
-                },
-                {
-                    withCredentials: true // Tells the browser to accept cookies from the backend and include them in future requests.
+
+    useEffect(() => {
+        if (selectedSubtask === "subtask2") {
+            const fetchEventsOfUser = async () => {
+                try {
+                    const res = await api.get("/users/me/networking/events", {
+                        withCredentials: true,
+                    });
+
+                    setUserEvents(res.data.eventsToAttend); // <- update your state
+                    toast.success("User events obtained successfully");
+                    console.log("User events:", res.data.eventsToAttend);
+                } catch (error) {
+                    console.error("User events were not fetched", error);
+                    toast.error("User events were not fetched");
                 }
-            );
-            toast.success("You registered sucessfully!");
-            navigate("/login"); // This should navigate to login page
-        } catch (error) {
-            console.log("Error in registering", error);
-            toast.error("Failed to register! Please try again");
+            };
+
+            fetchEventsOfUser();
         }
+    }, [selectedSubtask]);
+
+    const handleAttendance = (eventId) => {
+
     }
 
     useEffect(() => {
@@ -219,65 +226,82 @@ const NetworkingModule = () => {
                             <ArrowLeftIcon className="size-5" />
                             Back to subtasks
                         </button>
+                        <h2>Attend an event and earn points!</h2>
+                        <div className="border-4 border-yellow-500 rounded-3xl
+                shadow-[0_0_20px_4px_rgba(236,72,153,0.6)] overflow-hidden">
 
-                        <div className="carousel w-full p-4 space-x-4">
-                            {Array.isArray(allEvents) &&
-                                allEvents.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 
+                            <div className="carousel w-full p-5 space-x-4 bg-amber-100">
+                                {Array.isArray(allEvents) &&
+                                    allEvents.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 
                    rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 flex flex-col overflow-hidden group"
-                                    >
-                                        {/* Image / banner */}
-                                        <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-500 font-bold text-lg">
-                                            {item.type}
-                                        </div>
-
-                                        {/* Event content */}
-                                        <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
-                                            <h2 className="text-xl font-bold text-purple-800 group-hover:text-purple-900 transition-colors duration-200">
-                                                {item.name}
-                                            </h2>
-
-                                            {/* Badges */}
-                                            <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                                                <span className="badge badge-neutral">{item.type}</span>
-                                                <span className="badge badge-neutral">{item.costType}</span>
+                                        >
+                                            {/* Image / banner */}
+                                            <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-500 font-bold text-lg">
+                                                {item.type}
                                             </div>
 
-                                            {/* Date / Time / Location */}
-                                            <p className="text-gray-700 text-sm">📅 {item.date} · {item.time}</p>
-                                            <p className="text-gray-600 text-sm">📍 {item.location}</p>
+                                            {/* Event content */}
+                                            <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
+                                                <h2 className="text-xl font-bold text-purple-800 group-hover:text-purple-900 transition-colors duration-200">
+                                                    {item.name}
+                                                </h2>
 
-                                            {/* Description header */}
-                                            <h3 className="mt-2 text-purple-700 font-semibold">Description</h3>
+                                                {/* Badges */}
+                                                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                                                    <span className="badge badge-neutral">{item.type}</span>
+                                                    <span className="badge badge-neutral">{item.costType}</span>
+                                                </div>
 
-                                            {/* Scrollable description */}
-                                            <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg
+                                                {/* Date / Time / Location */}
+                                                <p className="text-gray-700 text-sm">📅 {item.date} · {item.time}</p>
+                                                <p className="text-gray-600 text-sm">📍 {item.location}</p>
+
+                                                {/* Description header */}
+                                                <h3 className="mt-2 text-purple-700 font-semibold">Description</h3>
+
+                                                {/* Scrollable description */}
+                                                <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg
                           shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] 
                           scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 
                           hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
-                                                <p className="text-gray-700 text-sm">
-                                                    {item.description}
-                                                </p>
-                                            </div>
+                                                    <p className="text-gray-700 text-sm">
+                                                        {item.description}
+                                                    </p>
+                                                </div>
 
-                                            {/* Button */}
-                                            <div className="mt-2 pt-2">
-                                                <a
-                                                    href={item.link}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="btn btn-primary btn-sm w-full hover:scale-105 hover:shadow-lg transition-transform duration-200"
-                                                >
-                                                    View Event
-                                                </a>
+                                                {/* Buttons */}
+                                                <div className="mt-auto pt-2 flex flex-col gap-2">
+                                                    {/* View Event */}
+                                                    <a
+                                                        href={item.link}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary btn-sm w-full hover:scale-105 hover:shadow-lg transition-transform duration-200"
+                                                    >
+                                                        View Event
+                                                    </a>
+
+                                                    {/* Attendance button */}
+                                                    <button
+                                                        className={`btn btn-sm w-full transition-transform duration-200 
+                ${attended ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-md'} 
+                hover:scale-105`}
+                                                        onClick={() => {
+                                                            handleAttendance(item.id);
+                                                        }}
+                                                    >
+                                                        {attended ? 'Locked In 🫡' : 'Going to Attend'}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                            </div>
                         </div>
-                    </div>
+                    </div >
                 )}
             </div >
         </>
