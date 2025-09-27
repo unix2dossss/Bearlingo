@@ -4,7 +4,7 @@ import { getSubtaskBySequenceNumber, isSubtaskCompleted } from "../../utils/modu
 import { useUserStore } from "../../store/user";
 import FlashCard from "../../components/InterviewModuleComponents/FlashCard";
 
-export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
+export default function InterviewSubtask1({ setIsSubmitted, onClose, onTaskComplete }) {
   const questions = [
     {
       q: "Tell me about yourself",
@@ -92,10 +92,12 @@ export default function InterviewSubtask1({ setIsSubmitted, onClose }) {
         const res = await completeTask(subtaskId);
         if (res?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
+          onTaskComplete?.();
         }
         setSubtaskAlreadyCompleted(true);
         setIsSubmitted(true);
         setIsDirty(false);
+        onTaskComplete?.();
         onClose(false, true);
       } catch (err) {
         console.error("Failed to complete subtask", err);

@@ -7,6 +7,9 @@ import CVSubtask3 from "./CVSubtask3";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
+import { gsap } from "gsap";
+
+// Assets
 import Floor from '../../assets/CVFloor.svg';
 import Window from '../../assets/CVWindow.svg';
 import WindowLocked from '../../assets/CVWindowB.svg';
@@ -17,7 +20,6 @@ import DeskLocked from '../../assets/CVDeskB.svg';
 import Bookcase from '../../assets/CVBook.svg';
 import BookcaseLocked from '../../assets/CVBookB.svg';
 import Bear from '../../assets/Bear.svg';
-import { gsap } from "gsap";
 
 
 const CVModule = () => {
@@ -29,16 +31,12 @@ const CVModule = () => {
   const [task2Complete, setTask2Complete] = useState(false);
   const [task3Complete, setTask3Complete] = useState(false);
 
-
-
   const navigate = useNavigate();
   const currentUser = useUserStore.getState().user;
   console.log("User:", currentUser);
 
   // Check if user is logged in and redirect if not
   const user = useUserStore((state) => state.user);
-
-
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -129,8 +127,8 @@ const CVModule = () => {
             gsap.set(bookcaseUnlockedRef.current, {
               opacity: 0,
               scale: 0.5,
-              rotation: 15,
-              y: 300,
+              rotation: -15,
+              y: -300,
             });
             gsap.to(bookcaseUnlockedRef.current, {
               opacity: 1,
@@ -138,7 +136,7 @@ const CVModule = () => {
               rotation: 0,
               y: 0,
               duration: 1.5,
-              ease: "elastic.out(1, 0.5)",
+              ease: "bounce.out",
             });
           },
         });
@@ -220,6 +218,30 @@ const CVModule = () => {
       });
     }, []);
 
+  // Elevator doors
+  const leftDoor = useRef(null);
+  const rightDoor = useRef(null);
+
+  // Animate elevator opening when CVModule loads
+  useEffect(() => {
+    gsap.set(leftDoor.current, { x: "0%" });
+    gsap.set(rightDoor.current, { x: "0%" });
+
+    gsap.to(leftDoor.current, {
+      x: "-100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+
+    gsap.to(rightDoor.current, {
+      x: "100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+  }, []);
+
   const handleSubtaskClick = (task) => {
     setSelectedSubtask(task);
     setShowSubtask(true);
@@ -284,8 +306,16 @@ const CVModule = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-    
+   <div className="flex flex-col min-h-screen relative overflow-hidden">
+      {/* Elevator Doors Overlay */}
+      <div
+        ref={leftDoor}
+        className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50"
+      />
+      <div
+        ref={rightDoor}
+        className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50"
+      />
 
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
@@ -367,19 +397,19 @@ const CVModule = () => {
       <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
         <div className="flex space-x-6">
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask1")}
           >
             Task 1
           </button>
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask2")}
           >
             Task 2
           </button>
           <button
-            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
             onClick={() => handleSubtaskClick("subtask3")}
           >
             Task 3
@@ -402,8 +432,6 @@ const CVModule = () => {
               className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
             />
           </div>
-
-
         </div>
       </div>
 
