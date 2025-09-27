@@ -1,5 +1,10 @@
 import React from "react";
-const ACCENT = "#43a047"; // Interview theme color (green)
+const ACCENT = "#4f9cf9"; 
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
 
 const CompanyResearchList = ({ researches, onAddClick, onDelete }) => {
   return (
@@ -45,10 +50,9 @@ const CompanyResearchList = ({ researches, onAddClick, onDelete }) => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 mt-6 w-full max-w-3xl">
+        <div className="grid grid-cols-1 gap-4 mt-6 w-full max-w-3xl p-8">
           {researches.map((r) => (
             <div key={r._id} className="relative border rounded-lg shadow p-4">
-              {/* Delete button on top-right */}
               <button
                 onClick={() => onDelete(r._id)}
                 className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"

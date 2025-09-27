@@ -14,11 +14,11 @@ export default {
       backgroundImage: {
         'register-bg': "url('/src/assets/login-page1.jpg')",
       },
-      
-    },
-},
 
-  plugins: [daisyui, flowbiteReact],
+    },
+  },
+
+  plugins: [daisyui, flowbiteReact, require("tailwind-scrollbar")],
   daisyui: {
     themes: ["winter"]
   }

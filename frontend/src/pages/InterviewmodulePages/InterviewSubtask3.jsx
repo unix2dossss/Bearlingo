@@ -5,8 +5,13 @@ import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const ACCENT = "#43a047"; // Interview theme color (green)
-
+const ACCENT = "#4f9cf9"; // Interview theme color (green)
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
+ 
 const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplete }) => {
   const [whatWentWell, setWhatWentWell] = useState("");
   const [whatWasDifficult, setWhatWasDifficult] = useState("");

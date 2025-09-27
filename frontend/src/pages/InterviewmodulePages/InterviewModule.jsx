@@ -17,6 +17,16 @@ import InterviewSubtask1 from "./InterviewSubtask1";
 import InterviewSubtask2 from "./InterviewSubtask2";
 import InterviewSubtask3 from "./InterviewSubtask3";
 
+/* THEME (blue) */
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
+
+const cx = (...xs) => xs.filter(Boolean).join(" ");
+
+
 const InterviewModule = () => {
   const [showSubtask, setShowSubtask] = useState(false);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
@@ -315,7 +325,10 @@ const InterviewModule = () => {
       {/* Modal */}
       {showSubtask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#79B66F]">
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl relative h-[700px] flex flex-col border-4"
+            style={{ borderColor: COLORS.primary }}
+          >
             <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
           </div>
         </div>

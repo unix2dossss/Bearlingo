@@ -1,9 +1,13 @@
 import React from "react";
+import CVuploadBox from "../../components/CVModuleComponent/CVuploadBox";
+import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
 export default function PersonalInfoCard({ personal, setPersonal }) {
 
   return (
     <div>
+      {/* <CVuploadBox /> */}
+      <ResumeUpload />
       {/* header */}
       <div className="pt-4 pb-2 px-8 text-center">
         <h2 className="text-center text-[32px] md:text-4xl font-extrabold text-[#4f9cf9]">
@@ -21,7 +25,6 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
             <div>
               <label className="block text-sm font-semibold mb-1">
                 First Name <label className="text-red-500">*</label>
-                {/*<label className="text-[#4f9cf9]">*</label>*/}
                 </label>
               <input
                 className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
@@ -42,7 +45,7 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
               />
             </div>
           </div>
-        </div>
+        </div> 
 
         {/* Contact Information */}
         <div className="border rounded-2xl border-gray-200 p-4">

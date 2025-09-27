@@ -4,6 +4,11 @@ import { buildCVHtml } from "../utils/buildCVHtml.js";
 import { isWithinMaxSentences, hasChanged, updateUserStreak } from "../utils/helpers.js";
 import puppeteer from "puppeteer";
 
+// import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+// import { v4 as uuidv4 } from "uuid";
+// import { GetObjectCommand } from "@aws-sdk/client-s3";
+// import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 // Saving or updating personal information in CV
 export const addPersonalInformation = async (req, res) => {
   const userId = req.user._id;
@@ -344,3 +349,115 @@ export const downloadCV = async (req, res) => {
     res.status(500).send("Error generating CV PDF");
   }
 };
+
+// PDF CV upload logics
+
+// Upload CV to S3 bucket (for large CVs + production)
+// const s3 = new S3Client({
+//   region: process.env.AWS_REGION, // e.g. "ap-southeast-2"
+//   credentials: {
+//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+//   }
+// });
+
+export const uploadCV = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    // Check PDF header magic bytes to confirm it's a valid PDF
+    const header = req.file.buffer.slice(0, 5).toString("utf8");
+    if (!header.startsWith("%PDF")) {
+      return res.status(400).json({ message: "Invalid PDF file" });
+    }
+
+    // Unique S3 key
+    // const key = `cvs/${req.user._id}/${uuidv4()}-${req.file.originalname}.pdf`;
+
+    // const uploadParams = {
+    //   Bucket: process.env.S3_BUCKET,
+    //   Key: key,
+    //   Body: req.file.buffer,
+    //   ContentType: "application/pdf"
+    // };
+
+    // await s3.send(new PutObjectCommand(uploadParams));
+
+    // Update CV record in DB
+    let cv = await CV.findOne({ userId: req.user._id });
+    if (!cv) {
+      cv = new CV({
+        userId: req.user._id,
+        firstName: req.body.firstName || "Unknown",
+        lastName: req.body.lastName || "Unknown"
+      });
+    }
+    // cv.cvUrl = key; // Store S3 key in CV record
+    cv.cvFile = {
+      data: req.file.buffer,
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+      size: req.file.size,
+      uploadedAt: new Date()
+    };
+    await cv.save();
+
+    res.json({ message: "CV uploaded successfully", cv });
+  } catch (err) {
+    console.error("S3 upload error:", err);
+    res.status(500).json({ message: "Upload failed" });
+  }
+};
+
+// Delete cvFile (has CV PDF information) from CV record
+export const deleteCV = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res.status(404).json({ message: "CV not found" });
+    }
+    cv.cvFile = null;
+    await cv.save();
+    res.json({ message: "CV deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// For small CVs, just store in DB
+export const getPdfCVFromDB = async (req, res) => {
+  const cv = await CV.findOne({ userId: req.user.id }).lean();
+  if (!cv || !cv.cvFile || !cv.cvFile.data) {
+    return res.status(404).json({ message: 'CV not found' });
+  }
+
+  const { filename, contentType, data } = cv.cvFile;
+  res.setHeader('Content-Type', contentType || 'application/pdf');
+  // Force download:
+  res.setHeader('Content-Disposition', `attachment; filename="${filename || 'cv.pdf'}"`);
+  res.send(data); // Buffer will be sent
+};
+
+// For large CVs + production
+// const downloadCVFromS3 = async (req, res) => {
+//   try {
+//     const cv = await CV.findOne({ userId: req.user._id });
+//     if (!cv || !cv.cvUrl) {
+//       return res.status(404).json({ message: "No CV found" });
+//     }
+
+//     // Generate signed URL valid for 60 seconds
+//     const command = new GetObjectCommand({
+//       Bucket: process.env.S3_BUCKET,
+//       Key: cv.cvUrl
+//     });
+//     const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+
+//     res.json({ downloadUrl: url });
+//   } catch (err) {
+//     console.error("Download error:", err);
+//     res.status(500).json({ message: "Could not generate download link" });
+//   }
+// };
