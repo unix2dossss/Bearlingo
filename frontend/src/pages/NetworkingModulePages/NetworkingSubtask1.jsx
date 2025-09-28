@@ -67,13 +67,13 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     setSelectedSkills(value);
   };
 
-  
+
 
   return (
     <div className="pt-16 bg-[#4f9cf9] relative min-h-screen flex flex-row min-w-0 gap-4 p-4">
       {/* Go back */}
-          <button
-        className="btn btn-ghost absolute top-20 left-6 z-10" 
+      <button
+        className="btn btn-ghost absolute top-20 left-6 z-10"
         onClick={onBack}
       >
         <ArrowLeftIcon className="size-5" />
@@ -99,14 +99,14 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           {/* Next button */}
           {animationDone && currentSpeechIndex < speechForSubtask1.length - 1 && (
             <button
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
+              className="absolute bottom-4 left-96 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
               onClick={handleNext}
             >
               Next
             </button>
           )}
 
-          <img className="bear h-[700px] w-[700px]" src={Bear} alt="Bear Mascot" />
+          <img className="bear h-[600px] w-[600px]" src={Bear} alt="Bear Mascot" />
         </div>
       </div>
 
