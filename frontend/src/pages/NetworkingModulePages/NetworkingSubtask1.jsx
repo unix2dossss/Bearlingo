@@ -41,9 +41,10 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       const profileExists = await api.get(
         "/users/me/networking/linkedin-profile",
         { withCredentials: true });
-      if (profileExists.status == 200 && profileExists.message == "Linked In Profile Retrieved Succesfully! ") {
-        setUserHasProfile(true);
+      console.log("profileExists: ", profileExists);
+      if (profileExists.status == 200 && profileExists.data.message == "Linked In Profile Retrieved Succesfully!") {
         setSavedProfile(profileExists.data.linkedInProfile);
+        setUserHasProfile(true);
         console.log("profileExists.data.linkedInProfile", profileExists.data.linkedInProfile);
         toast.success("Profile retrieved!");
       } else {
@@ -105,7 +106,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       selectedSkills.forEach((skill, index) => {
         keySkills[`keySkill${index + 1}`] = skill;
       });
-      await api.put(
+      const profile = await api.put(
         "/users/me/networking/linkedin-profile",
         {
           firstName: userInfo.firstName,
@@ -115,7 +116,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           objective: careerGoal
         },
         { withCredentials: true });
+      setSavedProfile(profile.data.linkedInProfile);
       setUserHasProfile(true);
+
       toast.success("Profile saved!");
 
     } catch (error) {
@@ -155,6 +158,8 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           )}
 
 
+
+
           {animationDone && userHasProfile == false && (
             <div
               key={currentSpeechIndex}
@@ -182,8 +187,46 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         </div>
       </div>
 
+
       {/* Right: Dynamic Panels */}
       <div className="flex-1">
+
+        {userHasProfile == true && (
+          <div className="flex flex-col items-center mt-32">
+            <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
+              <div className="card-body space-y-6">
+                <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {userInfo?.firstName} {userInfo?.lastName}
+                  </h1>
+                  <p className="text-gray-600 mt-1">{savedProfile.profressionalHeadline}</p>
+                  <p className="text-gray-500 mt-2 text-sm">{savedProfile.university}</p>
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.values(savedProfile.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
+                      if (!skill) return null; // skip empty values
+                      return (
+                        <span key={index} className="badge badge-outline">
+                          {skill}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
+                  <p className="text-gray-600 text-sm">{savedProfile.objective}</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
         {/* Example card preview (index 2) */}
         {currentSpeechIndex === 2 && (
           <div className="flex justify-center mt-32">
@@ -337,7 +380,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Final preview (index 8) */}
-        {(currentSpeechIndex === 8 || userHasProfile) == true && (
+        {currentSpeechIndex === 8 && userHasProfile == false && (
           <div className="flex flex-col items-center mt-32">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
@@ -345,14 +388,14 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {userInfo?.firstName} {userInfo?.lastName}
                   </h1>
-                  <p className="text-gray-600 mt-1">{userHasProfile ? savedProfile.headline : selectedHeadline}</p>
+                  <p className="text-gray-600 mt-1">{selectedHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{university}</p>
                 </div>
 
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
                   <div className="flex flex-wrap gap-2">
-                    {userHasProfile ? Object.values(savedProfile.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
+                    {userHasProfile && savedProfile ? Object.values(savedProfile?.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
                       if (!skill) return null; // skip empty values
                       return (
                         <span key={index} className="badge badge-outline">
@@ -369,19 +412,18 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
-                  <p className="text-gray-600 text-sm"> {userHasProfile ? savedProfile.objective : careerGoal}</p>
+                  <p className="text-gray-600 text-sm">{careerGoal}</p>
                 </div>
               </div>
             </div>
             {/* Save Profile button */}
-            {userHasProfile == false &&
-              <button
-                className="btn btn-primary mt-4"
-                onClick={saveProfile}
-              >
-                Save Profile
-              </button>
-            }
+
+            <button
+              className="btn btn-primary mt-4"
+              onClick={saveProfile}
+            >
+              Save Profile
+            </button>
 
           </div>
         )}
