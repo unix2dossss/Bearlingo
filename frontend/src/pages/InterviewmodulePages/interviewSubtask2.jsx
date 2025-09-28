@@ -6,7 +6,7 @@ import CompanyResearchForm from "../../components/InterviewModuleComponents/Comp
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const InterviewSubtask2 = ({ setIsSubmitted, onClose }) => {
+const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
   const [researches, setResearches] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null); // null if adding, object if editing
@@ -85,6 +85,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose }) => {
         // Check if subtask is completed and display appropriate message
         if (res.data.message === "Well Done! You completed the subtask") {
           toast.success("Task 2 completed!");
+          onTaskComplete?.();
         }
       } catch (err) {
         console.error("Failed to complete task", err);

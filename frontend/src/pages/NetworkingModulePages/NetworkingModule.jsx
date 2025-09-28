@@ -8,6 +8,8 @@ import api from "../../lib/axios";
 import toast from 'react-hot-toast';
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
+import NetworkingSubtask1 from "./NetworkingSubtask1";
+import NetworkingSubtask2 from "./NetworkingSubtask2";
 
 const NetworkingModule = () => {
 
@@ -16,20 +18,13 @@ const NetworkingModule = () => {
     const [showSubtask, setShowSubtask] = useState(false);
     const [allEvents, setAllEvents] = useState("");
     const [userEvents, setUserEvents] = useState("");
-    const [attendedEvents, setAttendedEvents] = useState([]);
-    const [attended, setAttended] = useState(false);
-    const [tempButtonChange, setTempButtonChange] = useState()
-
-    const speechForSubtask1 = [
-        "Hi there! 👋",
-        "Welcome to the first subtask of the Networking Module!",
-        "This will only take a few minutes — you'll create a simple LinkedIn profile like this one.",
-        "Complete this task to earn XPs and advance your career!",
-        "Choose one of the suggested headlines or create your own.",
-        "Which university are you attending?",
-        "Select all skills that apply — both technical and soft skills.",
-        "What is your career goal?"
-    ];
+    const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
+    const [animationDone, setAnimationDone] = useState(false);
+    const [university, setUniversity] = useState("");
+    const [selectedSkills, setSelectedSkills] = useState([]);
+    const [careerGoal, setCareerGoal] = useState("");
+    const [selectedHeadline, setSelectedHeadline] = useState(""); // default empty or ""
+    const [customHeadline, setCustomHeadline] = useState(""); // default empty
 
     const navigate = useNavigate();
 
@@ -53,6 +48,25 @@ const NetworkingModule = () => {
     }, [navigate]);
 
 
+
+    const speechForSubtask1 = [
+        "Hi there! 👋",
+        "Welcome to the first subtask of the Networking Module!",
+        "This will only take a few minutes - you'll create a simple LinkedIn profile like this one.",
+        "Complete this task to earn XPs and advance your career!",
+        "Choose one of the suggested headlines or create your own.",
+        "Which university are you attending?",
+        "Select top four skills that apply — both technical and soft skills.",
+        "What is your career goal?",
+        "Congratulations! You have finished your linked in profile! Nice job 🔥"
+    ];
+
+    const allSkills = [
+        "Python", "Java", "C++", "JavaScript", "React", "Node.js",
+        "SQL", "Git", "Linux", "AWS", "Docker", "Machine Learning",
+        "Communication", "Teamwork", "Problem Solving", "Adaptability"
+    ];
+
     const fetchAllEvents = async (e) => {
         try {
             const events = await api.get(
@@ -60,7 +74,7 @@ const NetworkingModule = () => {
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${userInfo?.token}` // or Sending token back to backend CHECK ON THE BACKEND CONNECTION
+                        Authorization: `Bearer ${userInfo?.token}` 
                     }
                 }
             );
@@ -99,14 +113,14 @@ const NetworkingModule = () => {
 
     useEffect(() => {
         if (showSubtask && selectedSubtask === "subtask2") {
-            fetchAllEvents(); // ✅ only runs when condition is true
+            fetchAllEvents();
         }
     }, [showSubtask, selectedSubtask]);
 
     // Animate bear when Subtask 1 opens
     useEffect(() => {
         if (showSubtask && selectedSubtask === "subtask1") {
-            const tl = gsap.timeline({ defaults: { duration: 0.8, ease: "power3.out" } });
+            const tl = gsap.timeline({ defaults: { duration: 0.8, ease: "power3.out" }, onComplete: () => setAnimationDone(true) });
 
             // 1. Scale up from tiny and rotate while fading in
             tl.fromTo(
@@ -121,6 +135,17 @@ const NetworkingModule = () => {
         }
     }, [showSubtask, selectedSubtask]);
 
+
+    useEffect(() => {
+        if (animationDone) {
+            gsap.fromTo(
+                ".bear-speech",
+                { opacity: 0, y: 50, scale: 0.8 },
+                { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.7)" }
+            );
+        }
+    }, [currentSpeechIndex, animationDone]);
+
     const handleSubtaskClick = (task) => {
         setSelectedSubtask(task);
         if (task == false) {
@@ -129,7 +154,22 @@ const NetworkingModule = () => {
         else {
             setShowSubtask(true);
         }
+    };
 
+
+    const handleNext = () => {
+        if (currentSpeechIndex < speechForSubtask1.length - 1) {
+            setCurrentSpeechIndex(currentSpeechIndex + 1);
+        }
+    };
+
+
+    const handleSkillChange = (e) => {
+        const value = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value
+        );
+        setSelectedSkills(value);
     };
 
     // Safely extract attendingEventIds for easier use, ? ensures that if userEvents[0] is null the program won't crash
@@ -233,133 +273,45 @@ const NetworkingModule = () => {
                 </div>
 
 
-                {!showSubtask &&
-
-                    <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
-                        {/* Main Workspace */}
-                        <div className="flex space-x-48 mb-[80px]">
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask1")}
-                            >
-                                Task 1
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask2")}
-                            >
-                                Task 2
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => handleSubtaskClick("subtask3")}
-                            >
-                                Task 3
-                            </button>
-                        </div>
+                {!showSubtask && (
+                <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
+                    <div className="flex space-x-48 mb-[80px]">
+                    <button
+                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
+                    >
+                        Task 1
+                    </button>
+                    <button
+                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
+                    >
+                        Task 2
+                    </button>
+                    <button
+                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
+                    >
+                        Task 3
+                    </button>
                     </div>
-                }
+                </div>
+                )}
 
-                {showSubtask && selectedSubtask == "subtask1" &&
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-row min-w-0  border border-red-500 gap-4 p-4">
-                        <button className="btn btn-ghost mb-6" onClick={() => handleSubtaskClick(false)}>
-                            <ArrowLeftIcon className="size-5" />
-                            Back to subtasks
-                        </button>
-                        <div className="flex flex-1 border border-green-400">
-                            <div className="border border-red-500 mt-36"><img className="bear h-[700px] w-[700px]" src={Bear} alt=" Bear Mascot" /></div>
-                        </div>
-                        <div className="flex-1 border border-black">Questions</div>
-                    </div>
-                }
+                {showSubtask && selectedSubtask === "subtask1" && (
+                <NetworkingSubtask1
+                    userInfo={userInfo}
+                    onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                />
+                )}
 
                 {showSubtask && selectedSubtask === "subtask2" && (
-                    <div className="bg-yellow-200 relative min-h-screen flex flex-col min-w-0 border border-red-500 gap-4 p-4 mt-2">
-                        <div>
-                            <button className="btn btn-ghost mb-2 " onClick={() => handleSubtaskClick(false)}>
-                                <ArrowLeftIcon className="size-5" />
-                                Back to subtasks
-                            </button>
-                        </div>
-                        <h2 className="text-2xl font-bold text-black-800 mb-4">
-                            🎉 Join an Event & Earn Points!
-                            Participate, learn, and get rewarded for attending events!
-                        </h2>
-                        <div className="border-4 border-yellow-500 rounded-3xl
-                shadow-[0_0_20px_4px_rgba(236,72,153,0.6)] overflow-hidden">
-
-                            <div className="carousel w-full p-5 space-x-4 bg-amber-100">
-                                {Array.isArray(allEvents) &&
-                                    allEvents.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="carousel-item w-[30%] min-w-[30%] max-w-[30%] bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700 rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:scale-105 flex flex-col overflow-hidden group"
-                                        >
-                                            {/* Image / banner */}
-                                            <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-500 font-bold text-lg">
-                                                {item.type}
-                                            </div>
-
-                                            {/* Event content */}
-                                            <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
-                                                <h2 className="text-xl font-bold text-purple-800 group-hover:text-purple-900 transition-colors duration-200">
-                                                    {item.name}
-                                                </h2>
-
-                                                {/* Badges */}
-                                                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                                                    <span className="badge badge-neutral">{item.type}</span>
-                                                    <span className="badge badge-neutral">{item.costType}</span>
-                                                </div>
-
-                                                {/* Date / Time / Location */}
-                                                <p className="text-gray-700 text-sm">📅 {item.date} · {item.time}</p>
-                                                <p className="text-gray-600 text-sm">📍 {item.location}</p>
-
-                                                {/* Description header */}
-                                                <h3 className="mt-2 text-purple-700 font-semibold">Description</h3>
-
-                                                {/* Scrollable description */}
-                                                <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
-                                                    <p className="text-gray-700 text-sm">
-                                                        {item.description}
-                                                    </p>
-                                                </div>
-
-                                                {/* Buttons */}
-                                                <div className="mt-auto pt-2 flex flex-col gap-2">
-                                                    {/* View Event */}
-                                                    <a
-                                                        href={item.link}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="btn btn-primary btn-sm w-full hover:scale-105 hover:shadow-lg transition-transform duration-200"
-                                                    >
-                                                        View Event
-                                                    </a>
-
-                                                    {/* Attendance button */}
-                                                    <button
-                                                        className={`btn btn-sm w-full transition-transform duration-200 ${getEventStatus(item.id) === 'going' ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : getEventStatus(item.id) == 'attended' ? 'bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed' : 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-md'} hover:scale-105`}
-                                                        onClick={() => {
-                                                            getEventStatus(item.id) === 'going' ? handleAttendance(item.id, 'going') : handleAttendance(item.id, 'default');
-                                                        }}
-                                                        disabled={getEventStatus(item.id) === 'attended'}
-                                                    >
-                                                        {getEventStatus(item.id) === 'attended'
-                                                            ? 'Attended ✅'
-                                                            : getEventStatus(item.id) === 'going'
-                                                                ? 'Locked In 🫡'
-                                                                : 'Going to Attend'}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                            </div>
-                        </div>
-                    </div >
+                <NetworkingSubtask2
+                    userInfo={userInfo}
+                    onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                />
                 )}
+
             </div >
         </>
     )
