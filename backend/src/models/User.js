@@ -4,6 +4,8 @@ import JournalEntry from "./JournalEntry.js";
 import CV from "./CV.js";
 import InterviewPrepRecord from "./InterviewPrepRecord.js";
 import CompanyResearch from "./CompanyResearch.js";
+import LinkedInProfile from "./LinkedInProfile.js";
+import AttendedEvents from "./AttendedEvent.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -83,6 +85,9 @@ userSchema.pre("deleteOne", { document: true, query: false }, async function (ne
   await CV.deleteMany({ userId });
   await InterviewPrepRecord.deleteMany({ user: userId });
   await CompanyResearch.deleteMany({ user: userId });
+  await LinkedInProfile.deleteMany({ userId });
+  await AttendedEvents.deleteMany({ userId });
+
   next();
 });
 
