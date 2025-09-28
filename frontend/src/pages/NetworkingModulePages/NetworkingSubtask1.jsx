@@ -3,6 +3,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
+import api from "../../lib/axios";
 
 export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
@@ -13,6 +14,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [university, setUniversity] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [careerGoal, setCareerGoal] = useState("");
+  const [userHasProfile, setUserHasProfile] = useState(false);
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -66,6 +68,33 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     const value = Array.from(e.target.selectedOptions, (o) => o.value);
     setSelectedSkills(value);
   };
+
+  // Save profile to database
+  const saveProfile = async () => {
+    try {
+      // Build keySkills object dynamically
+      const keySkills = {};
+      selectedSkills.forEach((skill, index) => {
+        keySkills[`keySkill${index + 1}`] = skill;
+      });
+      await api.put(
+        "/users/me/networking/linkedin-profile",
+        {
+          firstName: userInfo.firstName,
+          lastName: userInfo.lastName,
+          professionalHeadline: selectedHeadline,
+          keySkills: keySkills,
+          objective: careerGoal
+        },
+        { withCredentials: true });
+      setUserHasProfile(true);
+      toast.success("Profile saved!");
+
+    } catch (error) {
+      console.log("Error in saving profile to database: ", error.message);
+      toast.error("Error is saving profile to database");
+    }
+  }
 
 
 
@@ -265,7 +294,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Final preview (index 8) */}
         {currentSpeechIndex === 8 && (
-          <div className="flex justify-center mt-32">
+          <div className="flex flex-col items-center mt-32">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -286,6 +315,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                     ))}
                   </div>
                 </div>
+                {console.log(selectedSkills)}
 
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
@@ -293,6 +323,14 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                 </div>
               </div>
             </div>
+            {/* Save Profile button */}
+            <button
+              className="btn btn-primary mt-4"
+              onClick={saveProfile}
+            >
+              Save Profile
+            </button>
+
           </div>
         )}
       </div>
