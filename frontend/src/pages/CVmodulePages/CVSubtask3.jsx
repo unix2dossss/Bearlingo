@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
+import CVAnalyse from "../../components/CVModuleComponent/CVAnalyse";
 
 const COLORS = {
   primary: "#4f9cf9",
@@ -167,6 +168,7 @@ const CVSubtask3 = ({
           </ActionButton>
         </div>
       </div>
+      <CVAnalyse />
 
       {/* Tip card */}
       <div className={cx("px-6 w-full pb-6", SIZING.panelMaxW, "mx-auto")}>

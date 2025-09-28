@@ -3,6 +3,9 @@ import User from "../models/User.js";
 import { buildCVHtml } from "../utils/buildCVHtml.js";
 import { isWithinMaxSentences, hasChanged, updateUserStreak } from "../utils/helpers.js";
 import puppeteer from "puppeteer";
+import pdf from "pdf-parse/lib/pdf-parse.js";
+// import { extractRawText } from "docx-parser";
+import OpenAI from "openai";
 
 // import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 // import { v4 as uuidv4 } from "uuid";
@@ -371,6 +374,38 @@ export const uploadCV = async (req, res) => {
       return res.status(400).json({ message: "Invalid PDF file" });
     }
 
+    let resumeText = "";
+    const fileBuffer = req.file.buffer;
+
+    try {
+      // --- STEP 1: EXTRACT TEXT FROM THE UPLOADED FILE ---
+      if (req.file.mimetype === "application/pdf") {
+        const data = await pdf(fileBuffer);
+        resumeText = data.text;
+      } else if (
+        req.file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        const docxResult = await extractRawText(fileBuffer);
+        resumeText = docxResult.value;
+      } else {
+        return res
+          .status(400)
+          .json({ error: "Unsupported file type. Please upload a PDF or DOCX file." });
+      }
+
+      if (!resumeText.trim()) {
+        return res.status(400).json({
+          error: "Could not extract text from the document. The file might be empty or corrupted."
+        });
+      }
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while extracting text from the document." });
+    }
+
     // Unique S3 key
     // const key = `cvs/${req.user._id}/${uuidv4()}-${req.file.originalname}.pdf`;
 
@@ -400,6 +435,7 @@ export const uploadCV = async (req, res) => {
       size: req.file.size,
       uploadedAt: new Date()
     };
+    cv.resumeText = resumeText;
     await cv.save();
 
     res.json({ message: "CV uploaded successfully", cv });
@@ -461,3 +497,118 @@ export const getPdfCVFromDB = async (req, res) => {
 //     res.status(500).json({ message: "Could not generate download link" });
 //   }
 // };
+
+const openai = new OpenAI({
+  apiKey:
+    "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"
+});
+
+// --- AI PROMPT ---
+// This is the detailed instruction we send to the AI.
+const SYSTEM_PROMPT = `
+You are an expert resume reviewer. You will be given the text from a resume.
+Your task is to analyze the resume and provide a score and feedback for four categories: Impact, Brevity, Style, and Soft Skills.
+
+Please provide your response strictly in JSON format. The JSON object should have a main key "analysis" which contains a list of objects, one for each category.
+
+Each category object must have the following keys:
+- "category": The name of the category (e.g., "Impact").
+- "score": An integer score out of 100.
+- "summary": A one-sentence summary of the feedback.
+- "feedback_points": A list of strings, where each string is a specific feedback point. For negative feedback, quote the exact phrase from the resume that needs improvement.
+
+Here are the scoring guidelines:
+
+1.  **Impact (Score out of 100):**
+    * High score: Uses strong action verbs, quantifies results with numbers (e.g., "Increased sales by 20%"), focuses on achievements.
+    * Low score: Uses weak verbs (e.g., "Responsible for"), lists duties instead of achievements, lacks metrics.
+
+2.  **Brevity (Score out of 100):**
+    * High score: Concise bullet points (1-2 lines), no filler words, overall resume length is appropriate (ideally 1 page).
+    * Low score: Long paragraphs, wordy sentences, uses buzzwords without meaning.
+
+3.  **Style (Score out of 100):**
+    * High score: Consistent formatting, professional tone, no personal pronouns (I, my), uses active voice.
+    * Low score: Inconsistent dates or formatting, spelling/grammar errors, uses passive voice.
+
+4.  **Soft Skills (Score out of 100):**
+    * High score: Demonstrates skills like communication, teamwork, leadership, and problem-solving through examples in the experience section.
+    * Low score: Fails to provide evidence of soft skills.
+
+Example of a bad phrase to point out: "Responsible for managing the team."
+Example of good feedback for that phrase: "Weak action verb. Instead of 'Responsible for managing', use a stronger verb like 'Led a team of 5 engineers to...'."
+
+Now, analyze the following resume text and provide the JSON output.
+`;
+
+export const analyzeCV = async (req, res) => {
+  const userId = req.user._id;
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded." });
+  }
+
+  let resumeText = "";
+  const fileBuffer = req.file.buffer;
+  try {
+    // --- STEP 1: EXTRACT TEXT FROM THE UPLOADED FILE ---
+    if (req.file.mimetype === "application/pdf") {
+      const data = await pdf(fileBuffer);
+      resumeText = data.text;
+    } else if (
+      req.file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      const docxResult = await extractRawText(fileBuffer);
+      resumeText = docxResult.value;
+    } else {
+      return res
+        .status(400)
+        .json({ error: "Unsupported file type. Please upload a PDF or DOCX file." });
+    }
+
+    if (!resumeText.trim()) {
+      return res.status(400).json({
+        error: "Could not extract text from the document. The file might be empty or corrupted."
+      });
+    }
+    // // --- STEP 1: GET THE RESUME TEXT ---
+    // const cv = await CV.findOne({ userId });
+    // if (!cv) {
+    //   return res.status(404).json({ message: "CV not found" });
+    // }
+    // const resumeText = cv.resumeText;
+
+    // --- STEP 2: CALL THE OPENAI API FOR ANALYSIS ---
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // Cheaper model, often has higher rate limits
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: resumeText }
+      ]
+      // REMOVE response_format: { type: "json_object" }
+      // Rely on the SYSTEM_PROMPT to ask for JSON.
+    });
+
+    const analysisResult = JSON.parse(completion.choices[0].message.content);
+
+    // --- STEP 3: SEND THE RESULT BACK TO THE FRONTEND ---
+    res.json(analysisResult);
+  } catch (error) {
+    // --- IMPROVED ERROR HANDLING ---
+    // This will give you more specific feedback in your server console.
+    console.error("Error during CV analysis:", error);
+
+    let errorMessage = "An error occurred during analysis. Please try again.";
+
+    // Check if the error is a specific OpenAI API error
+    if (error instanceof OpenAI.APIError) {
+      console.error("OpenAI API Error Details:", error);
+      // Provide a more specific error message to the frontend
+      errorMessage = `OpenAI API Error: ${error.name} - ${error.message}`;
+      // A 401 status often means an authentication (API key) issue.
+      return res.status(error.status || 500).json({ error: errorMessage });
+    }
+
+    res.status(500).json({ error: errorMessage });
+  }
+};
