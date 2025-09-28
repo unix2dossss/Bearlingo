@@ -15,6 +15,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [careerGoal, setCareerGoal] = useState("");
   const [userHasProfile, setUserHasProfile] = useState(false);
+  const [savedProfile, setSavedProfile] = useState("");
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -33,6 +34,33 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     "SQL", "Git", "Linux", "AWS", "Docker", "Machine Learning",
     "Communication", "Teamwork", "Problem Solving", "Adaptability",
   ];
+
+
+  const getLinkedInProfile = async () => {
+    try {
+      const profileExists = await api.get(
+        "/users/me/networking/linkedin-profile",
+        { withCredentials: true });
+      if (profileExists.status == 200 && profileExists.message == "Linked In Profile Retrieved Succesfully! ") {
+        setUserHasProfile(true);
+        setSavedProfile(profileExists.data.linkedInProfile);
+        console.log("profileExists.data.linkedInProfile", profileExists.data.linkedInProfile);
+        toast.success("Profile retrieved!");
+      } else {
+        setUserHasProfile(false);
+      }
+    } catch (error) {
+
+      console.log("Error in retrieving linkedInProfile: ", error.message);
+      toast.error("Server error");
+    }
+  };
+
+
+  // Run once when component mounts
+  useEffect(() => {
+    getLinkedInProfile();
+  }, []);
 
   // Bear intro animation (runs once when mounted)
   useEffect(() => {
@@ -72,7 +100,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   // Save profile to database
   const saveProfile = async () => {
     try {
-      // Build keySkills object dynamically
+      // Build keySkills object
       const keySkills = {};
       selectedSkills.forEach((skill, index) => {
         keySkills[`keySkill${index + 1}`] = skill;
@@ -91,10 +119,12 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       toast.success("Profile saved!");
 
     } catch (error) {
-      console.log("Error in saving profile to database: ", error.message);
-      toast.error("Error is saving profile to database");
+      console.log("Error in saving profile to database: ", error);
+      toast.error("Error in saving profile to database");
     }
-  }
+  };
+
+
 
 
 
@@ -112,7 +142,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       {/* Left: Bear + Speech */}
       <div className="flex flex-1 ">
         <div className="mt-20 relative">
-          {animationDone && (
+
+          {animationDone && userHasProfile == true && (
+            <div
+              key={currentSpeechIndex}
+              className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
+            >
+              <div className="chat-bubble">
+                Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
+              </div>
+            </div>
+          )}
+
+
+          {animationDone && userHasProfile == false && (
             <div
               key={currentSpeechIndex}
               className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
@@ -126,7 +169,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           )}
 
           {/* Next button */}
-          {animationDone && currentSpeechIndex < speechForSubtask1.length - 1 && (
+          {animationDone && userHasProfile == false && currentSpeechIndex < speechForSubtask1.length - 1 && (
             <button
               className="absolute bottom-4 left-96 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
               onClick={handleNext}
@@ -174,7 +217,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Headline pick (index 4) */}
-        {currentSpeechIndex === 4 && (
+        {currentSpeechIndex === 4 && userHasProfile == false && (
           <div className="flex flex-col items-center justify-center gap-6 mt-[30%] h-[40%]">
             <select
               value={selectedHeadline}
@@ -219,7 +262,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* University (index 5) */}
-        {currentSpeechIndex === 5 && (
+        {currentSpeechIndex === 5 && userHasProfile == false && (
           <div className="flex justify-center mt-[50%]">
             <div className="flex flex-row gap-1">
               <input
@@ -240,11 +283,12 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                 Submit
               </button>
             </div>
+            {console.log("Headline: ", selectedHeadline)}
           </div>
         )}
 
         {/* Skills (index 6) */}
-        {currentSpeechIndex === 6 && (
+        {currentSpeechIndex === 6 && userHasProfile == false && (
           <div className="flex flex-col items-center gap-2 mt-[40%]">
             <label className="font-semibold">Select Your Skills</label>
             <select
@@ -268,7 +312,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Career goal (index 7) */}
-        {currentSpeechIndex === 7 && (
+        {currentSpeechIndex === 7 && userHasProfile == false && (
           <div className="mt-[50%]">
             <div className="flex flex-row gap-1">
               <input
@@ -293,7 +337,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Final preview (index 8) */}
-        {currentSpeechIndex === 8 && (
+        {(currentSpeechIndex === 8 || userHasProfile) == true && (
           <div className="flex flex-col items-center mt-32">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
@@ -301,35 +345,43 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {userInfo?.firstName} {userInfo?.lastName}
                   </h1>
-                  <p className="text-gray-600 mt-1">{selectedHeadline}</p>
+                  <p className="text-gray-600 mt-1">{userHasProfile ? savedProfile.headline : selectedHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{university}</p>
                 </div>
 
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
                   <div className="flex flex-wrap gap-2">
-                    {selectedSkills.map((skill, i) => (
+                    {userHasProfile ? Object.values(savedProfile.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
+                      if (!skill) return null; // skip empty values
+                      return (
+                        <span key={index} className="badge badge-outline">
+                          {skill}
+                        </span>
+                      );
+                    }) : selectedSkills.map((skill, i) => (
                       <span key={i} className="badge badge-outline">
                         {skill}
                       </span>
                     ))}
                   </div>
                 </div>
-                {console.log(selectedSkills)}
 
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
-                  <p className="text-gray-600 text-sm">{careerGoal}</p>
+                  <p className="text-gray-600 text-sm"> {userHasProfile ? savedProfile.objective : careerGoal}</p>
                 </div>
               </div>
             </div>
             {/* Save Profile button */}
-            <button
-              className="btn btn-primary mt-4"
-              onClick={saveProfile}
-            >
-              Save Profile
-            </button>
+            {userHasProfile == false &&
+              <button
+                className="btn btn-primary mt-4"
+                onClick={saveProfile}
+              >
+                Save Profile
+              </button>
+            }
 
           </div>
         )}
