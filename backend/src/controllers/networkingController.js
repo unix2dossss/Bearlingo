@@ -44,6 +44,9 @@ export const getLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
     try {
         const linkedInProfile = await LinkedInProfile.findOne({ user: userId });
+        if (!linkedInProfile) {
+            return res.status(404).json({ message: "LinkedIn Profile not found" });
+        }
         return res.status(200).json({ message: "Linked In Profile Retrieved Succesfully!", linkedInProfile: linkedInProfile });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
@@ -60,7 +63,7 @@ export const updateLinkedInProfile = async (req, res) => {
         const linkedInProfile = await linkedinprofile.findOne({ user: userId });
 
         if (!linkedInProfile) {
-            return res.status(404).json({ message: "LinkedIn Profile not found" });
+            return createLinkedInProfile(req, res);
         }
 
         linkedInProfile.firstName = firstName ?? linkedInProfile.firstName; //If req.body.firstName is undefined, it keep old value. If it’s an empty string then it updates it to empty string
