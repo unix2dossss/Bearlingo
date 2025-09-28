@@ -19,14 +19,13 @@ export const createLinkedInProfile = async (req, res) => {
     try {
         console.log("Incoming request body:", req.body);
         console.log("Authenticated user:", req.user);
-        const { firstName, lastName, professionalHeadline, currentRole, keySkills, objective } = req.body;
+        const { firstName, lastName, professionalHeadline, keySkills, objective } = req.body;
 
         const linkedInProfile = new linkedinprofile({
             user: userId,
             firstName,
             lastName,
             professionalHeadline,
-            currentRole,
             keySkills,
             objective
         });
@@ -59,7 +58,7 @@ export const updateLinkedInProfile = async (req, res) => {
         return res.status(400).json({ message: "Invalid user ID" });
     }
     try {
-        const { firstName, lastName, professionalHeadline, currentRole, keySkills, objective } = req.body;
+        const { firstName, lastName, professionalHeadline, keySkills, objective } = req.body;
         const linkedInProfile = await linkedinprofile.findOne({ user: userId });
 
         if (!linkedInProfile) {
@@ -69,7 +68,6 @@ export const updateLinkedInProfile = async (req, res) => {
         linkedInProfile.firstName = firstName ?? linkedInProfile.firstName; //If req.body.firstName is undefined, it keep old value. If it’s an empty string then it updates it to empty string
         linkedInProfile.lastName = lastName ?? linkedInProfile.lastName;
         linkedInProfile.professionalHeadline = professionalHeadline ?? linkedInProfile.professionalHeadline;
-        linkedInProfile.currentRole = currentRole ?? linkedInProfile.currentRole;
         linkedInProfile.objective = objective ?? linkedInProfile.objective;
 
         const skillKeys = Object.keys(keySkills); // e.g., ["keySkill2", "keySkill5"] from the req.body in JSON format

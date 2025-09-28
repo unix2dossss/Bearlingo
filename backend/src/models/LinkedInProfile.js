@@ -10,7 +10,6 @@ const LinkedInProfileSchema = new mongoose.Schema(
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
         profressionalHeadline: { type: String },
-        currentRole: { type: String },
         keySkills: {
             keySkill1: { type: String, required: true },
             keySkill2: { type: String },
