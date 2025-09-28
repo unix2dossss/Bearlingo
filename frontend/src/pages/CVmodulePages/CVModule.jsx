@@ -8,17 +8,18 @@ import CVSubtask3 from "./CVSubtask3";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
-import Floor from '../../assets/CVFloor.svg';
-import Window from '../../assets/CVWindow.svg';
-import WindowLocked from '../../assets/CVWindowB.svg';
-import Drawers from '../../assets/CVDrawers.svg';
-import DrawersLocked from '../../assets/CVDrawersB.svg';
-import Desk from '../../assets/CVDesk.svg';
-import DeskLocked from '../../assets/CVDeskB.svg';
-import Bookcase from '../../assets/CVBook.svg';
-import BookcaseLocked from '../../assets/CVBookB.svg';
-import Bear from '../../assets/Bear.svg';
+import Floor from "../../assets/CVFloor.svg";
+import Window from "../../assets/CVWindow.svg";
+import WindowLocked from "../../assets/CVWindowB.svg";
+import Drawers from "../../assets/CVDrawers.svg";
+import DrawersLocked from "../../assets/CVDrawersB.svg";
+import Desk from "../../assets/CVDesk.svg";
+import DeskLocked from "../../assets/CVDeskB.svg";
+import Bookcase from "../../assets/CVBook.svg";
+import BookcaseLocked from "../../assets/CVBookB.svg";
+import Bear from "../../assets/Bear.svg";
 import { gsap } from "gsap";
+import BackgroundMusicButton from "../../components/BackgroundMusicButton";
 
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
@@ -27,7 +28,7 @@ import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
-  textMuted: "#767687",
+  textMuted: "#767687"
 };
 
 const CVModule = () => {
@@ -106,7 +107,7 @@ const CVModule = () => {
             opacity: 0,
             scale: 0.5,
             rotation: -30,
-            y: -300,
+            y: -300
           });
           gsap.to(windowUnlockedRef.current, {
             opacity: 1,
@@ -114,9 +115,9 @@ const CVModule = () => {
             rotation: 0,
             y: 0,
             duration: 1.5,
-            ease: "bounce.out",
+            ease: "bounce.out"
           });
-        },
+        }
       });
     } else {
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
@@ -132,9 +133,14 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(drawersUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
           gsap.to(drawersUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
           });
-        },
+        }
       });
       gsap.to(bookcaseLockedRef.current, {
         opacity: 0,
@@ -142,14 +148,21 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(bookcaseUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: 15, y: 300 });
           gsap.to(bookcaseUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "elastic.out(1, 0.5)",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "elastic.out(1, 0.5)"
           });
-        },
+        }
       });
     } else {
       gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
       gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-        opacity: 1, duration: 0.6, ease: "power2.out",
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
       });
     }
   }, [task2Complete]);
@@ -162,9 +175,14 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(deskUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
           gsap.to(deskUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
           });
-        },
+        }
       });
     } else {
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
@@ -173,9 +191,24 @@ const CVModule = () => {
   }, [task3Complete]);
 
   useEffect(() => {
-    gsap.fromTo(bearRef.current, { y: 200 }, { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 });
-    gsap.fromTo(".speech-bubble", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 });
-    gsap.to(bearRef.current, { y: -15, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2 });
+    gsap.fromTo(
+      bearRef.current,
+      { y: 200 },
+      { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+    );
+    gsap.fromTo(
+      ".speech-bubble",
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+    );
+    gsap.to(bearRef.current, {
+      y: -15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 2
+    });
   }, []);
 
   const handleSubtaskClick = (task) => {
@@ -271,6 +304,10 @@ const CVModule = () => {
         {/* Top Navbar */}
         <div className="relative z-10">
           <TopNavbar />
+        </div>
+        {/* Floating music control */}
+        <div className="absolute top-20 right-8 z-20">
+          <BackgroundMusicButton />
         </div>
 
         {/* Purple Floor */}
