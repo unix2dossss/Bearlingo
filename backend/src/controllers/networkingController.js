@@ -19,13 +19,13 @@ export const createLinkedInProfile = async (req, res) => {
     try {
         console.log("Incoming request body:", req.body);
         console.log("Authenticated user:", req.user);
-        const { firstName, lastName, professionalHeadline, keySkills, objective } = req.body;
+        const { firstName, lastName, profressionalHeadline, keySkills, objective } = req.body;
 
         const linkedInProfile = new linkedinprofile({
             user: userId,
             firstName,
             lastName,
-            professionalHeadline,
+            profressionalHeadline,
             keySkills,
             objective
         });

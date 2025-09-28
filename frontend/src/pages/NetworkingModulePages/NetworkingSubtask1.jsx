@@ -110,7 +110,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         {
           firstName: userInfo.firstName,
           lastName: userInfo.lastName,
-          professionalHeadline: selectedHeadline,
+          profressionalHeadline: selectedHeadline,
           keySkills: keySkills,
           objective: careerGoal
         },
