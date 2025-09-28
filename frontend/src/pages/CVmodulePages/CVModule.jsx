@@ -51,7 +51,7 @@ const CVModule = () => {
   const [dontShowResumeAgain, setDontShowResumeAgain] = useState(false);
 
   const navigate = useNavigate();
-  const currentUser = useUserStore.getState().user;
+  // const currentUser = useUserStore.getState().user;
   const user = useUserStore((state) => state.user);
 
   useEffect(() => {
