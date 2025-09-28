@@ -8,14 +8,23 @@ import Aboutme from "../../components/CVModuleComponent/Aboutme";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 import ProgressPills from "../../components/CVModuleComponent/Task1Progress";
+import MethodChooser from "../../components/CVModuleComponent/CVMethodChooser";
+import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
-  textMuted: "#767687",
+  textMuted: "#767687"
 };
 
 const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
+  // To choose between manual and upload CV: "chooser" | "manual" | "upload"
+  const [mode, setMode] = useState("chooser");
+
+  const handleBackToChoice = () => {
+    setMode("chooser");
+  };
+
   const [step, setStep] = useState(0);
   const [personal, setPersonal] = useState({
     firstName: "",
@@ -82,7 +91,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
   const [dbAboutMe, setDbAboutMe] = useState(null);
 
   // Fetch existing data from database
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -248,9 +257,15 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
   // Check if step is valid
   const isStepValid = () => {
     if (step === 0) return personal.firstName && personal.lastName && personal.email;
-    if (step === 1) return secondary.school && secondary.subjects && secondary.startYear && secondary.endYear;
+    if (step === 1)
+      return secondary.school && secondary.subjects && secondary.startYear && secondary.endYear;
     if (step === 2)
-      return tertiary.university && tertiary.degree && tertiary.startYear && (tertiary.studying || tertiary.endYear);
+      return (
+        tertiary.university &&
+        tertiary.degree &&
+        tertiary.startYear &&
+        (tertiary.studying || tertiary.endYear)
+      );
     if (step === 3) return aboutMe.trim().length > 0;
     return false;
   };
@@ -271,96 +286,152 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
     }
   };
   // UI
-    return (
-      <div className="flex flex-col h-full">
-        {/* Sticky white header with Back • centered pills • Close */}
-        <header className="sticky top-0 z-40 bg-white">
-          <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
-            {/* Left: Back (reserve width when hidden to keep center centered) */}
-            <div className="min-w-[60px]">
-              {step > 0 && (
-                <button
-                  onClick={handleBack} // ⬅ use handler so blur + scroll reset run
-                  className="text-gray-600 hover:text-[#4f9cf9] text-sm"
-                >
-                  ← Back
-                </button>
-              )}
-            </div>
-
-          {/* Center: Progress pills */}
-          <div className="flex justify-center">
-            <ProgressPills step={step} />
-          </div>
-
+  return (
+    <div className="flex flex-col h-full">
+      {mode === "chooser" && (
+        <div className="flex flex-col justify-center">
           {/* Right: Close */}
           <button
             onClick={handleLocalClose}
-            className="text-gray-400 hover:text-gray-600 text-xl"
+            className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-xl"
             aria-label="Close"
           >
             ✖
           </button>
+          <MethodChooser
+            onSelectUpload={() => setMode("upload")}
+            onSelectManual={() => setMode("manual")}
+            onClose={onClose}
+          />
         </div>
-      </header>
+      )}
 
-      {/* The ONLY scrollable area */}
-      <div
-        ref={contentRef}                   
-        className="flex-1 overflow-y-auto px-6"
-        style={{ scrollbarGutter: "stable" }}
-      >
-        <div ref={stepTopRef} className="h-0" />
-        {renderStep()}
-      </div>
-
-      {/* Footer buttons */}
-      <div className="flex justify-between p-4">
-        <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {mode === "upload" && (
+        <>
           <button
-            className="inline-flex items-center justify-center
+            onClick={handleBackToChoice}
+            className="absolute top-6 left-6 text-gray-600 hover:text-[#4f9cf9] text-sm"
+          >
+            ← Change Method
+          </button>
+          {/* Right: Close */}
+          <button
+            onClick={handleLocalClose}
+            className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-xl"
+            aria-label="Close"
+          >
+            ✖
+          </button>
+
+          <ResumeUpload
+            onUpload={async (file) => console.log("Uploaded:", file)}
+            onRemove={async () => console.log("Removed")}
+            onAddUrl={async (url) => console.log("Added URL:", url)}
+          />
+        </>
+      )}
+
+      {mode === "manual" && (
+        <>
+          {/* Show this button ONLY on the first step to go back to the method chooser */}
+          {step === 0 && (
+            <button
+              onClick={handleBackToChoice}
+              className="absolute top-2 left-4 text-gray-600 hover:text-[#4f9cf9] text-sm "
+            >
+              ← Change Method
+            </button>
+          )}
+          {/* Sticky white header with Back • centered pills • Close */}
+          <header className="sticky top-0 z-40 bg-white">
+            <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
+              {/* Left: Back (reserve width when hidden to keep center centered) */}
+              <div className="min-w-[60px]">
+                {step > 0 && (
+                  <button
+                    onClick={handleBack} // ⬅ use handler so blur + scroll reset run
+                    className="text-gray-600 hover:text-[#4f9cf9] text-sm"
+                  >
+                    ← Back
+                  </button>
+                )}
+              </div>
+
+              {/* Center: Progress pills */}
+              <div className="flex justify-center">
+                <ProgressPills step={step} />
+              </div>
+
+              {/* Right: Close */}
+              <button
+                onClick={handleLocalClose}
+                className="text-gray-400 hover:text-gray-600 text-xl"
+                aria-label="Close"
+              >
+                ✖
+              </button>
+            </div>
+          </header>
+
+          {/* The ONLY scrollable area */}
+          <div
+            ref={contentRef}
+            className="flex-1 overflow-y-auto px-6"
+            style={{ scrollbarGutter: "stable" }}
+          >
+            <div ref={stepTopRef} className="h-0" />
+            {renderStep()}
+          </div>
+
+          {/* Footer buttons */}
+          <div className="flex justify-between p-4">
+            <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                className="inline-flex items-center justify-center
               h-12 md:h-14 px-8 md:px-10 rounded-full
               bg-white border-2 border-[#4f9cf9]
               text-[#4f9cf9] font-extrabold
               hover:bg-[#4f9cf9]/5
               focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
               min-w-[200px]"
-            onClick={handleClear}
-          >
-            Clear
-          </button>
+                onClick={handleClear}
+              >
+                Clear
+              </button>
 
-          {step < 3 ? (
-            <button
-              className={`inline-flex items-center justify-center
+              {step < 3 ? (
+                <button
+                  className={`inline-flex items-center justify-center
                 h-12 md:h-14 px-8 md:px-10 rounded-full
                 bg-[#4f9cf9] text-white 
                 font-extrabold text-base md:text-lg
                 shadow-sm hover:bg-[#4f9cf9]/90
                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
                 min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
-              onClick={handleSaveAndContinue}  
-              disabled={!isStepValid()}
-            >
-              Save & Continue
-            </button>
-          ) : (
-            <button
-              className={`inline-flex items-center justify-center
+                  onClick={handleSaveAndContinue}
+                  disabled={!isStepValid()}
+                >
+                  Save & Continue
+                </button>
+              ) : (
+                <button
+                  className={`inline-flex items-center justify-center
                 h-12 md:h-14 px-8 md:px-10 rounded-full
                 bg-[#4f9cf9] text-white
                 font-extrabold text-base md:text-lg
                 shadow-sm hover:bg-[#4f9cf9]/90
                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
                 min-w-[200px] ${!isStepValid() ? "opacity-65 cursor-not-allowed" : ""}`}
-              onClick={handleSubmit}
-              disabled={!isStepValid()}
-            >
-              Save & Submit
-            </button>
-          )}
-        </div>
-      </div>
+                  onClick={handleSubmit}
+                  disabled={!isStepValid()}
+                >
+                  Save & Submit
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
