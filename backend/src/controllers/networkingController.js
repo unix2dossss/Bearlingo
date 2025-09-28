@@ -32,6 +32,7 @@ export const createLinkedInProfile = async (req, res) => {
         await linkedInProfile.save();
         res.status(201).json({
             message: "Linked In Profile Created Succesfully!",
+            linkedInProfile: linkedInProfile
         });
     }
     catch (error) {
@@ -84,7 +85,7 @@ export const updateLinkedInProfile = async (req, res) => {
         }
 
         await linkedInProfile.save();
-        return res.status(201).json({ message: "Linked In profile updated succesfully!" });
+        return res.status(201).json({ message: "Linked In profile updated succesfully!", linkedInProfile: linkedInProfile });
 
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
