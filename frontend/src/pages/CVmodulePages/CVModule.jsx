@@ -9,18 +9,19 @@ import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 
 // Assets
-import Floor from '../../assets/CVFloor.svg';
-import Window from '../../assets/CVWindow.svg';
-import WindowLocked from '../../assets/CVWindowB.svg';
-import Drawers from '../../assets/CVDrawers.svg';
-import DrawersLocked from '../../assets/CVDrawersB.svg';
-import Desk from '../../assets/CVDesk.svg';
-import DeskLocked from '../../assets/CVDeskB.svg';
-import Bookcase from '../../assets/CVBook.svg';
-import BookcaseLocked from '../../assets/CVBookB.svg';
-import Bear from '../../assets/Bear.svg';
+import Floor from "../../assets/CVFloor.svg";
+import Window from "../../assets/CVWindow.svg";
+import WindowLocked from "../../assets/CVWindowB.svg";
+import Drawers from "../../assets/CVDrawers.svg";
+import DrawersLocked from "../../assets/CVDrawersB.svg";
+import Desk from "../../assets/CVDesk.svg";
+import DeskLocked from "../../assets/CVDeskB.svg";
+import Bookcase from "../../assets/CVBook.svg";
+import BookcaseLocked from "../../assets/CVBookB.svg";
+import Bear from "../../assets/Bear.svg";
 
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
@@ -29,7 +30,7 @@ import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
-  textMuted: "#767687",
+  textMuted: "#767687"
 };
 
 const CVModule = () => {
@@ -50,7 +51,7 @@ const CVModule = () => {
   const [dontShowResumeAgain, setDontShowResumeAgain] = useState(false);
 
   const navigate = useNavigate();
-  const currentUser = useUserStore.getState().user;
+  // const currentUser = useUserStore.getState().user;
   const user = useUserStore((state) => state.user);
 
   useEffect(() => {
@@ -108,7 +109,7 @@ const CVModule = () => {
             opacity: 0,
             scale: 0.5,
             rotation: -30,
-            y: -300,
+            y: -300
           });
           gsap.to(windowUnlockedRef.current, {
             opacity: 1,
@@ -116,9 +117,9 @@ const CVModule = () => {
             rotation: 0,
             y: 0,
             duration: 1.5,
-            ease: "bounce.out",
+            ease: "bounce.out"
           });
-        },
+        }
       });
     } else {
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
@@ -134,9 +135,14 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(drawersUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
           gsap.to(drawersUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
           });
-        },
+        }
       });
       gsap.to(bookcaseLockedRef.current, {
         opacity: 0,
@@ -144,14 +150,21 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(bookcaseUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: 15, y: 300 });
           gsap.to(bookcaseUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "elastic.out(1, 0.5)",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "elastic.out(1, 0.5)"
           });
-        },
+        }
       });
     } else {
       gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
       gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-        opacity: 1, duration: 0.6, ease: "power2.out",
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
       });
     }
   }, [task2Complete]);
@@ -164,9 +177,14 @@ const CVModule = () => {
         onComplete: () => {
           gsap.set(deskUnlockedRef.current, { opacity: 0, scale: 0.5, rotation: -30, y: -300 });
           gsap.to(deskUnlockedRef.current, {
-            opacity: 1, scale: 1, rotation: 0, y: 0, duration: 1.5, ease: "bounce.out",
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
           });
-        },
+        }
       });
     } else {
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
@@ -175,9 +193,24 @@ const CVModule = () => {
   }, [task3Complete]);
 
   useEffect(() => {
-    gsap.fromTo(bearRef.current, { y: 200 }, { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 });
-    gsap.fromTo(".speech-bubble", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 });
-    gsap.to(bearRef.current, { y: -15, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2 });
+    gsap.fromTo(
+      bearRef.current,
+      { y: 200 },
+      { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+    );
+    gsap.fromTo(
+      ".speech-bubble",
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+    );
+    gsap.to(bearRef.current, {
+      y: -15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 2
+    });
   }, []);
 
   // Elevator doors
@@ -291,22 +324,20 @@ const CVModule = () => {
   };
 
   return (
-   <div className="flex flex-col min-h-screen relative overflow-hidden">
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
-      <div
-        ref={leftDoor}
-        className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50"
-      />
-      <div
-        ref={rightDoor}
-        className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50"
-      />
+      <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+      <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
         {/* Top Navbar */}
-        <div className="relative z-10">
+        <div className="relative z-[100]">
           <TopNavbar />
+        </div>
+        {/* Floating music control */}
+        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+          <BackgroundMusicBox />
         </div>
 
         {/* Purple Floor */}
@@ -334,13 +365,13 @@ const CVModule = () => {
             ref={drawersLockedRef}
             src={DrawersLocked}
             alt="Locked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
           />
           <img
             ref={drawersUnlockedRef}
             src={Drawers}
             alt="Unlocked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
           />
           <img
             ref={bookcaseLockedRef}
