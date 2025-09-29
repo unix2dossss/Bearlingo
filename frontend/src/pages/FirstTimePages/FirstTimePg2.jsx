@@ -32,7 +32,7 @@ const FirstTimePg2 = () => {
       {/* White Glowing CV Button */}
       {/* CV Button with hover glow */}
       <div
-        className="fixed right-[350px] top-[340px] -translate-y-1/2 cursor-pointer group"
+        className="fixed right-[25vw] top-[340px] -translate-y-1/2 cursor-pointer group"
         onClick={handleClick}
       >
         {/* Glow only on hover */}
@@ -42,7 +42,7 @@ const FirstTimePg2 = () => {
         <img
           src={cvbutton}
           alt="Elevator Button"
-          className="w-32 h-auto transition transform duration-300 ease-in-out group-hover:scale-105"
+          className="w-[16vw] max-w-[130px] min-w-[20px] h-auto transition transform duration-300 ease-in-out group-hover:scale-105"
         />
       </div>
     </div>

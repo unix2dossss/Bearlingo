@@ -17,7 +17,7 @@ const COLORS = {
   textMuted: "#767687"
 };
 
-const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
+const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
   // To choose between manual and upload CV: "chooser" | "manual" | "upload"
   const [mode, setMode] = useState("chooser");
 
@@ -226,7 +226,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose }) => {
       setDbSecondary(secondary);
       setDbTertiary(tertiary);
       setDbAboutMe(aboutMe);
-
+      onTaskComplete?.();
       setIsSubmitted(true); // allow closing/leaving
       onClose(false, true); // hasChanges = false, force = true, bypass ConfirmLeave check
       // Get subtaskId by module name, level number and subtask sequence number
