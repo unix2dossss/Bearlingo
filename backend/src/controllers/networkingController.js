@@ -198,7 +198,7 @@ export const createReflection = async (req, res) => {
         });
 
         await newNetworkingReflection.save();
-        return res.status(201).json({ message: "Reflection saved!" });
+        return res.status(201).json({ message: "Reflection saved!", reflection: newNetworkingReflection });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }

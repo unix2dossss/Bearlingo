@@ -33,7 +33,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
             const reflections = await api.get("/users/me/networking/reflections",
                 { withCredentials: true }
             );
-            console.log("reflections: ", reflections.data.reflections);
+
             setUserReflections(reflections.data.reflections);
             setSelectedReflection(reflections.data.reflections[0]);
         } catch (error) {
@@ -48,8 +48,6 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                 withCredentials: true,
             });
             setUserEvents(res?.data?.eventsToAttend[0].attendingEventIds || []);
-            console.log("events: ", events);
-            console.log("res?.data?.eventsToAttend", res?.data?.eventsToAttend[0].attendingEventIds);
         } catch (error) {
             console.error("User events were not fetched", error);
             toast.error("User events were not fetched");
@@ -68,10 +66,12 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                 question: q,
                 answer: answers[index] + 1, // +1 as steps are 0–4 but backend expects 1–5
             }));
-            console.log("responses :", responses);
+
+            console.log("eventSelected: ", eventSelected._id);
+
             const saveReflection = await api.post("/users/me/networking/reflections", {
                 responses: responses,
-                event: eventSelected
+                event: eventSelected?._id
             }, { withCredentials: true })
             setUserReflections(prev => {
                 const updated = [...prev];
@@ -92,35 +92,47 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
 
     useEffect(() => {
+        if (activeTab !== "new") return; // Only init on "new" tab
+
+        const draggables = [];
+
         questions.forEach((_, index) => {
             const bear = bearRefs.current[index];
             const scale = scaleRefs.current[index];
             if (!bear || !scale) return;
 
-            const totalSteps = 5; // 1–5
-            const stepWidth = scale.offsetWidth / (totalSteps - 1); // divide track into equal steps
+            const totalSteps = 5;
+            let stepWidth = scale.offsetWidth / (totalSteps - 1);
 
-            Draggable.create(bear, {
+            const draggableInstance = Draggable.create(bear, {
                 type: "x",
                 bounds: scale,
                 inertia: false,
                 snap: (endValue) => {
-                    // snap to nearest step
-                    return Math.round(endValue / stepWidth) * stepWidth;
+                    let snapped = Math.round(endValue / stepWidth) * stepWidth;
+                    return Math.max(0, Math.min(snapped, stepWidth * (totalSteps - 1)));
                 },
                 onDragEnd: function () {
-                    const step = Math.round(this.x / stepWidth) + 1; // +1 for 1-based steps
-                    setAnswers(prev => {
+                    let step = Math.round(this.x / stepWidth) + 1;
+                    step = Math.max(1, Math.min(step, totalSteps));
+                    console.log("step: ", step)
+
+                    setAnswers((prev) => {
                         const updated = [...prev];
                         updated[index] = step;
                         return updated;
                     });
-                    console.log(`Q${index + 1} selected value:`, step);
                 },
-            });
-        });
-    }, []);
+            })[0]; // Draggable.create returns an array
+            draggables.push(draggableInstance);
 
+        });
+
+        // Cleanup old Draggables on tab change/unmount
+        return () => {
+            draggables.forEach((d) => d && d.kill());
+        };
+    }, [activeTab]);
 
 
 
@@ -164,7 +176,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
             </div>
 
             {activeTab == 'new' && (
-                <div className="border border-red-500 w-[100%] flex justify-center">
+                <div className=" w-[100%] flex justify-center">
                     <div className="flex flex-col gap-8 bg-slate-500 min-h-screen mt-16 p-4  w-[80%]">
                         {/* Title + Event Selection */}
                         <div className="text-center">
@@ -181,8 +193,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                                     if (!event) return null;
 
                                     const isSelected = eventClicked?.id === event.id;
-                                    { console.log("event: ", event, "userEvent: ", userEvent) };
-                                    console.log("isSelected: ", isSelected);
+
 
                                     return (
                                         <button
