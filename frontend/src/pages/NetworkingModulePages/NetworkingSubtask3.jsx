@@ -93,15 +93,23 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
     useEffect(() => {
         questions.forEach((_, index) => {
-            if (!bearRefs.current[index] || !scaleRefs.current[index]) return;
+            const bear = bearRefs.current[index];
+            const scale = scaleRefs.current[index];
+            if (!bear || !scale) return;
 
-            Draggable.create(bearRefs.current[index], {
+            const totalSteps = 5; // 1–5
+            const stepWidth = scale.offsetWidth / (totalSteps - 1); // divide track into equal steps
+
+            Draggable.create(bear, {
                 type: "x",
-                bounds: scaleRefs.current[index],
+                bounds: scale,
                 inertia: false,
-                snap: (endValue) => Math.round(endValue / 80) * 80,
+                snap: (endValue) => {
+                    // snap to nearest step
+                    return Math.round(endValue / stepWidth) * stepWidth;
+                },
                 onDragEnd: function () {
-                    const step = Math.round(this.x / 80) + 1;
+                    const step = Math.round(this.x / stepWidth) + 1; // +1 for 1-based steps
                     setAnswers(prev => {
                         const updated = [...prev];
                         updated[index] = step;
@@ -130,7 +138,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
             </button>
             {/* name of each tab group should be unique */}
             {/* Tab buttons */}
-            <div className="absolute top-16 left-[40%] tabs tabs-box w-max mx-auto mb-6 flex flex-row gap-6">
+            <div className="absolute top-16 left-[37%] tabs tabs-box w-max mx-auto mb-6 flex flex-row gap-6">
                 <button
                     onClick={() => setActiveTab("new")}
                     className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200
@@ -155,98 +163,102 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
             </div>
 
-            <div className="flex flex-row gap-8 flex-1 mt-12">
-                <div className="flex flex-col gap-8 bg-slate-500 p-3 overflow-y-auto min-h-screen">
-                    {/* Title + Event Selection */}
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                            🎉 Choose an event to reflect on!
-                        </h2>
+            {activeTab == 'new' && (
+                <div className="border border-red-500 w-[100%] flex justify-center">
+                    <div className="flex flex-col gap-8 bg-slate-500 min-h-screen mt-16 p-4  w-[80%]">
+                        {/* Title + Event Selection */}
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                🎉 Choose an event to reflect on!
+                            </h2>
 
-                        <div className="border-2 border-red-400 h-[300px] w-[98%] mx-auto overflow-y-auto 
+                            <div className="border-2 border-red-400 h-[300px] w-[98%] mx-auto overflow-y-auto 
                     bg-white rounded-xl p-4 flex flex-2 flex-col gap-4 shadow-inner">
-                            {userEvents.map((userEvent) => {
-                                const event = events.find(
-                                    (e) => e.id === userEvent.eventId && userEvent.status === "attended"
-                                );
-                                if (!event) return null;
+                                {userEvents.map((userEvent) => {
+                                    const event = events.find(
+                                        (e) => e.id === userEvent.eventId && userEvent.status === "attended"
+                                    );
+                                    if (!event) return null;
 
-                                const isSelected = eventClicked?.id === event.id;
-                                { console.log("event: ", event, "userEvent: ", userEvent) };
-                                console.log("isSelected: ", isSelected);
+                                    const isSelected = eventClicked?.id === event.id;
+                                    { console.log("event: ", event, "userEvent: ", userEvent) };
+                                    console.log("isSelected: ", isSelected);
 
-                                return (
-                                    <button
-                                        key={event.id}
-                                        onClick={() => {
-                                            setEventSelected(userEvent);
-                                            setEventClicked(event);
-                                        }}
+                                    return (
+                                        <button
+                                            key={event.id}
+                                            onClick={() => {
+                                                setEventSelected(userEvent);
+                                                setEventClicked(event);
+                                            }}
 
-                                        className={`flex flex-col text-left p-4 rounded-xl shadow-md transition-all duration-200 
+                                            className={`flex flex-col text-left p-4 rounded-xl shadow-md transition-all duration-200 
                         hover:scale-105 hover:shadow-xl 
                         ${isSelected
-                                                ? "bg-blue-500 text-white border-2 border-blue-700"
-                                                : "bg-gray-100 text-gray-800 border border-gray-200"
-                                            }`}
-                                    >
-                                        <h3 className="font-bold text-lg">{event.name}</h3>
-                                        <p className="text-sm">{event.date}</p>
-                                        <p className="text-sm italic">{event.location}</p>
-                                    </button>
-                                );
-                            })}
+                                                    ? "bg-blue-500 text-white border-2 border-blue-700"
+                                                    : "bg-gray-100 text-gray-800 border border-gray-200"
+                                                }`}
+                                        >
+                                            <h3 className="font-bold text-lg">{event.name}</h3>
+                                            <p className="text-sm">{event.date}</p>
+                                            <p className="text-sm italic">{event.location}</p>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Reflection Questions */}
-                    <div className="flex flex-col gap-6">
-                        {questions.map((question, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-md h-[200px]"
-                            >
-                                <p className="text-gray-800 font-semibold text-lg">
-                                    {index + 1}. {question}
-                                </p>
-
-                                {/* Gamified slider scale */}
+                        {/* Reflection Questions */}
+                        <div className="flex flex-col gap-6">
+                            {questions.map((question, index) => (
                                 <div
-                                    ref={(el) => (scaleRefs.current[index] = el)}
-                                    className="relative h-24 w-[90%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg flex items-center"
+                                    key={index}
+                                    className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-md h-[200px]"
                                 >
-                                    <img
-                                        ref={(el) => (bearRefs.current[index] = el)}
-                                        src={Bear}
-                                        alt="Bear"
-                                        className="absolute top-[30px] left-[10px] w-12 h-12 cursor-pointer select-none transition-transform duration-150 hover:scale-110"
-                                    />
-                                    {/* Labels under the track */}
+                                    <p className="text-gray-800 font-semibold text-lg">
+                                        {index + 1}. {question}
+                                    </p>
 
-                                    {/* Labels under the track */}
-                                    <div className="absolute bottom-[-24px] left-[10px] right-[10px] flex justify-between text-2xl font-medium text-gray-600">
-                                        <span>😡</span>
-                                        <span>🙁</span>
-                                        <span>😐</span>
-                                        <span>🙂</span>
-                                        <span>😀</span>
+                                    {/* Gamified slider scale */}
+                                    <div
+                                        ref={(el) => (scaleRefs.current[index] = el)}
+                                        className="relative h-24 w-[90%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg flex items-center"
+                                    >
+                                        <img
+                                            ref={(el) => (bearRefs.current[index] = el)}
+                                            src={Bear}
+                                            alt="Bear"
+                                            className="absolute top-[30px] left-[10px] w-12 h-12 cursor-pointer select-none transition-transform duration-150 hover:scale-110"
+                                        />
+                                        {/* Labels under the track */}
+
+                                        {/* Labels under the track */}
+                                        <div className="absolute bottom-[-24px] left-[10px] right-[10px] flex justify-between text-2xl font-medium text-gray-600">
+                                            <span>😡</span>
+                                            <span>🙁</span>
+                                            <span>😐</span>
+                                            <span>🙂</span>
+                                            <span>😀</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-center">
-                        <button
-                            className="btn btn-primary mt-4 w-[40%]"
-                            onClick={saveReflection}
-                        >
-                            Save Reflection
-                        </button>
+                            ))}
+                        </div>
+                        <div className="flex justify-center">
+                            <button
+                                className="btn btn-primary mt-4 w-[40%]"
+                                onClick={saveReflection}
+                            >
+                                Save Reflection
+                            </button>
+                        </div>
                     </div>
                 </div>
+            )}
 
-                {/* Reflections UI */}
-                <div className="flex-1 flex border border-blue-500 bg-gray-100 h-[63%]">
+            {/* Reflections UI */}
+            {activeTab == 'past' && (
+                <div className="flex-1 flex border border-blue-500 bg-gray-100 h-[63%] mt-16">
                     {/* Left: Reflections List */}
                     <div className="w-1/2 border-r border-gray-300 p-6 overflow-y-auto">
                         <h2 className="text-2xl font-bold mb-4">Past Reflections</h2>
@@ -298,8 +310,9 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                         )}
                     </div>
                 </div>
-            </div >
-        </div>
+            )}
+        </div >
+
 
 
     )
