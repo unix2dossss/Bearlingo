@@ -23,6 +23,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
         "I have a clear next step to follow up with people I met"
     ];
     const [answers, setAnswers] = useState(Array(questions.length).fill(0));
+    const [activeTab, setActiveTab] = useState("new"); // "new" or "past"
 
     gsap.registerPlugin(Draggable);
 
@@ -128,7 +129,33 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                 Back to subtasks
             </button>
             {/* name of each tab group should be unique */}
-            <div className="flex flex-row gap-8 flex-1 mt-2">
+            {/* Tab buttons */}
+            <div className="absolute top-16 left-[40%] tabs tabs-box w-max mx-auto mb-6 flex flex-row gap-6">
+                <button
+                    onClick={() => setActiveTab("new")}
+                    className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200
+      ${activeTab === "new"
+                            ? "bg-blue-500 text-white shadow-lg scale-105"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105"
+                        }`}
+                >
+                    📝 New Reflection
+                </button>
+
+                <button
+                    onClick={() => setActiveTab("past")}
+                    className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200
+      ${activeTab === "past"
+                            ? "bg-blue-500 text-white shadow-lg scale-105"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105"
+                        }`}
+                >
+                    📚 Past Reflections
+                </button>
+
+            </div>
+
+            <div className="flex flex-row gap-8 flex-1 mt-12">
                 <div className="flex flex-col gap-8 bg-slate-500 p-3 overflow-y-auto min-h-screen">
                     {/* Title + Event Selection */}
                     <div className="text-center">
@@ -273,6 +300,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                 </div>
             </div >
         </div>
+
 
     )
 };
