@@ -28,7 +28,6 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         ? res.data.allEventsFromBackend
         : [];
       setAllEvents(eventsOnly);
-      toast.success("Events obtained successfully!");
     } catch (error) {
       console.error("Error obtaining events", error);
       toast.error("Error obtaining events");
@@ -41,7 +40,6 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         withCredentials: true,
       });
       setUserEvents(res?.data?.eventsToAttend || []);
-      toast.success("Your events loaded");
     } catch (error) {
       console.error("User events were not fetched", error);
       toast.error("User events were not fetched");

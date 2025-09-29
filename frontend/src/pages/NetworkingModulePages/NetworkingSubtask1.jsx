@@ -58,7 +58,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   };
 
 
-  // Run once when component mounts
+  // Run once when component mounts to check if user already has a profile
   useEffect(() => {
     getLinkedInProfile();
   }, []);
