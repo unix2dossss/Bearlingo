@@ -19,19 +19,20 @@ export const createLinkedInProfile = async (req, res) => {
     try {
         console.log("Incoming request body:", req.body);
         console.log("Authenticated user:", req.user);
-        const { firstName, lastName, professionalHeadline, keySkills, objective } = req.body;
+        const { firstName, lastName, profressionalHeadline, keySkills, objective } = req.body;
 
         const linkedInProfile = new linkedinprofile({
             user: userId,
             firstName,
             lastName,
-            professionalHeadline,
+            profressionalHeadline,
             keySkills,
             objective
         });
         await linkedInProfile.save();
         res.status(201).json({
             message: "Linked In Profile Created Succesfully!",
+            linkedInProfile: linkedInProfile
         });
     }
     catch (error) {
@@ -44,7 +45,7 @@ export const getLinkedInProfile = async (req, res) => {
     try {
         const linkedInProfile = await LinkedInProfile.findOne({ user: userId });
         if (!linkedInProfile) {
-            return res.status(404).json({ message: "LinkedIn Profile not found" });
+            return res.status(200).json({ message: "LinkedIn Profile not found" });
         }
         return res.status(200).json({ message: "Linked In Profile Retrieved Succesfully!", linkedInProfile: linkedInProfile });
     } catch (error) {
@@ -58,7 +59,7 @@ export const updateLinkedInProfile = async (req, res) => {
         return res.status(400).json({ message: "Invalid user ID" });
     }
     try {
-        const { firstName, lastName, professionalHeadline, keySkills, objective } = req.body;
+        const { firstName, lastName, profressionalHeadline, keySkills, objective } = req.body;
         const linkedInProfile = await linkedinprofile.findOne({ user: userId });
 
         if (!linkedInProfile) {
@@ -67,7 +68,7 @@ export const updateLinkedInProfile = async (req, res) => {
 
         linkedInProfile.firstName = firstName ?? linkedInProfile.firstName; //If req.body.firstName is undefined, it keep old value. If it’s an empty string then it updates it to empty string
         linkedInProfile.lastName = lastName ?? linkedInProfile.lastName;
-        linkedInProfile.professionalHeadline = professionalHeadline ?? linkedInProfile.professionalHeadline;
+        linkedInProfile.profressionalHeadline = profressionalHeadline ?? linkedInProfile.profressionalHeadline;
         linkedInProfile.objective = objective ?? linkedInProfile.objective;
 
         const skillKeys = Object.keys(keySkills); // e.g., ["keySkill2", "keySkill5"] from the req.body in JSON format
@@ -84,7 +85,7 @@ export const updateLinkedInProfile = async (req, res) => {
         }
 
         await linkedInProfile.save();
-        return res.status(201).json({ message: "Linked In profile updated succesfully!" });
+        return res.status(201).json({ message: "Linked In profile updated succesfully!", linkedInProfile: linkedInProfile });
 
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
@@ -197,7 +198,7 @@ export const createReflection = async (req, res) => {
         });
 
         await newNetworkingReflection.save();
-        return res.status(201).json({ message: "Reflection saved!" });
+        return res.status(201).json({ message: "Reflection saved!", reflection: newNetworkingReflection });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }

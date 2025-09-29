@@ -10,6 +10,7 @@ import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import NetworkingSubtask1 from "./NetworkingSubtask1";
 import NetworkingSubtask2 from "./NetworkingSubtask2";
+import NetworkingSubtask3 from "./NetworkingSubtask3";
 
 const NetworkingModule = () => {
 
@@ -329,6 +330,14 @@ const NetworkingModule = () => {
                         onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
                     />
                 )}
+
+                {showSubtask && selectedSubtask === "subtask3" && (
+                    <NetworkingSubtask3
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
+                )}
+
 
             </div >
         </>

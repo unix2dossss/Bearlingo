@@ -28,7 +28,6 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         ? res.data.allEventsFromBackend
         : [];
       setAllEvents(eventsOnly);
-      toast.success("Events obtained successfully!");
     } catch (error) {
       console.error("Error obtaining events", error);
       toast.error("Error obtaining events");
@@ -41,7 +40,6 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         withCredentials: true,
       });
       setUserEvents(res?.data?.eventsToAttend || []);
-      toast.success("Your events loaded");
     } catch (error) {
       console.error("User events were not fetched", error);
       toast.error("User events were not fetched");
@@ -124,22 +122,22 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
       <button
         className="btn btn-ghost absolute top-20 left-6 z-10"
         onClick={onBack}
-        >
+      >
         <ArrowLeftIcon className="size-5" />
         Back to subtasks
-        </button>
+      </button>
 
-        {/* spacer equal to button height + gap */}
-        <div className="h-16" />
+      {/* spacer equal to button height + gap */}
+      <div className="h-16" />
 
-        <h2 className="text-2xl font-bold text-slate-800 mb-1">
+      <h2 className="text-2xl font-bold text-slate-800 mb-1">
         🎉 Join an Event & Earn Points!
-        </h2>
-        <p className="text-base text-slate-700 -mt-2">
+      </h2>
+      <p className="text-base text-slate-700 -mt-2">
         Participate, learn, and get rewarded for attending events!
-        </p>
+      </p>
 
-      {/*Controls bar */}
+      {/* Controls bar */}
       <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[#4f9cf9]/80 backdrop-blur rounded-b-xl">
         <div className="flex flex-wrap items-center gap-2">
           <input
@@ -201,8 +199,8 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
                 status === "going"
                   ? "bg-green-500 hover:bg-green-600 text-white shadow-lg"
                   : status === "attended"
-                  ? "bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed"
-                  : "bg-yellow-400 hover:bg-yellow-500 text-black shadow-md";
+                    ? "bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed"
+                    : "bg-yellow-400 hover:bg-yellow-500 text-black shadow-md";
 
               return (
                 <div
@@ -219,7 +217,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
                   {/* Event content */}
                   <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
-                    <h3 className="text-xl font-bold text-purple-100 group-hover:text-white transition-colors duration-200">
+                    <h3 className="text-xl font-bold text-purple-500 group-hover:text-pruple-500 transition-colors duration-200">
                       {item.name}
                     </h3>
 
@@ -268,8 +266,8 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
                         {status === "attended"
                           ? "Attended ✅"
                           : status === "going"
-                          ? "Locked In 🫡 (tap to mark attended)"
-                          : "Going to Attend"}
+                            ? "Locked In 🫡 (tap to mark attended)"
+                            : "Going to Attend"}
                       </button>
                     </div>
                   </div>

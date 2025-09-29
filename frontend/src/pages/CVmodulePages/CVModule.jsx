@@ -71,9 +71,13 @@ const CVModule = () => {
   useEffect(() => {
     const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
     if (!skipResume) {
+    // wait before showing resume modal
+    const timer = setTimeout(() => {
       setShowResumeModal(true);
-      return;
-    }
+    }, 2500); // 2.5s delay 
+
+    return () => clearTimeout(timer);
+  }
     const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
     if (!skipIntro) setShowLandingIntro(true);
   }, []);
@@ -405,7 +409,7 @@ const CVModule = () => {
       </div>
 
       {/* Bottom Button Container */}
-      <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+      <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
         <div className="flex space-x-6">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
@@ -428,7 +432,7 @@ const CVModule = () => {
 
           {/* Bear + Speech Bubble */}
           <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
-            <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl z-40">
+            <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl">
               Time to build our CV!
               <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md" />
             </div>
