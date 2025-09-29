@@ -9,7 +9,7 @@ import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
-import BackgroundMusicButton from "../../components/BackgroundMusicButton";
+import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -332,12 +332,12 @@ const CVModule = () => {
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
         {/* Top Navbar */}
-        <div className="relative z-10">
+        <div className="relative z-[100]">
           <TopNavbar />
         </div>
         {/* Floating music control */}
-        <div className="absolute top-20 right-8 z-20">
-          <BackgroundMusicButton />
+        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+          <BackgroundMusicBox />
         </div>
 
         {/* Purple Floor */}
@@ -365,13 +365,13 @@ const CVModule = () => {
             ref={drawersLockedRef}
             src={DrawersLocked}
             alt="Locked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
           />
           <img
             ref={drawersUnlockedRef}
             src={Drawers}
             alt="Unlocked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30"
+            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
           />
           <img
             ref={bookcaseLockedRef}
