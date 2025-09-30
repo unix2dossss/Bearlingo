@@ -351,9 +351,9 @@ const CVModule = () => {
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-            <div className="flex border border-black">
+            <div className="flex">
               <div className="mt-4 z-40">
-                  <SideNavbar />
+                <SideNavbar />
               </div>
 
               <div className="relative w-full">
@@ -596,7 +596,7 @@ const CVModule = () => {
           )}
 
         </div>
-        
+
       </div>
     </div>
   );
