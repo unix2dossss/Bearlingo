@@ -1,11 +1,12 @@
 import React from 'react';
-import Navbar from '../components/TopNavbar';
+import TopNavbar from '../components/TopNavbar';
 import MonitorImage from '../assets/journal-monitor.svg';
 import { useState } from "react";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
+import SideNavbar from '../components/SideNavbar';
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
@@ -48,43 +49,49 @@ const Journal = () => {
 
     return (
         <>
+            <div className="bg-blue-200 min-h-screen border border-black">
+                <TopNavbar />
 
-            <div className="bg-blue-200 min-h-screen border">
-                <Navbar />
-                <div className="flex justify-center items-center h-[calc(100vh-65px)]">
-                    {/* side navbar will come here */}
-                    <div className="flex justify-center items-center">
-                        <div className="relative w-3/4">
-                            {/* Monitor here */}
-                            <img
-                                src={MonitorImage}
-                                alt="Monitor"
-                                className="w-full h-auto"
-                            />
+                <div className="flex">
+                    <div className="mt-8">
+                        <SideNavbar />
+                    </div>
 
-                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
-                                style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
-                                {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
-                                {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
-                            </div>
+                    <div className="flex justify-center items-center h-[calc(100vh-65px)]">
+                        <div className="flex justify-center items-center">
+                            <div className="relative w-3/4">
+                                {/* Monitor here */}
+                                <img
+                                    src={MonitorImage}
+                                    alt="Monitor"
+                                    className="w-full h-auto"
+                                />
 
-                            <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
-                                {folders.map((folder, index) => (
-                                    <div key={index} className="flex flex-col items-center cursor-pointer">
-                                        <button onClick={() => setOpenFolder(folder)}>
-                                            <img
-                                                src={folder.image}
-                                                alt={folder.name}
-                                                className="w-16 h-auto"
-                                            />
-                                        </button>
-                                        <span className="text-black text-sm mt-1">{folder.name}</span>
-                                    </div>
-                                ))}
+                                <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
+                                    style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
+                                    {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
+                                    {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
+                                </div>
+
+                                <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
+                                    {folders.map((folder, index) => (
+                                        <div key={index} className="flex flex-col items-center cursor-pointer">
+                                            <button onClick={() => setOpenFolder(folder)}>
+                                                <img
+                                                    src={folder.image}
+                                                    alt={folder.name}
+                                                    className="w-16 h-auto"
+                                                />
+                                            </button>
+                                            <span className="text-black text-sm mt-1">{folder.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div >
+                    </div >
+                </div>
+                
 
                 {openFolder && (
                     <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
