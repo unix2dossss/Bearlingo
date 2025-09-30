@@ -8,7 +8,7 @@ const SideNavbar = () => {
 
   const menuItems = [
     { id: 1, label: "CV", path: "/CvModule" },
-    { id: 2, label: "Interview", path: "/InterviewModule" },
+    { id: 2, label: "Interview", path: "/" },
     { id: 3, label: "Networking", path: "/NetworkingModule" },
     { id: 4, label: "Journal", path: "/Journal" },
     { id: 5, label: "Leaderboard", path: "/Leaderboard" },
@@ -19,7 +19,7 @@ const SideNavbar = () => {
       className={`bg-[#526E7A] flex flex-col rounded-2xl
         ${isOpen ? "w-64 p-4" : "w-20 items-center p-2"} 
         shadow-[6px_6px_2px_1px_#92A8B5]
-        transition-all duration-300 min-h-[40rem] mt-8 ml-10`}
+        transition-all duration-300 min-h-[40rem] mt-8 ml-10 z-40`}
     >
       {/* Toggle button */}
       <button
