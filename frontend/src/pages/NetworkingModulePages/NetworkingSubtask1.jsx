@@ -117,11 +117,13 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           firstName: userInfo.firstName,
           lastName: userInfo.lastName,
           profressionalHeadline: selectedHeadline,
+          university: university,
           keySkills: keySkills,
           objective: careerGoal
         },
         { withCredentials: true });
       setSavedProfile(profile.data.linkedInProfile);
+      console.log("profile.data.linkedInProfile: ", profile.data.linkedInProfile);
       setUserHasProfile(true);
 
       toast.success("Profile saved!");
@@ -132,20 +134,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     }
   };
 
-// Max skills user can pick on step skills
-const MAX_SKILLS = 4;
+  // Max skills user can pick on step skills
+  const MAX_SKILLS = 4;
 
-const toggleSkill = (skill) => {
-  setSelectedSkills((prev) => {
-    const isSelected = prev.includes(skill);
-    if (isSelected) return prev.filter((s) => s !== skill);
-    if (prev.length >= MAX_SKILLS) {
-      toast.error(`You can select up to ${MAX_SKILLS} skills.`);
-      return prev;
-    }
-    return [...prev, skill];
-  });
-};
+  const toggleSkill = (skill) => {
+    setSelectedSkills((prev) => {
+      const isSelected = prev.includes(skill);
+      if (isSelected) return prev.filter((s) => s !== skill);
+      if (prev.length >= MAX_SKILLS) {
+        toast.error(`You can select up to ${MAX_SKILLS} skills.`);
+        return prev;
+      }
+      return [...prev, skill];
+    });
+  };
 
 
 
@@ -160,54 +162,54 @@ const toggleSkill = (skill) => {
         Back to subtasks
       </button>
 
-    {/* Left: Bear + Speech */}
-    <div className="flex flex-1 items-center justify-center">
-    <div className="relative w-full max-w-[500px] aspect-square">
-      <img
-        src={Bear}
-        alt="Bear Mascot"
-        className="absolute inset-0 w-full h-full object-contain"
-      />
+      {/* Left: Bear + Speech */}
+      <div className="flex flex-1 items-center justify-center">
+        <div className="relative w-full max-w-[500px] aspect-square">
+          <img
+            src={Bear}
+            alt="Bear Mascot"
+            className="absolute inset-0 w-full h-full object-contain"
+          />
 
-      {/* Speech bubble */}
-      {animationDone && userHasProfile === true && (
-        <div
-          key="profile-speech"
-          className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
-        >
-          <div className="chat-bubble">
-            Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
-          </div>
-        </div>
-      )}
+          {/* Speech bubble */}
+          {animationDone && userHasProfile === true && (
+            <div
+              key="profile-speech"
+              className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
+            >
+              <div className="chat-bubble">
+                Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
+              </div>
+            </div>
+          )}
 
-      {animationDone && userHasProfile === false && (
-        <div
-          key={currentSpeechIndex}
-          className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
-        >
-          <div className="chat-bubble">
-            {currentSpeechIndex === 0
-              ? `Hi ${userInfo?.username || "there"}! 👋`
-              : speechForSubtask1[currentSpeechIndex]}
-          </div>
-        </div>
-      )}
+          {animationDone && userHasProfile === false && (
+            <div
+              key={currentSpeechIndex}
+              className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
+            >
+              <div className="chat-bubble">
+                {currentSpeechIndex === 0
+                  ? `Hi ${userInfo?.username || "there"}! 👋`
+                  : speechForSubtask1[currentSpeechIndex]}
+              </div>
+            </div>
+          )}
 
-      {/* Next button */}
-      {animationDone &&
-        userHasProfile === false &&
-        currentSpeechIndex < speechForSubtask1.length - 1 && (
-          <button
-            className="absolute -bottom-20 left-1/2 -translate-x-1/2 px-6 py-2
+          {/* Next button */}
+          {animationDone &&
+            userHasProfile === false &&
+            currentSpeechIndex < speechForSubtask1.length - 1 && (
+              <button
+                className="absolute -bottom-20 left-1/2 -translate-x-1/2 px-6 py-2
                       bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
-            onClick={handleNext}
-          >
-            Next
-          </button>
-              )}
-          </div>
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            )}
         </div>
+      </div>
 
 
 
@@ -222,7 +224,7 @@ const toggleSkill = (skill) => {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {userInfo?.firstName} {userInfo?.lastName}
                   </h1>
-                  <p className="text-gray-600 mt-1">{savedProfile.professionalHeadline}</p>
+                  <p className="text-gray-600 mt-1">{savedProfile.profressionalHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{savedProfile.university}</p>
                 </div>
 
@@ -288,7 +290,7 @@ const toggleSkill = (skill) => {
             {/* Headline component */}
             <Headline
               value={selectedHeadline}
-              onChange={setSelectedHeadline}
+              onChange={setSelectedHeadline} // 👈 dropdown OR custom input will update this
               className="w-[350px]"
             />
           </div>
@@ -317,21 +319,21 @@ const toggleSkill = (skill) => {
                 Submit
               </button>
             </div>
-            {console.log("Headline: ", selectedHeadline)}
+            {console.log("Headline from :   {/* University (index 5) */}:", selectedHeadline)}
           </div>
         )}
 
         {/* Skills (index 6) */}
         {currentSpeechIndex === 6 && userHasProfile === false && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
-          <SkillList
-            allSkills={allSkills}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
-            maxSkills={MAX_SKILLS}
-          />
-        </div>
-      )}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+            <SkillList
+              allSkills={allSkills}
+              selectedSkills={selectedSkills}
+              toggleSkill={toggleSkill}
+              maxSkills={MAX_SKILLS}
+            />
+          </div>
+        )}
 
         {/* Career goal (index 7) */}
         {currentSpeechIndex === 7 && userHasProfile == false && (
@@ -369,6 +371,9 @@ const toggleSkill = (skill) => {
                   </h1>
                   <p className="text-gray-600 mt-1">{selectedHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{university}</p>
+                  {console.log("selectedHeadline: ", selectedHeadline)}
+                  {console.log("university: ", university)};
+
                 </div>
 
                 <div>
