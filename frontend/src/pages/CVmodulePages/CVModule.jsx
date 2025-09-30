@@ -80,7 +80,7 @@ const CVModule = () => {
       return () => clearTimeout(timer);
     }
     const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
-    if (!skipIntro) setShowLandingIntro(true);
+    if (!skipIntro) {setShowLandingIntro(true), 2500};
   }, []);
 
   // ⬇️ NEW: lock body scroll when any modal is open
