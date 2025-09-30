@@ -352,7 +352,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Skills (index 6) */}
         {currentSpeechIndex === 6 && userHasProfile === false && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
             <SkillList
               allSkills={allSkills}
               selectedSkills={selectedSkills}
@@ -364,7 +364,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Career goal (index 7) */}
         {currentSpeechIndex === 7 && !userHasProfile && (
-          <div className="absolute top-[40%] left-[44%] transform -translate-y-1/4 translate-x-48 w-[400px] flex justfy-center">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
             <div className="relative p-6 rounded-2xl shadow-2xl bg-indigo-100/80">
               {/* Animated border overlay */}
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 animate-gradient-x blur-lg opacity-50"></div>

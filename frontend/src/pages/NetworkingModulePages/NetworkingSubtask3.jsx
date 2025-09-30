@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
@@ -7,6 +7,8 @@ import api from "../../lib/axios";
 import { Draggable } from "gsap/Draggable";
 import events from "../../../../backend/src/utils/networkingEvents";
 import { FaStar } from "react-icons/fa";
+import { Search, Calendar, MapPin, Clock, Star } from "lucide-react";
+
 
 
 
@@ -18,6 +20,38 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
     const scaleRefs = useRef([]);
     const [eventSelected, setEventSelected] = useState(null);
     const [eventClicked, setEventClicked] = useState(null);
+    const [query, setQuery] = useState("");
+    const [sortBy, setSortBy] = useState("latest"); // "latest" | "rating" | "title"
+
+    const filteredReflections = useMemo(() => {
+    let list = [...userReflections];
+
+    // filter
+    const q = query.trim().toLowerCase();
+    if (q) {
+        list = list.filter(r => {
+        const hay =
+            `${r?.title || ""} ${r?.event?.name || ""} ${r?.responses?.map(x => x?.question).join(" ")}`.toLowerCase();
+        return hay.includes(q);
+        });
+    }
+
+    // sort
+    if (sortBy === "rating") {
+        list.sort((a, b) => avgScore(b.responses) - avgScore(a.responses));
+    } else if (sortBy === "title") {
+        list.sort((a, b) => (a?.title || "").localeCompare(b?.title || ""));
+    } else {
+        // latest: use createdAt if present, else keep original order (most recent first by index)
+        list.sort((a, b) => {
+        const da = a?.createdAt ? new Date(a.createdAt).getTime() : -Infinity;
+        const db = b?.createdAt ? new Date(b.createdAt).getTime() : -Infinity;
+        return db - da;
+        });
+    }
+
+    return list;
+    }, [userReflections, query, sortBy]);
     const questions = [
         "I connected with someone new at this event and it was useful",
         "I learned something valuable at this event",
@@ -93,6 +127,25 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
             toast.error("Error in saving reflection!");
         }
     };
+    const avgScore = (responses = []) =>
+    responses.length
+        ? Math.round(
+            (responses.reduce((s, r) => s + Number(r?.answer || 0), 0) / responses.length) * 10
+        ) / 10
+        : 0;
+
+    const Stars = ({ value = 0, size = 16 }) => (
+    <div className="flex items-center gap-0.5">
+        {[0,1,2,3,4].map(i => (
+        <Star
+            key={i}
+            size={size}
+            className={i < Math.round(value) ? "fill-amber-400 text-amber-400" : "text-slate-300"}
+        />
+        ))}
+        <span className="ml-1 text-xs text-slate-600">{value.toFixed(1)}</span>
+    </div>
+    );
 
 
     return (
@@ -134,208 +187,354 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
             </div>
 
-            {activeTab == 'new' && (
-                <div className=" w-[100%] flex justify-center">
-                    <div className="flex flex-col gap-8 bg-slate-300 min-h-screen mt-16 p-4  w-[80%]">
-                        {/* Title + Event Selection */}
-                        <div className="text-center">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                                🎉 Choose an event to reflect on!
-                            </h2>
-                            <div className="mb-2">
-                                <label className="flex items-center gap-2 text-lg font-bold text-yellow-600 mb-2">
-                                    <FaStar className="animate-bounce" /> Reflection Title
-                                </label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter your reflection title..."
-                                    className="
-          w-full px-4 py-3 rounded-lg bg-yellow-50 border-2 border-yellow-300
-          focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200
-          placeholder-yellow-400 text-yellow-900 font-semibold
-          shadow-sm focus:shadow-md transition-all duration-300
-        "
-                                />
-
-
-                            </div>
-
-                            <div className="border-2 border-red-400 h-[300px] w-[98%] mx-auto overflow-y-auto 
-                    bg-white rounded-xl p-4 flex flex-2 flex-col gap-4 shadow-inner">
-                                {userEvents.map((userEvent) => {
-                                    const event = events.find(
-                                        (e) => e.id === userEvent.eventId && userEvent.status === "attended"
-                                    );
-                                    if (!event) return null;
-
-                                    const isSelected = eventClicked?.id === event.id;
-
-
-                                    return (
-                                        <button
-                                            key={event.id}
-                                            onClick={() => {
-                                                setEventSelected(userEvent);
-                                                setEventClicked(event);
-                                            }}
-
-                                            className={`flex flex-col text-left p-4 rounded-xl shadow-md transition-all duration-200 
-                        hover:scale-105 hover:shadow-xl 
-                        ${isSelected
-                                                    ? "bg-blue-500 text-white border-2 border-blue-700"
-                                                    : "bg-gray-100 text-gray-800 border border-gray-200"
-                                                }`}
-                                        >
-                                            <h3 className="font-bold text-lg">{event.name}</h3>
-                                            <p className="text-sm">{event.date}</p>
-                                            <p className="text-sm italic">{event.location}</p>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Reflection Questions */}
-                        <div className="flex flex-col gap-6">
-                            {questions.map((question, index) => (
-                                <div
-                                    key={index}
-                                    className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-md h-[200px]"
-                                >
-                                    <p className="text-gray-800 font-semibold text-lg">
-                                        {index + 1}. {question}
-                                    </p>
-
-                                    {/* Slider Track */}
-                                    <div
-                                        ref={(el) => (scaleRefs.current[index] = el)}
-                                        className="relative h-24 w-[90%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg"
-                                    >
-                                        {/* Bear */}
-                                        <img
-                                            ref={(el) => (bearRefs.current[index] = el)}
-                                            src={Bear}
-                                            alt="Bear"
-                                            className="absolute top-[15px] w-12 h-12 select-none"
-                                        />
-
-                                        {/* Emoji Labels */}
-                                        <div className="absolute bottom-[-40px] left-0 right-0 flex justify-around text-2xl font-medium text-gray-600 px-2">
-                                            {["😡", "🙁", "😐", "🙂", "😀"].map((emoji, step) => (
-                                                <button
-                                                    key={step}
-                                                    onClick={() => {
-                                                        const container = scaleRefs.current[index];
-                                                        const bear = bearRefs.current[index];
-
-                                                        if (!container || !bear) return;
-
-                                                        const totalSteps = 5;
-                                                        const stepWidth = container.offsetWidth / (totalSteps - 1);
-
-                                                        // Center bear over emoji
-                                                        const bearOffset = bear.offsetWidth / 2;
-                                                        const emojiElements = container.querySelectorAll("button");
-                                                        const targetX = emojiElements[step].offsetLeft + emojiElements[step].offsetWidth / 2 - bearOffset;
-
-
-                                                        gsap.to(bear, {
-                                                            x: targetX,
-                                                            duration: 0.4,
-                                                            ease: "power2.out",
-                                                        });
-
-                                                        setAnswers((prev) => {
-                                                            const updated = [...prev];
-                                                            updated[index] = step + 1;
-                                                            return updated;
-                                                        });
-
-                                                        console.log(`Q${index + 1} → ${step + 1}`);
-                                                    }}
-                                                    className="cursor-pointer hover:scale-125 transition-transform"
-                                                >
-                                                    {emoji}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-
-                        </div>
-                        <div className="flex justify-center">
-                            <button
-                                className="btn btn-primary mt-4 w-[40%]"
-                                onClick={saveReflection}
-                            >
-                                Save Reflection
-                            </button>
-                        </div>
+            {activeTab === "new" && (
+            <section className="w-full">
+                <div className="mx-auto mt-16 grid max-w-6xl gap-6 lg:grid-cols-[1.15fr,1fr]">
+                {/* LEFT: Title + Event */}
+                <section className="rounded-2xl border border-slate-200 bg-white/95 shadow-xl backdrop-blur">
+                    <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Create a new reflection</h3>
+                        <p className="text-sm text-slate-500">Choose an attended event and give it a title.</p>
                     </div>
-                </div>
-            )}
+                    </header>
 
-            {/* Reflections UI */}
-            {activeTab == 'past' && (
-                <div className="flex-1 flex border border-blue-500 bg-gray-100 h-[63%] mt-16">
-                    {/* Left: Reflections List */}
-                    <div className="w-1/2 border-r border-gray-300 p-6 overflow-y-auto">
-                        <h2 className="text-2xl font-bold mb-4">Past Reflections</h2>
-                        <div className="space-y-4">
-                            {userReflections.map((reflection, index) => (
-                                <div
-                                    key={reflection._id || index}
-                                    onClick={() => setSelectedReflection(reflection)}
-                                    className={`p-4 rounded-xl shadow cursor-pointer transition ${selectedReflection === reflection
-                                        ? "bg-blue-100 border border-blue-400"
-                                        : "bg-white hover:bg-gray-50"
-                                        }`}
-                                >
-                                    <h3 className="text-lg font-semibold text-gray-800">
-                                        {reflection.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 truncate">
-                                        {/* Show first question as a preview */}
-                                        {reflection.responses[0]?.question}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="space-y-5 p-5">
+                    {/* Title */}
+                    <div>
+                        <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-800">
+                        Reflection title
+                        </label>
+                        <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g., Tech Careers Night — great conversations!"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-800 outline-none transition focus:border-slate-400 focus:bg-white"
+                        />
                     </div>
 
-                    {/* Right: Reflection Detail */}
-                    <div className="w-1/2 p-6">
-                        {selectedReflection ? (
-                            <div className="bg-white p-6 rounded-xl shadow-lg">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                    {selectedReflection.title} Details
-                                </h2>
-                                <ul className="space-y-3">
-                                    {selectedReflection.responses.map((resp) => (
-                                        <li
-                                            key={resp._id}
-                                            className="p-3 border rounded-lg bg-gray-50"
-                                        >
-                                            <p className="font-medium text-gray-800">{resp.question}</p>
-                                            <p className="text-gray-600">Answer: {resp.answer}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-gray-500">
-                                {selectedReflection == null ? 'Create a reflection' : 'Select a reflection to view its details'}
+                    {/* Event selector */}
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-slate-800">Attended events</label>
+
+                        <div className="grid max-h-72 grid-cols-1 gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
+                        {userEvents
+                            .filter((ue) => ue?.status === "attended")
+                            .map((ue) => {
+                            const evt = events.find((e) => e.id === ue.eventId);
+                            if (!evt) return null;
+                            const selected = eventClicked?.id === evt.id;
+
+                            return (
+                                <button
+                                key={evt.id}
+                                onClick={() => {
+                                    setEventSelected(ue);
+                                    setEventClicked(evt);
+                                }}
+                                className={[
+                                    "text-left rounded-lg border p-3 transition",
+                                    selected
+                                    ? "border-slate-900 bg-slate-900 text-white"
+                                    : "border-slate-200 bg-slate-50 hover:bg-white",
+                                ].join(" ")}
+                                >
+                                <div className="font-medium">{evt.name}</div>
+                                <div className="text-xs opacity-80">{evt.date}</div>
+                                <div className="text-xs italic opacity-80">{evt.location}</div>
+                                </button>
+                            );
+                            })}
+
+                        {/* Empty state */}
+                        {userEvents.filter((ue) => ue?.status === "attended").length === 0 && (
+                            <div className="col-span-full flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-500">
+                            You have no attended events yet.
                             </div>
                         )}
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                {/* RIGHT: Questions */}
+                <section className="rounded-2xl border border-slate-200 bg-white/95 shadow-xl backdrop-blur">
+                    <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Reflection questions</h3>
+                        <p className="text-sm text-slate-500">Tap an emoji to rate your experience.</p>
+                    </div>
+
+                    {/* Progress */}
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
+                        {answers.filter((a) => a > 0).length}/{questions.length} answered
+                    </span>
+                    </header>
+
+                    <div className="space-y-5 p-5">
+                    {questions.map((question, index) => (
+                        <div key={index} className="rounded-lg border border-slate-200 p-3">
+                        <p className="mb-2 text-sm font-medium text-slate-800">
+                            {index + 1}. {question}
+                        </p>
+
+              {/* Track */}
+              <div
+                ref={(el) => (scaleRefs.current[index] = el)}
+                className="relative h-20 rounded-md bg-gradient-to-r from-slate-100 via-white to-slate-100"
+              >
+                {/* Bear icon (moves horizontally) */}
+                <img
+                  ref={(el) => (bearRefs.current[index] = el)}
+                  src={Bear}
+                  alt="Bear"
+                  className="absolute top-1/2 -translate-y-1/2 h-10 w-10 select-none"
+                  draggable={false}
+                />
+
+                {/* Emoji row */}
+                <div className="absolute bottom-1 left-2 right-2 flex justify-between text-lg sm:text-xl">
+                  {["😡", "🙁", "😐", "🙂", "😀"].map((emoji, step) => (
+                    <button
+                      key={step}
+                      type="button"
+                      aria-label={`Rate ${step + 1} out of 5`}
+                      className={[
+                        "rounded-md px-2 py-1 transition",
+                        answers[index] === step + 1 ? "scale-110" : "opacity-90 hover:scale-110",
+                      ].join(" ")}
+                      onClick={() => {
+                        const track = scaleRefs.current[index];
+                        const bear = bearRefs.current[index];
+                        if (!track || !bear) return;
+                        const totalSteps = 5;
+                        const stepWidth = track.clientWidth / (totalSteps - 1);
+                        const bearOffset = bear.clientWidth / 2;
+                        const x = step * stepWidth - bearOffset + 16; // +16 ≈ left padding (left-2)
+                        gsap.to(bear, { x, duration: 0.35, ease: "power2.out" });
+                        setAnswers((prev) => {
+                          const next = [...prev];
+                          next[index] = step + 1; // 1..5
+                          return next;
+                        });
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected value */}
+              <div className="mt-1 text-xs text-slate-600">
+                Selected: <span className="font-medium">{answers[index] || "—"}</span>/5
+              </div>
+            </div>
+          ))}
+
+          {/* Actions */}
+          <div className="mt-2 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setAnswers(Array(questions.length).fill(0))}
+              className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              Reset
+            </button>
+
+            <button
+              type="button"
+              onClick={saveReflection}
+              disabled={
+                !title.trim() ||
+                !eventSelected?._id ||
+                answers.some((a) => a === 0)
+              }
+              className={[
+                "rounded-md px-5 py-2 text-sm font-medium",
+                !title.trim() || !eventSelected?._id || answers.some((a) => a === 0)
+                  ? "cursor-not-allowed border border-slate-200 bg-slate-200 text-slate-500"
+                  : "bg-slate-900 text-white hover:bg-slate-800",
+              ].join(" ")}
+            >
+              Save Reflection
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+)}
+
+
+            {/* Reflections UI */}
+            {activeTab === "past" && (
+            <section className="mx-auto mt-16 w-full max-w-6xl">
+                <div className="rounded-2xl border border-slate-200 bg-white/95 shadow-xl backdrop-blur">
+                {/* Toolbar */}
+                <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 px-4 py-3">
+                    {/* search */}
+                    <div className="relative flex-1 min-w-[220px]">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                    <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search reflections, events, or questions…"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400 focus:bg-white"
+                    />
+                    </div>
+
+                    {/* sort */}
+                    <div className="flex items-center gap-2">
+                    <label className="text-xs text-slate-500">Sort by</label>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+                    >
+                        <option value="latest">Latest</option>
+                        <option value="rating">Highest rating</option>
+                        <option value="title">Title A–Z</option>
+                    </select>
+                    </div>
+
+                    <div className="ml-auto text-xs text-slate-500">
+                    Showing {filteredReflections.length}/{userReflections.length}
                     </div>
                 </div>
+
+                {/* Content grid */}
+                <div className="grid gap-0 lg:grid-cols-[0.95fr,1.05fr]">
+                    {/* LEFT: list */}
+                    <aside className="max-h-[70vh] overflow-y-auto border-r border-slate-100 p-3">
+                    {filteredReflections.length === 0 && (
+                        <div className="flex h-40 items-center justify-center text-sm text-slate-500">
+                        No reflections match your search.
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        {filteredReflections.map((r, idx) => {
+                        const active = selectedReflection?._id === r._id;
+                        const score = avgScore(r.responses);
+                        return (
+                            <button
+                            key={r._id || idx}
+                            onClick={() => setSelectedReflection(r)}
+                            className={[
+                                "w-full text-left rounded-lg border p-3 transition",
+                                active
+                                ? "border-slate-900 bg-slate-200 text-black"
+                                : "border-slate-200 bg-slate-50 hover:bg-white",
+                            ].join(" ")}
+                            >
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                <div className="truncate text-sm font-semibold">
+                                    {r.title || `Reflection ${idx + 1}`}
+                                </div>
+                                <div className="mt-1 flex flex-wrap gap-2 text-[11px]">
+                                    {r?.event?.date && (
+                                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5">
+                                        <Calendar className="size-3 opacity-70" />
+                                        {r.event.date}
+                                    </span>
+                                    )}
+                                    {r?.event?.location && (
+                                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5">
+                                        <MapPin className="size-3 opacity-70" />
+                                        {r.event.location}
+                                    </span>
+                                    )}
+                                    {r?.createdAt && (
+                                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5">
+                                        <Clock className="size-3 opacity-70" />
+                                        {new Date(r.createdAt).toLocaleDateString()}
+                                    </span>
+                                    )}
+                                </div>
+                                <p className="mt-2 line-clamp-2 text-xs text-slate-600">
+                                    {r.responses?.[0]?.question}
+                                </p>
+                                </div>
+
+                                <Stars value={score} />
+                            </div>
+                            </button>
+                        );
+                        })}
+                    </div>
+                    </aside>
+
+                    {/* RIGHT: detail */}
+                    <section className="p-5">
+                    {!selectedReflection ? (
+                        <div className="flex h-40 items-center justify-center text-sm text-slate-500">
+                        Select a reflection to view its details
+                        </div>
+                    ) : (
+                        <>
+                        <div className="flex items-start justify-between gap-3">
+                            <div>
+                            <h3 className="text-xl font-semibold text-slate-900">
+                                {selectedReflection.title || "Reflection"}
+                            </h3>
+                            <div className="mt-1 flex flex-wrap gap-2 text-[12px] text-slate-600">
+                                {selectedReflection?.event?.name && (
+                                <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5">
+                                    {selectedReflection.event.name}
+                                </span>
+                                )}
+                                {selectedReflection?.event?.date && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5">
+                                    <Calendar className="size-3" />
+                                    {selectedReflection.event.date}
+                                </span>
+                                )}
+                                {selectedReflection?.event?.location && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5">
+                                    <MapPin className="size-3" />
+                                    {selectedReflection.event.location}
+                                </span>
+                                )}
+                                {selectedReflection?.createdAt && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5">
+                                    <Clock className="size-3" />
+                                    {new Date(selectedReflection.createdAt).toLocaleString()}
+                                </span>
+                                )}
+                            </div>
+                            </div>
+
+                            <Stars value={avgScore(selectedReflection.responses)} />
+                        </div>
+
+                        <div className="mt-6 space-y-4">
+                            {selectedReflection.responses?.map((resp, i) => (
+                            <div key={resp._id || i} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                <p className="text-sm font-medium text-slate-800">
+                                {i + 1}. {resp.question}
+                                </p>
+
+                                {/* tiny progress bar */}
+                                <div className="mt-2 h-2 w-full rounded bg-slate-200">
+                                <div
+                                    className="h-2 rounded bg-blue-500"
+                                    style={{ width: `${Math.max(0, Math.min(100, (Number(resp.answer || 0) / 5) * 100))}%` }}
+                                />
+                                </div>
+                                <div className="mt-1 text-xs text-slate-600">Answer: {resp.answer}/5</div>
+                            </div>
+                            ))}
+                        </div>
+                        </>
+                    )}
+                    </section>
+                </div>
+                </div>
+            </section>
             )}
-        </div >
-
-
-
+        </div>
     )
 };

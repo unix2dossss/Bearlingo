@@ -1,21 +1,13 @@
 import React, { useMemo, useState } from "react";
 
-const COLORS = {
-  primary: "#4f9cf9",
-  primaryHover: "#3d86ea",
-  textMuted: "#767687",
-  white: "#ffffff",
-};
-
 export default function SkillList({
   allSkills = [],
   selectedSkills = [],
-  toggleSkill,     // (skill: string) => void  (parent enforces MAX_SKILLS)
+  toggleSkill,          // (skill: string) => void
   maxSkills = 4,
 }) {
   const [query, setQuery] = useState("");
   const [customSkill, setCustomSkill] = useState("");
-
   const atLimit = selectedSkills.length >= maxSkills;
 
   const filtered = useMemo(() => {
@@ -27,127 +19,130 @@ export default function SkillList({
   const addCustomSkill = () => {
     const s = customSkill.trim();
     if (!s) return;
-    // if it exists in list, just toggle that one; otherwise toggle the custom string
     const existing = allSkills.find((k) => k.toLowerCase() === s.toLowerCase());
     toggleSkill(existing || s);
     setCustomSkill("");
   };
 
   return (
-    <section className="mt-5 w-full mx-auto max-w-sm sm:max-w-md md:max-w-lg rounded-2xl p-6 sm:p-7 bg-transparent shadow-sm">
-      <p className="text-center font-semibold mt-1" style={{ color: COLORS.white }}>
-        Select up to {maxSkills} skills
-      </p>
+    <section className="w-[min(92vw,600px)] mx-auto">
+      {/* 🔷 same container as your career objective */}
+      <div className="relative p-6 rounded-2xl shadow-2xl bg-indigo-100/80">
+        {/* animated gradient glow */}
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 animate-gradient-x blur-lg opacity-50" />
 
-      <div className="mt-5 rounded-2xl border border-gray-300 p-6 md:p-7 bg-white">
-        <div className="flex items-center justify-between mb-3">
-          <p className="font-semibold" style={{ color: COLORS.textMuted }}>
-            Skills ({selectedSkills.length}/{maxSkills}){" "}
-            <span style={{ color: COLORS.primary }}>*</span>
+        {/* glassy inner card */}
+        <div className="relative z-10 bg-indigo-50/90 rounded-2xl border border-indigo-300 p-6">
+          <h3 className="text-2xl font-bold text-indigo-900">Skills</h3>
+          <p className="mt-1 text-sm text-indigo-700">
+            Select up to {maxSkills} skills
           </p>
-        </div>
 
-        {/* Search */}
-        <div className="relative mb-3 bg-white">
-          <span className="absolute left-3 top-2.5 text-gray-400" aria-hidden="true">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <path d="M21 21l-4.2-4.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-          </span>
-          <input
-            className="w-full h-10 rounded bg-gray-100 pl-10 pr-3 placeholder:text-gray-400 focus:outline-none focus:ring-2"
-            onFocus={(e) => (e.currentTarget.style.boxShadow = `0 0 0 2px ${COLORS.primary}55`)}
-            onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
-            placeholder="Search skills..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search skills"
-          />
-        </div>
+          {/* search */}
+          <div className="relative mt-4">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-500" aria-hidden>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21l-4.2-4.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
+              </svg>
+            </span>
+            <input
+              className="w-full h-10 rounded-xl bg-indigo-50/80 text-indigo-900 placeholder-indigo-500
+                         border-2 border-indigo-300 pl-10 pr-3 outline-none
+                         focus:border-pink-400 focus:ring-1 focus:ring-pink-300 transition-colors"
+              placeholder="Search skills…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search skills"
+            />
+          </div>
 
-        {/* List */}
-        <div className="max-h-64 sm:max-h-80 overflow-y-auto pr-1 space-y-2 mb-4">
-          {filtered.map((skill) => {
-            const checked = selectedSkills.includes(skill);
-            const disabled = atLimit && !checked;
-            return (
-              <label
-                key={skill}
-                className={`flex items-center gap-2 select-none transition rounded-lg p-1
-                  ${checked ? "bg-blue-50" : ""}
-                  ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                style={checked ? { backgroundColor: `${COLORS.primary}15` } : undefined}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 focus:ring-2"
-                  style={{ accentColor: COLORS.primary }}
-                  checked={checked}
-                  disabled={disabled}
-                  onChange={() => toggleSkill(skill)}
-                />
-                <span>{skill}</span>
-              </label>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p className="text-sm text-gray-500">No skills match “{query}”.</p>
-          )}
-        </div>
-
-        {/* Add custom */}
-        <div className="flex items-center gap-2 mb-1" style={{ color: COLORS.textMuted }}>
-          Add your own <span className="text-sm font-normal text-gray-500">(optional)</span>
-        </div>
-        <div className="flex gap-2 mb-2">
-          <input
-            className="flex-1 h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400 focus:outline-none focus:ring-2"
-            onFocus={(e) => (e.currentTarget.style.boxShadow = `0 0 0 2px ${COLORS.primary}55`)}
-            onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
-            placeholder="Enter a custom skill"
-            value={customSkill}
-            onChange={(e) => setCustomSkill(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addCustomSkill()}
-          />
-          <button
-            onClick={addCustomSkill}
-            className="h-10 px-4 rounded text-white font-semibold transition"
-            style={{ backgroundColor: COLORS.primary }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
-          >
-            Add
-          </button>
-        </div>
-
-        {/* Chips */}
-        {selectedSkills.length > 0 && (
-          <div className="mt-4">
-            <p className="font-semibold mb-2">Selected Skills:</p>
-            <div className="flex flex-wrap gap-2">
-              {selectedSkills.map((s) => (
-                <span
-                  key={s}
-                  className="inline-flex items-center gap-2 px-3 h-8 rounded font-semibold"
-                  style={{ backgroundColor: `${COLORS.primary}25`, color: COLORS.primary }}
+          {/* list */}
+          <div className="mt-4 max-h-64 overflow-y-auto pr-2
+                          bg-indigo-100/70 border border-indigo-200 rounded-xl p-3
+                          scrollbar-thin scrollbar-thumb-pink-400 scrollbar-track-indigo-200/40">
+            {filtered.map((skill) => {
+              const checked = selectedSkills.includes(skill);
+              const disabled = atLimit && !checked;
+              return (
+                <label
+                  key={skill}
+                  className={[
+                    "flex items-center gap-2 select-none rounded-lg px-2 py-2 transition",
+                    checked
+                      ? "bg-indigo-50/80 border border-indigo-300"
+                      : "hover:bg-indigo-50/60",
+                    disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
+                  ].join(" ")}
                 >
-                  {s}
-                  <button
-                    className="transition"
-                    style={{ color: COLORS.primary }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = 0.7)}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = 1)}
-                    onClick={() => toggleSkill(s)}
-                    aria-label={`Remove ${s}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-indigo-300"
+                    style={{ accentColor: "#ef84d6" /* pink thumb to match glow */ }}
+                    checked={checked}
+                    disabled={disabled}
+                    onChange={() => toggleSkill(skill)}
+                  />
+                  <span className="text-indigo-900">{skill}</span>
+                </label>
+              );
+            })}
+
+            {filtered.length === 0 && (
+              <p className="text-sm text-indigo-700">No skills match “{query}”.</p>
+            )}
+          </div>
+
+          {/* add custom */}
+          <div className="mt-5">
+            <div className="flex items-center gap-2 mb-1 text-indigo-700">
+              Add your own <span className="text-sm font-normal text-indigo-600/90">(optional)</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                className="flex-1 h-10 rounded-xl bg-indigo-50/80 text-indigo-900 placeholder-indigo-500
+                           border-2 border-indigo-300 px-3 outline-none
+                           focus:border-pink-400 focus:ring-1 focus:ring-pink-300 transition-colors"
+                placeholder="Enter a custom skill"
+                value={customSkill}
+                onChange={(e) => setCustomSkill(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addCustomSkill()}
+              />
+              <button
+                onClick={addCustomSkill}
+                className="h-10 px-4 rounded-xl text-white font-semibold
+                           bg-pink-400 hover:bg-pink-500 transition-colors"
+              >
+                Add
+              </button>
             </div>
           </div>
-        )}
+
+          {/* chips */}
+          {selectedSkills.length > 0 && (
+            <div className="mt-5">
+              <p className="font-semibold text-indigo-800 mb-2">Selected Skills</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedSkills.map((s) => (
+                  <span
+                    key={s}
+                    className="inline-flex items-center gap-2 px-3 h-8 rounded-xl font-semibold
+                               text-indigo-800 bg-indigo-50/80 border border-indigo-300"
+                  >
+                    {s}
+                    <button
+                      className="transition text-pink-500 hover:text-pink-600"
+                      onClick={() => toggleSkill(s)}
+                      aria-label={`Remove ${s}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
