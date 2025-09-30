@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Volume2, VolumeX, Music } from "lucide-react"; // icons
 
 const BackgroundMusicBox = () => {
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const [currentTrack, setCurrentTrack] = useState("/sounds/about-wish-138203.mp3");
   const bgMusicRef = useRef(null);
 
