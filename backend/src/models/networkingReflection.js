@@ -7,6 +7,12 @@ const NetworkingReflectionSchema = new mongoose.Schema(
             ref: "User",
             required: true
         },
+        title: {
+            type: String,
+            required: true,
+            maxLength: 100,
+            default: "Untitled Entry"
+        },
         responses: [{
             question: { type: String, required: true },
             answer: { type: Number, required: true, min: 1, max: 5 }

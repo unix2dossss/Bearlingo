@@ -174,7 +174,11 @@ export const createReflection = async (req, res) => {
         return res.status(400).json({ message: "Invalid user ID" });
     }
     try {
-        const { responses, event } = req.body; // Javascript does not destructure nested properties using dot notation
+        const { title, responses, event } = req.body; // Javascript does not destructure nested properties using dot notation
+
+        if (!title || title.length > 100) {
+            return res.status(400).json({ message: "Need a title less than 100 characters!" });
+        }
 
         if (!responses || responses.length === 0) {
             return res.status(400).json({ message: "No responses provided" });
@@ -193,6 +197,7 @@ export const createReflection = async (req, res) => {
 
         const newNetworkingReflection = new networkingReflection({
             user: userId,
+            title: title,
             responses,
             event
         });

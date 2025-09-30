@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import NetworkingSubtask1 from "./NetworkingSubtask1";
 import NetworkingSubtask2 from "./NetworkingSubtask2";
 import NetworkingSubtask3 from "./NetworkingSubtask3";
+import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 
 const NetworkingModule = () => {
 
@@ -289,6 +290,11 @@ const NetworkingModule = () => {
                 {/* Top Navbar */}
                 <div className="fixed top-0 inset-x-0 z-[100]">
                     <TopNavbar />
+                </div>
+
+                {/* Floating music control */}
+                <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+                    <BackgroundMusicBox />
                 </div>
 
 

@@ -1,14 +1,12 @@
 import React from 'react';
-import Navbar from '../components/TopNavbar';
-import ComputerFrame from '../assets/computer-screen.png';
+import TopNavbar from '../components/TopNavbar';
 import MonitorImage from '../assets/journal-monitor.svg';
 import { useState } from "react";
-import { Modal, Button } from "daisyui";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
-import api from "../lib/axios";
+import SideNavbar from '../components/SideNavbar';
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
@@ -51,43 +49,49 @@ const Journal = () => {
 
     return (
         <>
+            <div className="bg-blue-200 min-h-screen border border-black">
+                <TopNavbar />
 
-            <div className="bg-blue-200 min-h-screen border">
-                <Navbar />
-                <div className="flex justify-center items-center h-[calc(100vh-65px)]">
-                    {/* side navbar will come here */}
-                    <div className="flex justify-center items-center">
-                        <div className="relative w-3/4">
-                            {/* Monitor here */}
-                            <img
-                                src={MonitorImage}
-                                alt="Monitor"
-                                className="w-full h-auto"
-                            />
+                <div className="flex">
+                    <div className="mt-8">
+                        <SideNavbar />
+                    </div>
 
-                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
-                                style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
-                                {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
-                                {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
-                            </div>
+                    <div className="flex justify-center items-center h-[calc(100vh-65px)]">
+                        <div className="flex justify-center items-center">
+                            <div className="relative w-3/4">
+                                {/* Monitor here */}
+                                <img
+                                    src={MonitorImage}
+                                    alt="Monitor"
+                                    className="w-full h-auto"
+                                />
 
-                            <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
-                                {folders.map((folder, index) => (
-                                    <div key={index} className="flex flex-col items-center cursor-pointer">
-                                        <button onClick={() => setOpenFolder(folder)}>
-                                            <img
-                                                src={folder.image}
-                                                alt={folder.name}
-                                                className="w-16 h-auto"
-                                            />
-                                        </button>
-                                        <span className="text-black text-sm mt-1">{folder.name}</span>
-                                    </div>
-                                ))}
+                                <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
+                                    style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
+                                    {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
+                                    {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
+                                </div>
+
+                                <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
+                                    {folders.map((folder, index) => (
+                                        <div key={index} className="flex flex-col items-center cursor-pointer">
+                                            <button onClick={() => setOpenFolder(folder)}>
+                                                <img
+                                                    src={folder.image}
+                                                    alt={folder.name}
+                                                    className="w-16 h-auto"
+                                                />
+                                            </button>
+                                            <span className="text-black text-sm mt-1">{folder.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div >
+                    </div >
+                </div>
+                
 
                 {openFolder && (
                     <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
@@ -539,34 +543,6 @@ const Journal = () => {
                                         )}
                                     </div>
                                 )}
-
-
-
-
-
-
-
-                                {/*<div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
-                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
-                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
-                                    <textarea
-                                        placeholder="Type here"
-                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
-                                    />
-                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
-                                    <textarea
-                                        placeholder="Type here"
-                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
-                                    />
-                                    <div className="flex justify-end mt-4">
-                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
-                                            Submit
-                                        </button>
-                                    </div>
-                            </div>*/}
-
-
-
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,7 @@ import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
+import SideNavbar from "../../components/SideNavbar";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -71,13 +72,13 @@ const CVModule = () => {
   useEffect(() => {
     const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
     if (!skipResume) {
-    // wait before showing resume modal
-    const timer = setTimeout(() => {
-      setShowResumeModal(true);
-    }, 2500); // 2.5s delay 
+      // wait before showing resume modal
+      const timer = setTimeout(() => {
+        setShowResumeModal(true);
+      }, 2500); // 2.5s delay
 
-    return () => clearTimeout(timer);
-  }
+      return () => clearTimeout(timer);
+    }
     const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
     if (!skipIntro) setShowLandingIntro(true);
   }, []);
@@ -339,248 +340,264 @@ const CVModule = () => {
         <div className="relative z-[100]">
           <TopNavbar />
         </div>
-        {/* Floating music control */}
-        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-          <BackgroundMusicBox />
-        </div>
 
-        {/* Purple Floor */}
-        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
-
-        {/* Subtask 3 Object: Desk */}
-        <div className="relative w-full flex justify-center">
-          <img
-            ref={deskLockedRef}
-            src={DeskLocked}
-            alt="Locked CV Desk"
-            className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-          />
-          <img
-            ref={deskUnlockedRef}
-            src={Desk}
-            alt="Unlocked CV Desk"
-            className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-          />
-        </div>
-
-        {/* Subtask 2 Object: Drawer + Bookcase */}
-        <div className="relative">
-          <img
-            ref={drawersLockedRef}
-            src={DrawersLocked}
-            alt="Locked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
-          />
-          <img
-            ref={drawersUnlockedRef}
-            src={Drawers}
-            alt="Unlocked CV Drawers"
-            className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
-          />
-          <img
-            ref={bookcaseLockedRef}
-            src={BookcaseLocked}
-            alt="Locked CV Bookcase"
-            className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
-          />
-          <img
-            ref={bookcaseUnlockedRef}
-            src={Bookcase}
-            alt="Unlocked CV Bookcase"
-            className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
-          />
-        </div>
-
-        {/* Subtask 1 Object: Windows */}
-        <div className="relative">
-          <img
-            ref={windowLockedRef}
-            src={WindowLocked}
-            alt="Locked CV Window"
-            className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
-          />
-          <img
-            ref={windowUnlockedRef}
-            src={Window}
-            alt="Unlocked CV Window"
-            className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
-          />
-        </div>
-      </div>
-
-      {/* Bottom Button Container */}
-      <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
-        <div className="flex space-x-6">
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask1")}
-          >
-            Task 1
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask2")}
-          >
-            Task 2
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask3")}
-          >
-            Task 3
-          </button>
-
-          {/* Bear + Speech Bubble */}
-          <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
-            <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl">
-              Time to build our CV!
-              <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md" />
-            </div>
-            <img
-              ref={bearRef}
-              src={Bear}
-              alt="Bear peeking"
-              className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ⬇️ NEW: Resume Upload Landing Modal */}
-      {showResumeModal && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50">
-          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative">
-            {/* Close X */}
-            <button
-              onClick={() => closeResumeModal(true)}
-              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
-              aria-label="Close"
-            >
-              ✖
-            </button>
-
-            {/* Header */}
-            <div className="px-6 pt-6">
-              <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
-                Quick step: Upload your resume
-              </h3>
-              <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
-                This helps us personalize your CV building experience.
-              </p>
+        <div>
+          <div>
+            {/* Floating music control */}
+            <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+              <BackgroundMusicBox />
             </div>
 
-            {/* ResumeUpload component */}
-            <div className="pb-2">
-              <ResumeUpload
-                // If you want to hit your default API routes, no props are needed.
-                // Provide onUpload to mark the modal as done after a successful upload:
-                onUpload={handleResumeUploaded}
-              />
-            </div>
+            {/* Purple Floor */}
+            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-            {/* Footer: Don't show again / Skip */}
-            <div className="px-6 pb-6 -mt-2 flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4"
-                  checked={dontShowResumeAgain}
-                  onChange={(e) => setDontShowResumeAgain(e.target.checked)}
-                />
-                Don’t show this again
-              </label>
+            <div className="flex border border-black">
+              <div className="mt-4 z-40">
+                  <SideNavbar />
+              </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => closeResumeModal(true)}
-                  className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
-                  style={{ borderColor: COLORS.primary, color: COLORS.primary }}
-                >
-                  Skip for now
-                </button>
+              <div className="relative w-full">
+                {/* Subtask 3 Object: Desk */}
+                <div className="relative w-full flex justify-center">
+                  <img
+                    ref={deskLockedRef}
+                    src={DeskLocked}
+                    alt="Locked CV Desk"
+                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                  />
+                  <img
+                    ref={deskUnlockedRef}
+                    src={Desk}
+                    alt="Unlocked CV Desk"
+                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                  />
+                </div>
+
+                {/* Subtask 2 Object: Drawer + Bookcase */}
+                <div className="relative">
+                  <img
+                    ref={drawersLockedRef}
+                    src={DrawersLocked}
+                    alt="Locked CV Drawers"
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
+                  />
+                  <img
+                    ref={drawersUnlockedRef}
+                    src={Drawers}
+                    alt="Unlocked CV Drawers"
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
+                  />
+                  <img
+                    ref={bookcaseLockedRef}
+                    src={BookcaseLocked}
+                    alt="Locked CV Bookcase"
+                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                  />
+                  <img
+                    ref={bookcaseUnlockedRef}
+                    src={Bookcase}
+                    alt="Unlocked CV Bookcase"
+                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                  />
+                </div>
+
+                {/* Subtask 1 Object: Windows */}
+                <div className="relative">
+                  <img
+                    ref={windowLockedRef}
+                    src={WindowLocked}
+                    alt="Locked CV Window"
+                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                  />
+                  <img
+                    ref={windowUnlockedRef}
+                    src={Window}
+                    alt="Unlocked CV Window"
+                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                  />
+                </div>
+
               </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Landing Intro Modal (your existing one) */}
-      {showLandingIntro && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
-          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-            {/* Close X */}
-            <button
-              onClick={() => closeLandingIntro()}
-              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
-              aria-label="Close"
-            >
-              ✖
-            </button>
-
-            <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
-              Welcome to the CV Builder
-            </h3>
-            <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
-              Quick heads-up before you start
-            </p>
-
-            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 my-4">
-              <li>There are 3 tasks: Skills, Projects, and Review.</li>
-              <li>You can save and come back anytime.</li>
-              <li>We’ll guide you step-by-step and auto-validate fields.</li>
-            </ul>
-
-            <label className="flex items-center gap-2 text-sm text-gray-600 mb-4 select-none">
-              <input
-                type="checkbox"
-                className="h-4 w-4"
-                checked={dontShowLandingAgain}
-                onChange={(e) => setDontShowLandingAgain(e.target.checked)}
-              />
-              Don’t show this again
-            </label>
-
-            <div className="flex justify-end gap-3">
+          {/* Bottom Button Container */}
+          <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
+            <div className="flex space-x-6">
               <button
-                onClick={() => closeLandingIntro()}
-                className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
-                style={{ borderColor: COLORS.primary, color: COLORS.primary }}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask1")}
               >
-                Explore
+                Task 1
               </button>
               <button
-                onClick={() => closeLandingIntro("subtask1")}
-                className="h-10 px-5 rounded-full font-bold text-sm text-white"
-                style={{ backgroundColor: COLORS.primary }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask2")}
               >
-                Start Task 1
+                Task 2
               </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask3")}
+              >
+                Task 3
+              </button>
+
+              {/* Bear + Speech Bubble */}
+              <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
+                <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl">
+                  Time to build our CV!
+                  <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md" />
+                </div>
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear peeking"
+                  className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Subtask Modal */}
-      {showSubtask && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#4f9cf9]">
-            <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
-          </div>
-        </div>
-      )}
+          {/* ⬇️ NEW: Resume Upload Landing Modal */}
+          {showResumeModal && (
+            <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50">
+              <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative">
+                {/* Close X */}
+                <button
+                  onClick={() => closeResumeModal(true)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
+                  aria-label="Close"
+                >
+                  ✖
+                </button>
 
-      {/* Confirm Leave */}
-      {showConfirmLeave && (
-        <ConfirmLeaveDialog
-          isOpen={showConfirmLeave}
-          title="Your changes will be lost!"
-          message="Please finish the task to save the changes."
-          onConfirm={confirmLeave}
-          onCancel={() => setShowConfirmLeave(false)}
-        />
-      )}
+                {/* Header */}
+                <div className="px-6 pt-6">
+                  <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
+                    Quick step: Upload your resume
+                  </h3>
+                  <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
+                    This helps us personalize your CV building experience.
+                  </p>
+                </div>
+
+                {/* ResumeUpload component */}
+                <div className="pb-2">
+                  <ResumeUpload
+                    // If you want to hit your default API routes, no props are needed.
+                    // Provide onUpload to mark the modal as done after a successful upload:
+                    onUpload={handleResumeUploaded}
+                  />
+                </div>
+
+                {/* Footer: Don't show again / Skip */}
+                <div className="px-6 pb-6 -mt-2 flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4"
+                      checked={dontShowResumeAgain}
+                      onChange={(e) => setDontShowResumeAgain(e.target.checked)}
+                    />
+                    Don’t show this again
+                  </label>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => closeResumeModal(true)}
+                      className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
+                      style={{ borderColor: COLORS.primary, color: COLORS.primary }}
+                    >
+                      Skip for now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Landing Intro Modal (your existing one) */}
+          {showLandingIntro && (
+            <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
+              <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+                {/* Close X */}
+                <button
+                  onClick={() => closeLandingIntro()}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-xl"
+                  aria-label="Close"
+                >
+                  ✖
+                </button>
+
+                <h3 className="text-2xl font-extrabold mb-1" style={{ color: COLORS.primary }}>
+                  Welcome to the CV Builder
+                </h3>
+                <p className="text-sm font-semibold" style={{ color: COLORS.textMuted }}>
+                  Quick heads-up before you start
+                </p>
+
+                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 my-4">
+                  <li>There are 3 tasks: Skills, Projects, and Review.</li>
+                  <li>You can save and come back anytime.</li>
+                  <li>We’ll guide you step-by-step and auto-validate fields.</li>
+                </ul>
+
+                <label className="flex items-center gap-2 text-sm text-gray-600 mb-4 select-none">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4"
+                    checked={dontShowLandingAgain}
+                    onChange={(e) => setDontShowLandingAgain(e.target.checked)}
+                  />
+                  Don’t show this again
+                </label>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => closeLandingIntro()}
+                    className="h-10 px-5 rounded-full border-2 font-bold text-sm bg-white hover:bg-[#4f9cf9]/5"
+                    style={{ borderColor: COLORS.primary, color: COLORS.primary }}
+                  >
+                    Explore
+                  </button>
+                  <button
+                    onClick={() => closeLandingIntro("subtask1")}
+                    className="h-10 px-5 rounded-full font-bold text-sm text-white"
+                    style={{ backgroundColor: COLORS.primary }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
+                  >
+                    Start Task 1
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Subtask Modal */}
+          {showSubtask && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl relative h-[700px] flex flex-col border-4 border-[#4f9cf9]">
+                <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Confirm Leave */}
+          {showConfirmLeave && (
+            <ConfirmLeaveDialog
+              isOpen={showConfirmLeave}
+              title="Your changes will be lost!"
+              message="Please finish the task to save the changes."
+              onConfirm={confirmLeave}
+              onCancel={() => setShowConfirmLeave(false)}
+            />
+          )}
+
+        </div>
+        
+      </div>
     </div>
   );
 };
