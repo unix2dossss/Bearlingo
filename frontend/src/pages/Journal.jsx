@@ -1,14 +1,11 @@
 import React from 'react';
 import Navbar from '../components/TopNavbar';
-import ComputerFrame from '../assets/computer-screen.png';
 import MonitorImage from '../assets/journal-monitor.svg';
 import { useState } from "react";
-import { Modal, Button } from "daisyui";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
-import api from "../lib/axios";
 
 const Journal = () => {
     const [openFolder, setOpenFolder] = useState(false);
@@ -539,34 +536,6 @@ const Journal = () => {
                                         )}
                                     </div>
                                 )}
-
-
-
-
-
-
-
-                                {/*<div className="flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col justify-between">
-                                    <h3 className="text-purple-600 text-3xl font-semibold mb-6 text-center">Goal Setting</h3>
-                                    <p className="text-purple-700 mb-2">What makes a goal SMART?</p>
-                                    <textarea
-                                        placeholder="Type here"
-                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-4"
-                                    />
-                                    <p className="text-purple-700 mt-6 mb-2">Top three SMART goals for the upcoming fortnight</p>
-                                    <textarea
-                                        placeholder="Type here"
-                                        className="w-full rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
-                                    />
-                                    <div className="flex justify-end mt-4">
-                                        <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
-                                            Submit
-                                        </button>
-                                    </div>
-                            </div>*/}
-
-
-
                             </div>
                         </div>
                     </div>
