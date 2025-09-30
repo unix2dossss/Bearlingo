@@ -5,12 +5,17 @@ import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
 
+//Import Components
+import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
+import Headline from "../../components/NetworkingModuleComponents/NetworkingSubtask1/HeadLine";
+
+
 export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);
 
   const [selectedHeadline, setSelectedHeadline] = useState("");
-  const [customHeadline, setCustomHeadline] = useState("");
+  //const [customHeadline, setCustomHeadline] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [careerGoal, setCareerGoal] = useState("");
@@ -127,7 +132,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     }
   };
 
+// Max skills user can pick on step skills
+const MAX_SKILLS = 4;
 
+const toggleSkill = (skill) => {
+  setSelectedSkills((prev) => {
+    const isSelected = prev.includes(skill);
+    if (isSelected) return prev.filter((s) => s !== skill);
+    if (prev.length >= MAX_SKILLS) {
+      toast.error(`You can select up to ${MAX_SKILLS} skills.`);
+      return prev;
+    }
+    return [...prev, skill];
+  });
+};
 
 
 
@@ -142,50 +160,55 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         Back to subtasks
       </button>
 
-      {/* Left: Bear + Speech */}
-      <div className="flex flex-1 ">
-        <div className="mt-20 relative">
+    {/* Left: Bear + Speech */}
+    <div className="flex flex-1 items-center justify-center">
+    <div className="relative w-full max-w-[500px] aspect-square">
+      <img
+        src={Bear}
+        alt="Bear Mascot"
+        className="absolute inset-0 w-full h-full object-contain"
+      />
 
-          {animationDone && userHasProfile == true && (
-            <div
-              key={currentSpeechIndex}
-              className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
-            >
-              <div className="chat-bubble">
-                Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
-              </div>
-            </div>
-          )}
-
-
-
-
-          {animationDone && userHasProfile == false && (
-            <div
-              key={currentSpeechIndex}
-              className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
-            >
-              <div className="chat-bubble">
-                {currentSpeechIndex === 0
-                  ? `Hi ${userInfo?.username || "there"}! 👋`
-                  : speechForSubtask1[currentSpeechIndex]}
-              </div>
-            </div>
-          )}
-
-          {/* Next button */}
-          {animationDone && userHasProfile == false && currentSpeechIndex < speechForSubtask1.length - 1 && (
-            <button
-              className="absolute bottom-4 left-96 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
-              onClick={handleNext}
-            >
-              Next
-            </button>
-          )}
-
-          <img className="bear h-[600px] w-[600px]" src={Bear} alt="Bear Mascot" />
+      {/* Speech bubble */}
+      {animationDone && userHasProfile === true && (
+        <div
+          key="profile-speech"
+          className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
+        >
+          <div className="chat-bubble">
+            Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
+          </div>
         </div>
-      </div>
+      )}
+
+      {animationDone && userHasProfile === false && (
+        <div
+          key={currentSpeechIndex}
+          className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
+        >
+          <div className="chat-bubble">
+            {currentSpeechIndex === 0
+              ? `Hi ${userInfo?.username || "there"}! 👋`
+              : speechForSubtask1[currentSpeechIndex]}
+          </div>
+        </div>
+      )}
+
+      {/* Next button */}
+      {animationDone &&
+        userHasProfile === false &&
+        currentSpeechIndex < speechForSubtask1.length - 1 && (
+          <button
+            className="absolute -bottom-20 left-1/2 -translate-x-1/2 px-6 py-2
+                      bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
+            onClick={handleNext}
+          >
+            Next
+          </button>
+              )}
+          </div>
+        </div>
+
 
 
       {/* Right: Dynamic Panels */}
@@ -199,7 +222,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {userInfo?.firstName} {userInfo?.lastName}
                   </h1>
-                  <p className="text-gray-600 mt-1">{savedProfile.profressionalHeadline}</p>
+                  <p className="text-gray-600 mt-1">{savedProfile.professionalHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{savedProfile.university}</p>
                 </div>
 
@@ -229,7 +252,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Example card preview (index 2) */}
         {currentSpeechIndex === 2 && (
-          <div className="flex justify-center mt-32">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -260,53 +283,21 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Headline pick (index 4) */}
-        {currentSpeechIndex === 4 && userHasProfile == false && (
-          <div className="flex flex-col items-center justify-center gap-6 mt-[30%] h-[40%]">
-            <select
+        {currentSpeechIndex === 4 && !userHasProfile && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
+            {/* Headline component */}
+            <Headline
               value={selectedHeadline}
-              onChange={(e) => setSelectedHeadline(e.target.value)}
-              className="select w-[70%]"
-            >
-              <option disabled value="">
-                Pick a headline
-              </option>
-              <option>Aspiring Software Engineer | Computer Science Student</option>
-              <option>Computer Science Undergraduate | Passionate About AI & Machine Learning</option>
-              <option>Future Full-Stack Developer | Tech Enthusiast</option>
-              <option>CS Student | Exploring Cloud Computing & DevOps</option>
-              <option>Software Developer in Training | Problem Solver & Innovator</option>
-              <option>Tech Student | Building Projects in Web & Mobile Development</option>
-              <option>Computer Science Enthusiast | Passionate About Data Science</option>
-              <option>CS Student | Interested in Cybersecurity & Ethical Hacking</option>
-            </select>
-
-            <div className="flex flex-row gap-1 w-[70%]">
-              <input
-                type="text"
-                placeholder="Enter headline here"
-                className="input flex-1"
-                value={customHeadline}
-                onChange={(e) => setCustomHeadline(e.target.value)}
-              />
-              <button
-                className="btn"
-                onClick={() => {
-                  if (customHeadline.trim() !== "") {
-                    setSelectedHeadline(customHeadline);
-                    setCustomHeadline("");
-                    toast.success("Headline saved!");
-                  }
-                }}
-              >
-                Enter
-              </button>
-            </div>
+              onChange={setSelectedHeadline}
+              className="w-[350px]"
+            />
           </div>
         )}
 
+
         {/* University (index 5) */}
         {currentSpeechIndex === 5 && userHasProfile == false && (
-          <div className="flex justify-center mt-[50%]">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
             <div className="flex flex-row gap-1">
               <input
                 type="text"
@@ -331,32 +322,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Skills (index 6) */}
-        {currentSpeechIndex === 6 && userHasProfile == false && (
-          <div className="flex flex-col items-center gap-2 mt-[40%]">
-            <label className="font-semibold">Select Your Skills</label>
-            <select
-              multiple
-              size={10}
-              className="select p-2 w-[70%] text-lg"
-              value={selectedSkills}
-              onChange={handleSkillChange}
-            >
-              {allSkills.map((skill, i) => (
-                <option key={i} value={skill}>
-                  {skill}
-                </option>
-              ))}
-            </select>
-            <p className="mt-2">Selected Skills: {selectedSkills.join(", ")}</p>
-            <button className="btn" onClick={() => toast.success("Skills saved!")}>
-              Submit
-            </button>
-          </div>
-        )}
+        {currentSpeechIndex === 6 && userHasProfile === false && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+          <SkillList
+            allSkills={allSkills}
+            selectedSkills={selectedSkills}
+            toggleSkill={toggleSkill}
+            maxSkills={MAX_SKILLS}
+          />
+        </div>
+      )}
 
         {/* Career goal (index 7) */}
         {currentSpeechIndex === 7 && userHasProfile == false && (
-          <div className="mt-[50%]">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
             <div className="flex flex-row gap-1">
               <input
                 type="text"
@@ -381,7 +360,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Final preview (index 8) */}
         {currentSpeechIndex === 8 && userHasProfile == false && (
-          <div className="flex flex-col items-center mt-32">
+          <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -419,7 +398,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
             {/* Save Profile button */}
 
             <button
-              className="btn btn-primary mt-4"
+              className="btn btn-white mt-8 align-right"
               onClick={saveProfile}
             >
               Save Profile
