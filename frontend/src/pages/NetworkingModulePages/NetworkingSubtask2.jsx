@@ -4,6 +4,13 @@ import api from "../../lib/axios";
 import toast from "react-hot-toast";
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
+  const COLORS = {
+    primary: "#4f9cf9",       
+    primaryHover: "#3d86ea",  
+    bgLight: "#f8fafc",       
+    textMain: "#1e293b",      
+    textMuted: "#64748b"}      
+
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
   const [query, setQuery] = useState("");
@@ -171,7 +178,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         </div>
       </div>
 
-      <div className="border-4 border-yellow-500 rounded-3xl shadow-[0_0_20px_4px_rgba(236,72,153,0.6)] overflow-hidden">
+      <div className="rounded-3xl bg-[#fef9c3]  overflow-hidden">
         {/* Prev / Next buttons (desktop) */}
         <button
           aria-label="Previous"
@@ -190,7 +197,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
         <div
           ref={railRef}
-          className="w-full p-5 bg-amber-100 overflow-x-auto flex gap-4 snap-x snap-mandatory scroll-smooth"
+          className="w-full p-5 overflow-x-auto flex gap-4 snap-x snap-mandatory scroll-smooth"
         >
           {(Array.isArray(filteredEvents) ? filteredEvents : []).map(
             (item, index) => {
@@ -200,78 +207,84 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
                   ? "bg-green-500 hover:bg-green-600 text-white shadow-lg"
                   : status === "attended"
                     ? "bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed"
-                    : "bg-yellow-400 hover:bg-yellow-500 text-black shadow-md";
+                    : "bg-white-400 hover:bg-white-500 text-black shadow-md";
 
               return (
                 <div
-                  key={item.id ?? index}
-                  className="carousel-item snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[45%] lg:w-[32%]
-                             bg-gradient-to-br from-purple-700 via-indigo-700 to-blue-700
-                             rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105
-                             flex flex-col overflow-hidden group"
+                key={item.id ?? index}
+                className="carousel-item snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[45%] lg:w-[32%]
+                            bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105
+                            flex flex-col overflow-hidden border border-gray-100"
                 >
-                  {/* Image / banner */}
-                  <div className="h-40 bg-gray-200 rounded-t-2xl flex items-center justify-center text-gray-700 font-bold text-lg">
+                {/* Banner */}
+                <div className="h-40 flex items-center justify-center text-white font-bold text-lg"
+                    style={{
+                        background: `linear-gradient(135deg, #14b8a6, #0ea5e9)` // teal → sky blue
+                    }}>
                     {item.type}
-                  </div>
+                </div>
 
-                  {/* Event content */}
-                  <div className="flex-1 flex flex-col p-4 gap-2 bg-base-100">
-                    <h3 className="text-xl font-bold text-purple-500 group-hover:text-pruple-500 transition-colors duration-200">
-                      {item.name}
+                {/* Content */}
+                <div className="flex-1 flex flex-col p-4 gap-3">
+                    {/* Event name */}
+                    <h3 className="text-xl font-bold text-gray-900">
+                    {item.name}
                     </h3>
 
                     {/* Badges */}
-                    <div className="flex flex-wrap gap-2 text-sm text-gray-700">
-                      <span className="badge badge-neutral">{item.type}</span>
-                      <span className="badge badge-neutral">
+                    <div className="flex flex-wrap gap-2 text-sm">
+                    <span className="px-2 py-1 rounded-md text-xs bg-amber-100 text-amber-700 font-medium">
+                        {item.type}
+                    </span>
+                    <span className="px-2 py-1 rounded-md text-xs bg-emerald-100 text-emerald-700 font-medium">
                         {item.costType}
-                      </span>
+                    </span>
                     </div>
 
-                    {/* Date / Time / Location */}
-                    <p className="text-gray-700 text-sm">
-                      📅 {item.date} · {item.time}
-                    </p>
-                    <p className="text-gray-600 text-sm">📍 {item.location}</p>
+                    {/* Info */}
+                    <p className="text-sm text-gray-600">📅 {item.date} · {item.time}</p>
+                    <p className="text-sm text-gray-600">📍 {item.location}</p>
 
                     {/* Description */}
-                    <h4 className="mt-2 text-purple-700 font-semibold">
-                      Description
-                    </h4>
-                    <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-pink-500 rounded-lg shadow-[0_0_12px_2px_rgba(236,72,153,0.6)] scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-pink-200 hover:shadow-[0_0_20px_4px_rgba(236,72,153,0.8)] transition-shadow duration-300">
-                      <p className="text-gray-700 text-sm">
-                        {item.description}
-                      </p>
+                    <h4 className="mt-2 font-semibold text-sm text-amber-600">Description</h4>
+                    <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-gray-200 rounded-lg
+                                    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                    <p className="text-sm text-gray-700">{item.description}</p>
                     </div>
 
                     {/* Buttons */}
                     <div className="mt-auto pt-2 flex flex-col gap-2">
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn btn-primary btn-sm w-full hover:scale-105 hover:shadow-lg transition-transform duration-200"
-                      >
+                    <a href={item.link} target="_blank" rel="noreferrer"
+                        className="btn btn-sm w-full text-white hover:scale-105 hover:shadow-md transition-transform duration-200"
+                        style={{ backgroundColor: "#4f9cf9" }}>
                         View Event
-                      </a>
+                    </a>
 
-                      <button
-                        className={`btn btn-sm w-full transition-transform duration-200 ${btnClass} hover:scale-105`}
-                        onClick={() =>
-                          handleAttendance(item.id, status /* current */)
-                        }
+                    <button
+                        className="btn btn-sm w-full transition-transform duration-200 hover:scale-105"
+                        style={{
+                        backgroundColor:
+                            status === "going"
+                            ? "#22c55e" // emerald green
+                            : status === "attended"
+                            ? "#9ca3af" // neutral gray
+                            : "#fbbf24", // amber for "Going to Attend"
+                        color: "white",
+                        opacity: status === "attended" ? 0.8 : 1
+                        }}
+                        onClick={() => handleAttendance(item.id, status)}
                         disabled={status === "attended"}
-                      >
+                    >
                         {status === "attended"
-                          ? "Attended ✅"
-                          : status === "going"
-                            ? "Locked In 🫡 (tap to mark attended)"
-                            : "Going to Attend"}
-                      </button>
+                        ? "Attended ✅"
+                        : status === "going"
+                        ? "Locked In 🫡 (tap to mark attended)"
+                        : "Going to Attend"}
+                    </button>
                     </div>
-                  </div>
                 </div>
+                </div>
+
               );
             }
           )}
