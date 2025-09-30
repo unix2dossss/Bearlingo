@@ -233,100 +233,105 @@ const InterviewModule = () => {
   }, [task3Complete]);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
-      {/* Background */}
-      <div className="absolute inset-0 bg-cover bg-center bg-[#deffbd]" />
-
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Top Navbar */}
-      <div className="fixed top-0 inset-x-0 z-[100]">
+      <div className="relative z-[100] bg-[#deffbd]">
         <TopNavbar />
       </div>
 
-      {/* Side Navbar */}
-      <div className="fixed top-20 left-6 z-40">
-          <SideNavbar />
+      <div>
+        {/* Floating music control */}
+        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+          <BackgroundMusicBox />
         </div>
 
-      {/* Floating music control */}
-      <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-        <BackgroundMusicBox />
-      </div>
+        {/* Purple Floor */}
+        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-      {/* Purple Floor */}
-      <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+        <div className="flex bg-[#deffbd]">
+          <div className="mt-4 z-10">
+            <SideNavbar />
+          </div>
 
-      {/* Subtask 3 Object: Wall */}
-      <div className="relative">
-        <img
-          ref={wallLockedRef}
-          src={WallLocked}
-          alt="Unlocked Interview Wall"
-          className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
-        />
+          <div className="relative w-full">
+            {/* Subtask 3 Object: Wall */}
+            <div className="relative">
+              <img
+                ref={wallLockedRef}
+                src={WallLocked}
+                alt="Unlocked Interview Wall"
+                className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
+              />
 
-        <img
-          ref={wallUnlockedRef}
-          src={Wall}
-          alt="Unlocked Interview Wall"
-          className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
-        />
-      </div>
+              <img
+                ref={wallUnlockedRef}
+                src={Wall}
+                alt="Unlocked Interview Wall"
+                className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
+              />
+            </div>
 
-      {/* Subtask 1 Object: Desk */}
+            {/* Subtask 1 Object: Desk */}
 
-      <div className="relative w-full flex justify-center">
-        <img
-          ref={deskLockedRef}
-          src={DeskLocked}
-          alt="Locked CV Desk"
-          className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
-        />
-        <img
-          ref={deskUnlockedRef}
-          src={Desk}
-          alt="Unlocked CV Desk"
-          className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
-        />
-      </div>
+            <div className="relative w-full flex justify-center">
+              <img
+                ref={deskLockedRef}
+                src={DeskLocked}
+                alt="Locked CV Desk"
+                className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+              />
+              <img
+                ref={deskUnlockedRef}
+                src={Desk}
+                alt="Unlocked CV Desk"
+                className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+              />
+            </div>
 
-      {/* Subtask 2 Object: Sofa */}
-      <div className="relative w-full flex justify-center">
-        <img
-          ref={sofaLockedRef}
-          src={SofaLocked}
-          alt="Locked CV Desk"
-          className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
-        />
-        <img
-          ref={sofaUnlockedRef}
-          src={Sofa}
-          alt="Unlocked CV Desk"
-          className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
-        />
-      </div>
+            {/* Subtask 2 Object: Sofa */}
+            <div className="relative w-full flex justify-center">
+              <img
+                ref={sofaLockedRef}
+                src={SofaLocked}
+                alt="Locked CV Desk"
+                className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+              />
+              <img
+                ref={sofaUnlockedRef}
+                src={Sofa}
+                alt="Unlocked CV Desk"
+                className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+              />
+            </div>
 
-      {/* Bottom Button Container */}
-      <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
-        <div className="flex space-x-6">
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask1")}
-          >
-            Task 1
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask2")}
-          >
-            Task 2
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-            onClick={() => handleSubtaskClick("subtask3")}
-          >
-            Task 3
-          </button>
+            {/* Bottom Button Container */}
+            <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+              <div className="flex space-x-6">
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask1")}
+                >
+                  Task 1
+                </button>
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask2")}
+                >
+                  Task 2
+                </button>
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask3")}
+                >
+                  Task 3
+                </button>
+              </div>
+            </div>
+
+          </div>
+
         </div>
+        
       </div>
 
       {/* Modal */}
