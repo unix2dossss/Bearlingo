@@ -26,7 +26,6 @@ import Bear from "../../assets/Bear.svg";
 
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
-import SideNavbar from "../../components/SideNavbar";
 
 /* THEME */
 const COLORS = {
