@@ -15,7 +15,10 @@ const FirstTimePg2 = () => {
 
   return (
     <div className="relative w-full h-screen bg-[#D0EAFB]">
+        {/* Navbar at top */}
+      <div className="absolute top-0 left-0 w-full z-20">
         <TopNavbar />
+      </div>
       {/* Background image */}
       <img
         src={background}
