@@ -6,6 +6,8 @@ import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
 import { Draggable } from "gsap/Draggable";
 import events from "../../../../backend/src/utils/networkingEvents";
+import { FaStar } from "react-icons/fa";
+
 
 
 export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
@@ -24,6 +26,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
     ];
     const [answers, setAnswers] = useState(Array(questions.length).fill(0));
     const [activeTab, setActiveTab] = useState("new"); // "new" or "past"
+    const [title, setTitle] = useState("");
 
     gsap.registerPlugin(Draggable);
 
@@ -64,12 +67,13 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
             const responses = questions.map((q, index) => ({
                 question: q,
-                answer: answers[index] + 1, // +1 as steps are 0–4 but backend expects 1–5
+                answer: answers[index], // +1 as steps are 0–4 but backend expects 1–5
             }));
 
             console.log("eventSelected: ", eventSelected._id);
 
             const saveReflection = await api.post("/users/me/networking/reflections", {
+                title: title,
                 responses: responses,
                 event: eventSelected?._id
             }, { withCredentials: true })
@@ -89,51 +93,6 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
             toast.error("Error in saving reflection!");
         }
     };
-
-
-    useEffect(() => {
-        if (activeTab !== "new") return; // Only init on "new" tab
-
-        const draggables = [];
-
-        questions.forEach((_, index) => {
-            const bear = bearRefs.current[index];
-            const scale = scaleRefs.current[index];
-            if (!bear || !scale) return;
-
-            const totalSteps = 5;
-            let stepWidth = scale.offsetWidth / (totalSteps - 1);
-
-            const draggableInstance = Draggable.create(bear, {
-                type: "x",
-                bounds: scale,
-                inertia: false,
-                snap: (endValue) => {
-                    let snapped = Math.round(endValue / stepWidth) * stepWidth;
-                    return Math.max(0, Math.min(snapped, stepWidth * (totalSteps - 1)));
-                },
-                onDragEnd: function () {
-                    let step = Math.round(this.x / stepWidth) + 1;
-                    step = Math.max(1, Math.min(step, totalSteps));
-                    console.log("step: ", step)
-
-                    setAnswers((prev) => {
-                        const updated = [...prev];
-                        updated[index] = step;
-                        return updated;
-                    });
-                },
-            })[0]; // Draggable.create returns an array
-            draggables.push(draggableInstance);
-
-        });
-
-        // Cleanup old Draggables on tab change/unmount
-        return () => {
-            draggables.forEach((d) => d && d.kill());
-        };
-    }, [activeTab]);
-
 
 
     return (
@@ -177,12 +136,31 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
 
             {activeTab == 'new' && (
                 <div className=" w-[100%] flex justify-center">
-                    <div className="flex flex-col gap-8 bg-slate-500 min-h-screen mt-16 p-4  w-[80%]">
+                    <div className="flex flex-col gap-8 bg-slate-300 min-h-screen mt-16 p-4  w-[80%]">
                         {/* Title + Event Selection */}
                         <div className="text-center">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">
                                 🎉 Choose an event to reflect on!
                             </h2>
+                            <div className="mb-2">
+                                <label className="flex items-center gap-2 text-lg font-bold text-yellow-600 mb-2">
+                                    <FaStar className="animate-bounce" /> Reflection Title
+                                </label>
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Enter your reflection title..."
+                                    className="
+          w-full px-4 py-3 rounded-lg bg-yellow-50 border-2 border-yellow-300
+          focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200
+          placeholder-yellow-400 text-yellow-900 font-semibold
+          shadow-sm focus:shadow-md transition-all duration-300
+        "
+                                />
+
+
+                            </div>
 
                             <div className="border-2 border-red-400 h-[300px] w-[98%] mx-auto overflow-y-auto 
                     bg-white rounded-xl p-4 flex flex-2 flex-col gap-4 shadow-inner">
@@ -230,30 +208,63 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                                         {index + 1}. {question}
                                     </p>
 
-                                    {/* Gamified slider scale */}
+                                    {/* Slider Track */}
                                     <div
                                         ref={(el) => (scaleRefs.current[index] = el)}
-                                        className="relative h-24 w-[90%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg flex items-center"
+                                        className="relative h-24 w-[90%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg"
                                     >
+                                        {/* Bear */}
                                         <img
                                             ref={(el) => (bearRefs.current[index] = el)}
                                             src={Bear}
                                             alt="Bear"
-                                            className="absolute top-[30px] left-[10px] w-12 h-12 cursor-pointer select-none transition-transform duration-150 hover:scale-110"
+                                            className="absolute top-[15px] w-12 h-12 select-none"
                                         />
-                                        {/* Labels under the track */}
 
-                                        {/* Labels under the track */}
-                                        <div className="absolute bottom-[-24px] left-[10px] right-[10px] flex justify-between text-2xl font-medium text-gray-600">
-                                            <span>😡</span>
-                                            <span>🙁</span>
-                                            <span>😐</span>
-                                            <span>🙂</span>
-                                            <span>😀</span>
+                                        {/* Emoji Labels */}
+                                        <div className="absolute bottom-[-40px] left-0 right-0 flex justify-around text-2xl font-medium text-gray-600 px-2">
+                                            {["😡", "🙁", "😐", "🙂", "😀"].map((emoji, step) => (
+                                                <button
+                                                    key={step}
+                                                    onClick={() => {
+                                                        const container = scaleRefs.current[index];
+                                                        const bear = bearRefs.current[index];
+
+                                                        if (!container || !bear) return;
+
+                                                        const totalSteps = 5;
+                                                        const stepWidth = container.offsetWidth / (totalSteps - 1);
+
+                                                        // Center bear over emoji
+                                                        const bearOffset = bear.offsetWidth / 2;
+                                                        const emojiElements = container.querySelectorAll("button");
+                                                        const targetX = emojiElements[step].offsetLeft + emojiElements[step].offsetWidth / 2 - bearOffset;
+
+
+                                                        gsap.to(bear, {
+                                                            x: targetX,
+                                                            duration: 0.4,
+                                                            ease: "power2.out",
+                                                        });
+
+                                                        setAnswers((prev) => {
+                                                            const updated = [...prev];
+                                                            updated[index] = step + 1;
+                                                            return updated;
+                                                        });
+
+                                                        console.log(`Q${index + 1} → ${step + 1}`);
+                                                    }}
+                                                    className="cursor-pointer hover:scale-125 transition-transform"
+                                                >
+                                                    {emoji}
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
                             ))}
+
                         </div>
                         <div className="flex justify-center">
                             <button
@@ -284,7 +295,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                                         }`}
                                 >
                                     <h3 className="text-lg font-semibold text-gray-800">
-                                        Reflection {index + 1}
+                                        {reflection.title}
                                     </h3>
                                     <p className="text-sm text-gray-600 truncate">
                                         {/* Show first question as a preview */}
@@ -300,7 +311,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
                         {selectedReflection ? (
                             <div className="bg-white p-6 rounded-xl shadow-lg">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                    Reflection Details
+                                    {selectedReflection.title} Details
                                 </h2>
                                 <ul className="space-y-3">
                                     {selectedReflection.responses.map((resp) => (
