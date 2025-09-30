@@ -3,14 +3,15 @@ import TopNavbar from "../../components/TopNavbar";
 import ConfirmLeaveDialog from "../../components/ConfirmLeaveDialog";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
-import Floor from '../../assets/IFloor.svg';
-import Desk from '../../assets/IDesk.svg';
-import Sofa from '../../assets/ISofa.svg';
-import Wall from '../../assets/IWall.svg';
-import WallLocked from '../../assets/IWallB.svg';
-import DeskLocked from '../../assets/IDeskB.svg';
-import SofaLocked from '../../assets/ISofaB.svg';
+import Floor from "../../assets/IFloor.svg";
+import Desk from "../../assets/IDesk.svg";
+import Sofa from "../../assets/ISofa.svg";
+import Wall from "../../assets/IWall.svg";
+import WallLocked from "../../assets/IWallB.svg";
+import DeskLocked from "../../assets/IDeskB.svg";
+import SofaLocked from "../../assets/ISofaB.svg";
 import { gsap } from "gsap";
+import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -21,11 +22,10 @@ import InterviewSubtask3 from "./InterviewSubtask3";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
-  textMuted: "#767687",
+  textMuted: "#767687"
 };
 
-const cx = (...xs) => xs.filter(Boolean).join(" ");
-
+// const cx = (...xs) => xs.filter(Boolean).join(" ");
 
 const InterviewModule = () => {
   const [showSubtask, setShowSubtask] = useState(false);
@@ -120,133 +120,134 @@ const InterviewModule = () => {
   const deskLockedRef = useRef(null);
   const deskUnlockedRef = useRef(null);
 
-    useEffect(() => {
-          if (task1Complete) {
-            // Fade out locked desk
-            gsap.to(deskLockedRef.current, {
-              opacity: 0,
-              duration: 0.5,
-              onComplete: () => {
-                // Bounce in unlocked drawers
-                gsap.set(deskUnlockedRef.current, {
-                  opacity: 0,
-                  scale: 0.5,
-                  rotation: -30,
-                  y: -300,
-                });
-                gsap.to(deskUnlockedRef.current, {
-                  opacity: 1,
-                  scale: 1,
-                  rotation: 0,
-                  y: 0,
-                  duration: 1.5,
-                  ease: "bounce.out",
-                });
-              },
-            });
-          } else {
-            // Fade in locked desk
-            gsap.set(deskUnlockedRef.current, { opacity: 0 });
-            gsap.to(deskLockedRef.current, {
-              opacity: 1,
-              duration: 0.6,
-              ease: "power2.out",
-            });
-          }
-        }, [task1Complete]);
+  useEffect(() => {
+    if (task1Complete) {
+      // Fade out locked desk
+      gsap.to(deskLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          // Bounce in unlocked drawers
+          gsap.set(deskUnlockedRef.current, {
+            opacity: 0,
+            scale: 0.5,
+            rotation: -30,
+            y: -300
+          });
+          gsap.to(deskUnlockedRef.current, {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
+          });
+        }
+      });
+    } else {
+      // Fade in locked desk
+      gsap.set(deskUnlockedRef.current, { opacity: 0 });
+      gsap.to(deskLockedRef.current, {
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+    }
+  }, [task1Complete]);
 
   const sofaLockedRef = useRef(null);
   const sofaUnlockedRef = useRef(null);
 
-    useEffect(() => {
-          if (task2Complete) {
-            // Fade out locked desk
-            gsap.to(sofaLockedRef.current, {
-              opacity: 0,
-              duration: 0.5,
-              onComplete: () => {
-                // Bounce in unlocked drawers
-                gsap.set(sofaUnlockedRef.current, {
-                  opacity: 0,
-                  scale: 0.5,
-                  rotation: -30,
-                  y: -300,
-                });
-                gsap.to(sofaUnlockedRef.current, {
-                  opacity: 1,
-                  scale: 1,
-                  rotation: 0,
-                  y: 0,
-                  duration: 1.5,
-                  ease: "bounce.out",
-                });
-              },
-            });
-          } else {
-            // Fade in locked desk
-            gsap.set(sofaUnlockedRef.current, { opacity: 0 });
-            gsap.to(sofaLockedRef.current, {
-              opacity: 1,
-              duration: 0.6,
-              ease: "power2.out",
-            });
-          }
-        }, [task2Complete]);
+  useEffect(() => {
+    if (task2Complete) {
+      // Fade out locked desk
+      gsap.to(sofaLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          // Bounce in unlocked drawers
+          gsap.set(sofaUnlockedRef.current, {
+            opacity: 0,
+            scale: 0.5,
+            rotation: -30,
+            y: -300
+          });
+          gsap.to(sofaUnlockedRef.current, {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
+          });
+        }
+      });
+    } else {
+      // Fade in locked desk
+      gsap.set(sofaUnlockedRef.current, { opacity: 0 });
+      gsap.to(sofaLockedRef.current, {
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+    }
+  }, [task2Complete]);
 
   const wallLockedRef = useRef(null);
   const wallUnlockedRef = useRef(null);
 
-    useEffect(() => {
-      if (task3Complete) {
-        // Fade out locked desk
-        gsap.to(wallLockedRef.current, {
-          opacity: 0,
-          duration: 0.5,
-          onComplete: () => {
-            // Bounce in unlocked drawers
-            gsap.set(wallUnlockedRef.current, {
-              opacity: 0,
-              scale: 0.5,
-              rotation: -30,
-              y: -300,
-            });
-            gsap.to(wallUnlockedRef.current, {
-              opacity: 1,
-              scale: 1,
-              rotation: 0,
-              y: 0,
-              duration: 1.5,
-              ease: "bounce.out",
-            });
-          },
-        });
-      } else {
-        // Fade in locked desk
-        gsap.set(wallUnlockedRef.current, { opacity: 0 });
-        gsap.to(wallLockedRef.current, {
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out",
-        });
-      }
-    }, [task3Complete]);
+  useEffect(() => {
+    if (task3Complete) {
+      // Fade out locked desk
+      gsap.to(wallLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          // Bounce in unlocked drawers
+          gsap.set(wallUnlockedRef.current, {
+            opacity: 0,
+            scale: 0.5,
+            rotation: -30,
+            y: -300
+          });
+          gsap.to(wallUnlockedRef.current, {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out"
+          });
+        }
+      });
+    } else {
+      // Fade in locked desk
+      gsap.set(wallUnlockedRef.current, { opacity: 0 });
+      gsap.to(wallLockedRef.current, {
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+    }
+  }, [task3Complete]);
 
   return (
     <div className="relative min-h-screen flex flex-col">
       {/* Background */}
       <div className="absolute inset-0 bg-cover bg-center bg-[#deffbd]" />
-      
+
       {/* Top Navbar */}
       <div className="fixed top-0 inset-x-0 z-[100]">
         <TopNavbar />
       </div>
 
+      {/* Floating music control */}
+      <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+        <BackgroundMusicBox />
+      </div>
+
       {/* Purple Floor */}
-      <img
-        src={Floor}
-        alt="Welcome"
-        className="absolute bottom-0 left-0 w-full h-auto"
-      />
+      <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
       {/* Subtask 3 Object: Wall */}
       <div className="relative">
@@ -256,7 +257,7 @@ const InterviewModule = () => {
           alt="Unlocked Interview Wall"
           className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
         />
-        
+
         <img
           ref={wallUnlockedRef}
           src={Wall}
@@ -264,7 +265,7 @@ const InterviewModule = () => {
           className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
         />
       </div>
-            
+
       {/* Subtask 1 Object: Desk */}
 
       <div className="relative w-full flex justify-center">
@@ -282,7 +283,7 @@ const InterviewModule = () => {
         />
       </div>
 
-      {/* Subtask 2 Object: Sofa */}         
+      {/* Subtask 2 Object: Sofa */}
       <div className="relative w-full flex justify-center">
         <img
           ref={sofaLockedRef}

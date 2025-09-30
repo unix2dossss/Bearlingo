@@ -27,7 +27,7 @@ const Home = () => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 flex items-center justify-left">
-              <div className="text-left max-w-lg px-8 py-12">
+              <div className="text-left max-w-lg px-8 py-12 ml-20">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6">
                         Job Seeking, Made Fun
                      </h1>

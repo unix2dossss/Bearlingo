@@ -10,6 +10,8 @@ import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import NetworkingSubtask1 from "./NetworkingSubtask1";
 import NetworkingSubtask2 from "./NetworkingSubtask2";
+import NetworkingSubtask3 from "./NetworkingSubtask3";
+import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 
 const NetworkingModule = () => {
 
@@ -74,7 +76,7 @@ const NetworkingModule = () => {
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${userInfo?.token}` 
+                        Authorization: `Bearer ${userInfo?.token}`
                     }
                 }
             );
@@ -244,9 +246,27 @@ const NetworkingModule = () => {
                 console.log("Error in updating events: ", events);
                 toast.error("Events were not updated");
             }
+        };
+
+        useEffect(() => {
+            if (currentSpeechIndex === 8) {
+                submitLinkedInProfile();
+            }
+        }, [currentSpeechIndex]);
+
+
+
+
+        const submitLinkedInProfile = async () => {
+            try {
+
+            } catch (error) {
+                toast.error("Could not submit linked-inprofile")
+            }
+
         }
 
-    }
+    };
 
     return (
         <>
@@ -272,45 +292,58 @@ const NetworkingModule = () => {
                     <TopNavbar />
                 </div>
 
+                {/* Floating music control */}
+                <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+                    <BackgroundMusicBox />
+                </div>
+
 
                 {!showSubtask && (
-                <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
-                    <div className="flex space-x-48 mb-[80px]">
-                    <button
-                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                        onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
-                    >
-                        Task 1
-                    </button>
-                    <button
-                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                        onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
-                    >
-                        Task 2
-                    </button>
-                    <button
-                        className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                        onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
-                    >
-                        Task 3
-                    </button>
+                    <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
+                        <div className="flex space-x-48 mb-[80px]">
+                            <button
+                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
+                            >
+                                Task 1
+                            </button>
+                            <button
+                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
+                            >
+                                Task 2
+                            </button>
+                            <button
+                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
+                            >
+                                Task 3
+                            </button>
+                        </div>
                     </div>
-                </div>
                 )}
 
                 {showSubtask && selectedSubtask === "subtask1" && (
-                <NetworkingSubtask1
-                    userInfo={userInfo}
-                    onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                />
+                    <NetworkingSubtask1
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
                 )}
 
                 {showSubtask && selectedSubtask === "subtask2" && (
-                <NetworkingSubtask2
-                    userInfo={userInfo}
-                    onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                />
+                    <NetworkingSubtask2
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
                 )}
+
+                {showSubtask && selectedSubtask === "subtask3" && (
+                    <NetworkingSubtask3
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
+                )}
+
 
             </div >
         </>

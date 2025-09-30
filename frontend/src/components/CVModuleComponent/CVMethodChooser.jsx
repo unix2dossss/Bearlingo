@@ -15,7 +15,7 @@ const UserIcon = () => (
 );
 
 
-const MethodChooser = ({ onSelectUpload, onSelectManual }) => {
+const CVMethodChooser = ({ onSelectUpload, onSelectManual }) => {
   return (
     <div className="p-8 h-full rounded-2xl">
       <div className="max-w-lg mx-auto">
@@ -59,4 +59,4 @@ const MethodChooser = ({ onSelectUpload, onSelectManual }) => {
   );
 };
 
-export default MethodChooser;
+export default CVMethodChooser;
