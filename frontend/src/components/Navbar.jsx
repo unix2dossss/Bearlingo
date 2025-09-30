@@ -6,7 +6,7 @@ import Logo from '../assets/Logo1.svg'; // adjust path if needed
 const Navbar = () => {
   return (
     <header className="bg-white border-b border-base-content/10">
-      <div className="mx-auto max-w-7xl flex items-center justify-between p-4">
+      <div className="mx-auto max-w-full flex items-center justify-between px-8 py-4">
 
         {/* Logo on the left */}
         <Link to="/">
