@@ -12,6 +12,7 @@ import DeskLocked from "../../assets/IDeskB.svg";
 import SofaLocked from "../../assets/ISofaB.svg";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
+import SideNavbar from "../../components/SideNavbar";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -240,6 +241,11 @@ const InterviewModule = () => {
       <div className="fixed top-0 inset-x-0 z-[100]">
         <TopNavbar />
       </div>
+
+      {/* Side Navbar */}
+      <div className="fixed top-20 left-6 z-40">
+          <SideNavbar />
+        </div>
 
       {/* Floating music control */}
       <div className="fixed top-20 right-6 z-30 pointer-events-auto">

@@ -10,6 +10,7 @@ import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
+import SideNavbar from "../../components/SideNavbar";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -71,13 +72,13 @@ const CVModule = () => {
   useEffect(() => {
     const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
     if (!skipResume) {
-    // wait before showing resume modal
-    const timer = setTimeout(() => {
-      setShowResumeModal(true);
-    }, 2500); // 2.5s delay 
+      // wait before showing resume modal
+      const timer = setTimeout(() => {
+        setShowResumeModal(true);
+      }, 2500); // 2.5s delay
 
-    return () => clearTimeout(timer);
-  }
+      return () => clearTimeout(timer);
+    }
     const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
     if (!skipIntro) setShowLandingIntro(true);
   }, []);
@@ -339,6 +340,12 @@ const CVModule = () => {
         <div className="relative z-[100]">
           <TopNavbar />
         </div>
+
+        {/* Side Navbar */}
+        <div className="fixed top-20 left-6 z-40">
+          <SideNavbar />
+        </div>
+
         {/* Floating music control */}
         <div className="fixed top-20 right-6 z-30 pointer-events-auto">
           <BackgroundMusicBox />
