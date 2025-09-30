@@ -13,6 +13,7 @@ import Journal from './pages/Journal';
 import Test1 from './pages/Journal-redone'
 import InterviewModule from './pages/InterviewmodulePages/InterviewModule';
 import NetworkingModule from './pages/NetworkingModulePages/NetworkingModule';
+import ElevatorToInterview from './pages/FirstTimePages/ElevatorToInterview';
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/Journal" element={<Journal />} />
         <Route path="/test" element={<Test1 />} />
         <Route path="/NetworkingModule" element={<NetworkingModule />} />
+        <Route path="/Elevator" element={<ElevatorToInterview />} />
       </Routes>
     </div>
   )

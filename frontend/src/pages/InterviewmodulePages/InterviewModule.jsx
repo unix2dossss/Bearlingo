@@ -16,7 +16,7 @@ import SideNavbar from "../../components/SideNavbar";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
-import InterviewSubtask2 from "./InterviewSubtask2";
+import InterviewSubtask2 from "./interviewSubtask2";
 import InterviewSubtask3 from "./InterviewSubtask3";
 
 /* THEME (blue) */
