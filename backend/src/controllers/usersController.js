@@ -90,14 +90,14 @@ export const loginUser = async (req, res) => {
 // Logging out a user
 export const logoutUser = (req, res) => {
   try {
-      res.cookie("jwt", "", {
-        httpOnly: true,
-        expires: new Date(0), // Set the cookie to expire immediately
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
-      });
-      return res.status(200).json({ message: "Logged out successfully" });
-   } catch (error) {
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      expires: new Date(0), // Set the cookie to expire immediately
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -600,9 +600,9 @@ export const getNotes = async (req, res) => {
   try {
     const notes = await Note.find({ user: userId });
     if (!notes) {
-      return res.status(200).json({ message: "No reflections exist!" });
+      return res.status(200).json({ message: "No notes exist!" });
     }
-    return res.status(200).json({ message: "Reflections retrieved succesfully!", notes: notes });
+    return res.status(200).json({ message: "Notes retrieved succesfully!", notes: notes });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }

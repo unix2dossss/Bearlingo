@@ -294,6 +294,7 @@ const NetworkingModule = () => {
                         {/* Yellow Floor */}
                         <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
+
                         <img
                             src={Cafe}
                             alt="Unlocked Networking Cafe"
