@@ -7,6 +7,13 @@ import { useUserStore } from "../store/user";
 import api from "../lib/axios";
 import { getModuleByName } from "../utils/moduleHelpers";
 
+import CV from "../assets/CVStats.svg";
+import Net from "../assets/NetStats.svg";
+import Int from "../assets/IntStats.svg";
+import Jou from "../assets/JouStats.svg";
+
+import gsap from "gsap";
+
 const Profile = () => {
   const [userInfo, setUserInfo] = useState({
     firstName: "",
@@ -176,7 +183,15 @@ const Profile = () => {
                       <div className="relative w-full h-full flex items-center justify-center">
                         {/* Image as circle, same size as progress */}
                         <img
-                          src={stat.imageSrc}
+                          src={index === 0 
+                            ? CV 
+                            : index === 1 
+                            ? Int 
+                            : index === 2 
+                            ? Net 
+                            : index === 3 
+                            ? Jou 
+                            : stat.imageSrc}
                           alt={stat.label}
                           className="w-[120px] h-[120px] rounded-full object-cover z-10 opacity-30"
                         />
