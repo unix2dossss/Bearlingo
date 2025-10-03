@@ -256,7 +256,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
             {/* Next & back buttons */}
             <div>
-              {animationDone && (
+              {animationDone && userHasProfile === false && (
                 <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex gap-4">
                   {/* Back button */}
                   {currentSpeechIndex > 0 && (
