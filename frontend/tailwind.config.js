@@ -21,6 +21,7 @@ export default {
   plugins: [daisyui, flowbiteReact, require("tailwind-scrollbar")],
   daisyui: {
     themes: ["winter"]
-  }
+  },
+  assetsInclude: ['**/*.lottie'],
 }
 

@@ -9,6 +9,7 @@ import AddFolderImage from '../assets/add-folder-icon.svg';
 import SideNavbar from '../components/SideNavbar';
 import api from "../lib/axios";
 
+
 const JournalRefined = () => {
     const [reflections, setReflections] = useState([]);
     const [goals, setGoals] = useState([]);
@@ -70,7 +71,7 @@ const JournalRefined = () => {
             toast.error("Error obtaining journal items");
         }
 
-    }
+    };
 
     // Save goal to backend
     const saveGoal = async () => {

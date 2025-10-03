@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -360,6 +361,24 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           </div>
         )}
 
+        {/* Lottie animation */}
+        {currentSpeechIndex === 3 && !userHasProfile && (
+          <div className="absolute top-1/2 right-40 transform -translate-y-1/2
+      w-[400px] h-[400px]  /* bigger */
+      flex items-center justify-center
+      rounded-full
+      "
+            style={{ marginRight: "5%" }} /* moves it slightly left from the edge */
+          >
+            <DotLottieReact
+              src="/achievement-animation.lottie"
+              loop
+              autoplay
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+        )}
+
         {/* Headline pick (index 4) */}
         {currentSpeechIndex === 4 && !userHasProfile && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
@@ -523,6 +542,6 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }
