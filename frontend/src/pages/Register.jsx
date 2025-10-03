@@ -6,6 +6,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../lib/axios";
 import OAuth from "../components/OAuth";
+import CookieConsent from "../components/CookieConsent";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -336,7 +337,11 @@ const Register = () => {
                     </div>
 
                     <div className="card-actions justify-center mt-6 mb-8">
-                      <button type="submit" className="btn btn-primary w-full md:w-80 h-18" disable={loading}>
+                      <button
+                        type="submit"
+                        className="btn btn-primary w-full md:w-80 h-18"
+                        disable={loading.toString()}
+                      >
                         {loading ? "Registering ..." : "Register"}
                       </button>
                     </div>
@@ -357,6 +362,7 @@ const Register = () => {
             </div>
           </div>
         </div>
+        <CookieConsent />
       </div>
     </>
   );
