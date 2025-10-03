@@ -7,14 +7,15 @@ import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
 const TopNavbar = () => {
-  const { user, fetchUser } = useUserStore();
+  // const { user, fetchUser } = useUserStore();
+  const { user } = useUserStore();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user) fetchUser();
-  }, [user, fetchUser]);
+  // useEffect(() => {
+  //   if (!user) fetchUser();
+  // }, [user, fetchUser]);
 
   // Close when clicking outside or pressing Escape
   useEffect(() => {
