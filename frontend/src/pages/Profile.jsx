@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import TopNavbar from "../components/TopNavbar";
@@ -26,6 +26,17 @@ const Profile = () => {
 
   const user = useUserStore((state) => state.user);
 
+  const statRefs = useRef([]); // Array of refs
+
+  // Clear refs before each render
+  statRefs.current = [];
+
+  const addToRefs = (el) => {
+    if (el && !statRefs.current.includes(el)) {
+      statRefs.current.push(el);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) {
@@ -48,17 +59,23 @@ const Profile = () => {
           {
             label: "CV",
             colorClass: "text-[#B471EC]",
-            imageSrc: "https://placehold.co/100x100/B471EC/FFFFFF?text=CV"
+            borderColor: "border-[#B471EC]", 
+            hoverShadow: "hover:shadow-[0_0_15px_#B471EC]",
+            imageSrc: CV
           },
           {
             label: "Interview",
             colorClass: "text-[#39CD47]",
-            imageSrc: "https://placehold.co/100x100/39CD47/FFFFFF?text=Interview"
+            borderColor: "border-[#39CD47]",
+            hoverShadow: "hover:shadow-[0_0_15px_#39CD47]",
+            imageSrc: Int
           },
           {
             label: "Networking",
             colorClass: "text-[#FFDE32]",
-            imageSrc: "https://placehold.co/100x100/FFDE32/FFFFFF?text=Networking"
+            borderColor: "border-[#FFDE32]",
+            hoverShadow: "hover:shadow-[0_0_15px_#FFDE32]",
+            imageSrc: Net
           }
         ];
 
@@ -89,15 +106,29 @@ const Profile = () => {
         }
         // Dummy last stat for now
         const lastStat = {
-          label: "Last Stat",
+          label: "Journal",
           colorClass: "text-[#5CA3FF]",
-          imageSrc: "https://placehold.co/100x100/5CA3FF/FFFFFF?text=Last Stat",
+          borderColor: "border-[#5CA3FF]",
+          hoverShadow: "hover:shadow-[0_0_15px_#5CA3FF]",
+          imageSrc: Jou,
           progress: 0
         };
         statsData.push(lastStat);
         // console.log("Stats loaded:", statsData);
         setStats(statsData);
         // setStats(statsData);
+        // Animate after stats load
+        statsData.forEach((stat, i) => {
+          const el = statRefs.current[i];
+          if (el) {
+            const targetValue = stat.progress || 0;
+            gsap.fromTo(
+              el,
+              { "--value": 0 },
+              { "--value": targetValue, duration: 1.5, ease: "power2.out" }
+            );
+          }
+      });
       } catch (error) {
         console.error("Error fetching stats:", error);
       }
@@ -158,6 +189,8 @@ const Profile = () => {
     }
   };
 
+
+  
   return (
     <div className="relative bg-[#D0EAFB] min-h-screen overflow-hidden">
       <TopNavbar />
@@ -169,6 +202,10 @@ const Profile = () => {
 
         <main className="relative flex-1 p-4 md:p-6 max-w-7xl mx-5">
           <div className="relative z-10">
+            
+            {/* Big White Box */}
+            <div className="bg-white backdrop-blur-sm p-6 md:p-10 rounded-3xl shadow-xl space-y-12">
+
             {/* Statistics Section */}
             <section className="mb-8 px-6 sm:px-6 md:px-12">
               <h1 className="text-2xl font-bold text-gray-800 mb-4">Statistics</h1>
@@ -178,22 +215,17 @@ const Profile = () => {
                     // Each stat card
                     <div
                       key={index}
-                      className="aspect-square bg-white p-2 rounded-2xl shadow-sm flex items-center justify-center border-4 border-[#5CA3FF]"
-                    >
+                      className={`aspect-square bg-white p-4 rounded-2xl shadow-md flex flex-col items-center justify-center 
+                      border-4 ${stat.borderColor} ${stat.hoverShadow} hover:scale-105 hover:shadow-lg transition-transform duration-300 ease-in-out`}>
+                    
+                      {/* Title/Label */}
+                      <p className="mt-1 text-base font-semibold text-gray-700 mb-3">{stat.label}</p>
                       <div className="relative w-full h-full flex items-center justify-center">
                         {/* Image as circle, same size as progress */}
                         <img
-                          src={index === 0 
-                            ? CV 
-                            : index === 1 
-                            ? Int 
-                            : index === 2 
-                            ? Net 
-                            : index === 3 
-                            ? Jou 
-                            : stat.imageSrc}
+                          src={stat.imageSrc}
                           alt={stat.label}
-                          className="w-[120px] h-[120px] rounded-full object-cover z-10 opacity-30"
+                          className="w-[160px] h-[160px] rounded-full object-cover z-10 opacity-60 "
                         />
 
                         {/* Radial progress on top */}
@@ -205,9 +237,10 @@ const Profile = () => {
                             className={`radial-progress ${stat.colorClass} text-2xl font-bold`}
                             style={{
                               "--value": stat.progress,
-                              "--size": "130px",
+                              "--size": "170px",
                               "--thickness": "6px"
                             }}
+                            ref={addToRefs}
                           >
                             {stat.progress}%
                           </div>
@@ -222,7 +255,7 @@ const Profile = () => {
             {/* Account Section */}
             <section className="mb-8 px-6 sm:px-6 md:px-12">
               <h1 className="text-2xl font-bold text-gray-800 mb-4">Account</h1>
-              <div className="bg-white/60 backdrop-blur-sm p-4 sm:p-4 md:p-8 rounded-2xl shadow-lg">
+              <div className="bg-white backdrop-blur-sm p-4 sm:p-4 md:p-8 rounded-2xl shadow-lg  border-4 border-grey">
                 <form className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -304,6 +337,7 @@ const Profile = () => {
                 </form>
               </div>
             </section>
+            </div>
           </div>
         </main>
 
