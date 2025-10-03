@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import TopNavbar from "../components/TopNavbar";
@@ -6,6 +6,14 @@ import SideNavbar from "../components/SideNavbar";
 import { useUserStore } from "../store/user";
 import api from "../lib/axios";
 import { getModuleByName } from "../utils/moduleHelpers";
+
+import CV from "../assets/CVStats.svg";
+import Net from "../assets/NetStats.svg";
+import Int from "../assets/IntStats.svg";
+import Jou from "../assets/JouStats.svg";
+
+import gsap from "gsap";
+
 
 const Profile = () => {
   const [userInfo, setUserInfo] = useState({
@@ -175,7 +183,15 @@ const Profile = () => {
                     <div className="relative w-full h-full flex items-center justify-center">
                       {/* Image as circle, same size as progress */}
                       <img
-                        src={stat.imageSrc}
+                        src={index === 0 
+                            ? CV 
+                            : index === 1 
+                            ? Int 
+                            : index === 2 
+                            ? Net 
+                            : index === 3 
+                            ? Jou 
+                            : stat.imageSrc} 
                         alt={stat.label}
                         className="w-[154px] h-[154px] rounded-full object-cover z-10 opacity-30"
                       />
@@ -190,7 +206,7 @@ const Profile = () => {
                           style={{
                             "--value": stat.progress,
                             "--size": "170px",
-                            "--thickness": "8px"
+                            "--thickness": "7px"
                           }}
                         >
                           {stat.progress}%
@@ -206,7 +222,7 @@ const Profile = () => {
           {/* Account Section */}
           <section className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Account</h1>
-            <div className="bg-white/60 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-lg">
+            <div className="bg-white backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-lg">
               <form className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
