@@ -194,7 +194,6 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplet
           </p>
         </div>
 
-
         {/* Single card containing all fields */}
         <div className="mt-5 rounded-2xl border border-gray-300 bg-white p-6 md:p-7 shadow-sm space-y-5">
           {/* What went well */}

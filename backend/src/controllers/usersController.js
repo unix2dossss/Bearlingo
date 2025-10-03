@@ -90,14 +90,14 @@ export const loginUser = async (req, res) => {
 // Logging out a user
 export const logoutUser = (req, res) => {
   try {
-      res.cookie("jwt", "", {
-        httpOnly: true,
-        expires: new Date(0), // Set the cookie to expire immediately
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
-      });
-      return res.status(200).json({ message: "Logged out successfully" });
-   } catch (error) {
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      expires: new Date(0), // Set the cookie to expire immediately
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -299,7 +299,7 @@ export const getUserModuleProgress = async (req, res) => {
       module: moduleId
     });
     if (!progressDocs.length) {
-      return { moduleProgressPercentage: "0%" }; // No progress yet
+      return res.status(200).json({ moduleProgressPercentage: "0%" }); // No progress yet
     }
     // Add up all level progresses for the module
     let totalProgress = 0;
@@ -485,7 +485,7 @@ export const createGoal = async (req, res) => {
     // Check if user already has a journal with the same title
     const existing = await Goal.findOne({
       user: userId,
-      title: title,
+      title: title
     });
 
     if (existing) {
@@ -504,7 +504,6 @@ export const createGoal = async (req, res) => {
     return res.status(201).json({ message: "Goal created succesfully!", savedEntry: savedEntry });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
-
   }
 };
 
@@ -519,7 +518,6 @@ export const getGoals = async (req, res) => {
     return res.status(200).json({ message: "Goals retrieved succesfully!", goals: goals });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
-
   }
 };
 
@@ -535,7 +533,9 @@ export const createReflection = async (req, res) => {
     }
 
     if (feeling.emoji < 1 || feeling.emoji > 10 || rating < 1 || rating > 10) {
-      return res.status(400).json({ message: "Invalid response. Submit a value between 1 and 10 inclusive" });
+      return res
+        .status(400)
+        .json({ message: "Invalid response. Submit a value between 1 and 10 inclusive" });
     }
 
     const newReflection = new Reflection({
@@ -552,7 +552,9 @@ export const createReflection = async (req, res) => {
     });
 
     const reflection = await newReflection.save();
-    return res.status(201).json({ message: "Reflection created succesfully!", reflection: reflection });
+    return res
+      .status(201)
+      .json({ message: "Reflection created succesfully!", reflection: reflection });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -566,7 +568,9 @@ export const getReflections = async (req, res) => {
     if (!reflections) {
       return res.status(200).json({ message: "No reflections exist!" });
     }
-    return res.status(200).json({ message: "Reflections retrieved succesfully!", reflections: reflections });
+    return res
+      .status(200)
+      .json({ message: "Reflections retrieved succesfully!", reflections: reflections });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -585,7 +589,7 @@ export const createNote = async (req, res) => {
       user: userId,
       title: title,
       thoughts: thoughts
-    })
+    });
 
     const savedNote = await newNote.save();
     return res.status(201).json({ message: "Note created succesfully!", note: savedNote });
@@ -600,9 +604,9 @@ export const getNotes = async (req, res) => {
   try {
     const notes = await Note.find({ user: userId });
     if (!notes) {
-      return res.status(200).json({ message: "No reflections exist!" });
+      return res.status(200).json({ message: "No notes exist!" });
     }
-    return res.status(200).json({ message: "Reflections retrieved succesfully!", notes: notes });
+    return res.status(200).json({ message: "Notes retrieved succesfully!", notes: notes });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }

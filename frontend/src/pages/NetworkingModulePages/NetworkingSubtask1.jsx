@@ -5,12 +5,17 @@ import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
 
+//Import Components
+import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
+import Headline from "../../components/NetworkingModuleComponents/NetworkingSubtask1/HeadLine";
+
+
 export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);
 
   const [selectedHeadline, setSelectedHeadline] = useState("");
-  const [customHeadline, setCustomHeadline] = useState("");
+  //const [customHeadline, setCustomHeadline] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [careerGoal, setCareerGoal] = useState("");
@@ -35,6 +40,33 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     "Communication", "Teamwork", "Problem Solving", "Adaptability",
   ];
 
+  const EXAMPLES = [
+    {
+      id: 1,
+      title: "Internship",
+      text: "Motivated Computer Science student with strong foundations in algorithms, web development, and databases, seeking an internship to apply problem-solving skills in real-world projects and contribute to a collaborative engineering team.",
+    },
+    {
+      id: 2,
+      title: "Graduate role",
+      text: "Recent Software Engineering student eager to begin a career as a Software Developer. Passionate about building scalable web applications, learning new technologies, and contributing to innovative solutions in a fast-paced environment.",
+    },
+    {
+      id: 3,
+      title: "General tech",
+      text: "Aspiring software engineer with a strong academic background in computer science and practical experience through projects. Interested in developing user-friendly, reliable, and efficient software that creates real-world impact.",
+    },
+    {
+      id: 4,
+      title: "Teamwork & adaptability",
+      text: "Enthusiastic Computer Science student with hands-on experience in team-based software projects. Skilled in Java, React, and databases, and eager to contribute to collaborative problem-solving in dynamic tech environments.",
+    },
+    {
+      id: 5,
+      title: "Research / AI",
+      text: "Computer Science student passionate about artificial intelligence and data science. Looking to contribute research-driven and innovative solutions while expanding technical expertise in machine learning and big data systems.",
+    },
+  ];
 
   const getLinkedInProfile = async () => {
     try {
@@ -112,11 +144,13 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           firstName: userInfo.firstName,
           lastName: userInfo.lastName,
           profressionalHeadline: selectedHeadline,
+          university: university,
           keySkills: keySkills,
           objective: careerGoal
         },
         { withCredentials: true });
       setSavedProfile(profile.data.linkedInProfile);
+      console.log("profile.data.linkedInProfile: ", profile.data.linkedInProfile);
       setUserHasProfile(true);
 
       toast.success("Profile saved!");
@@ -127,7 +161,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
     }
   };
 
+  // Max skills user can pick on step skills
+  const MAX_SKILLS = 4;
 
+  const toggleSkill = (skill) => {
+    setSelectedSkills((prev) => {
+      const isSelected = prev.includes(skill);
+      if (isSelected) return prev.filter((s) => s !== skill);
+      if (prev.length >= MAX_SKILLS) {
+        toast.error(`You can select up to ${MAX_SKILLS} skills.`);
+        return prev;
+      }
+      return [...prev, skill];
+    });
+  };
 
 
 
@@ -143,13 +190,19 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       </button>
 
       {/* Left: Bear + Speech */}
-      <div className="flex flex-1 ">
-        <div className="mt-20 relative">
+      <div className="flex flex-1 items-center justify-center">
+        <div className="relative w-full max-w-[500px] aspect-square">
+          <img
+            src={Bear}
+            alt="Bear Mascot"
+            className="absolute inset-0 w-full h-full object-contain"
+          />
 
-          {animationDone && userHasProfile == true && (
+          {/* Speech bubble */}
+          {animationDone && userHasProfile === true && (
             <div
-              key={currentSpeechIndex}
-              className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
+              key="profile-speech"
+              className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
             >
               <div className="chat-bubble">
                 Hi {userInfo?.username || "there"}! 👋. Take a look at your LinkedIn profile!
@@ -157,13 +210,10 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
             </div>
           )}
 
-
-
-
-          {animationDone && userHasProfile == false && (
+          {animationDone && userHasProfile === false && (
             <div
               key={currentSpeechIndex}
-              className="chat chat-start opacity-0 translate-y-4 bear-speech flex justify-center"
+              className="chat chat-start absolute -top-4 left-1/2 -translate-x-1/2 translate-x-24 opacity-0 bear-speech"
             >
               <div className="chat-bubble">
                 {currentSpeechIndex === 0
@@ -174,18 +224,20 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           )}
 
           {/* Next button */}
-          {animationDone && userHasProfile == false && currentSpeechIndex < speechForSubtask1.length - 1 && (
-            <button
-              className="absolute bottom-4 left-96 transform -translate-x-1/2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
-              onClick={handleNext}
-            >
-              Next
-            </button>
-          )}
-
-          <img className="bear h-[600px] w-[600px]" src={Bear} alt="Bear Mascot" />
+          {animationDone &&
+            userHasProfile === false &&
+            currentSpeechIndex < speechForSubtask1.length - 1 && (
+              <button
+                className="absolute -bottom-20 left-1/2 -translate-x-1/2 px-6 py-2
+                      bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            )}
         </div>
       </div>
+
 
 
       {/* Right: Dynamic Panels */}
@@ -229,7 +281,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
         {/* Example card preview (index 2) */}
         {currentSpeechIndex === 2 && (
-          <div className="flex justify-center mt-32">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -260,53 +312,21 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
         {/* Headline pick (index 4) */}
-        {currentSpeechIndex === 4 && userHasProfile == false && (
-          <div className="flex flex-col items-center justify-center gap-6 mt-[30%] h-[40%]">
-            <select
+        {currentSpeechIndex === 4 && !userHasProfile && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
+            {/* Headline component */}
+            <Headline
               value={selectedHeadline}
-              onChange={(e) => setSelectedHeadline(e.target.value)}
-              className="select w-[70%]"
-            >
-              <option disabled value="">
-                Pick a headline
-              </option>
-              <option>Aspiring Software Engineer | Computer Science Student</option>
-              <option>Computer Science Undergraduate | Passionate About AI & Machine Learning</option>
-              <option>Future Full-Stack Developer | Tech Enthusiast</option>
-              <option>CS Student | Exploring Cloud Computing & DevOps</option>
-              <option>Software Developer in Training | Problem Solver & Innovator</option>
-              <option>Tech Student | Building Projects in Web & Mobile Development</option>
-              <option>Computer Science Enthusiast | Passionate About Data Science</option>
-              <option>CS Student | Interested in Cybersecurity & Ethical Hacking</option>
-            </select>
-
-            <div className="flex flex-row gap-1 w-[70%]">
-              <input
-                type="text"
-                placeholder="Enter headline here"
-                className="input flex-1"
-                value={customHeadline}
-                onChange={(e) => setCustomHeadline(e.target.value)}
-              />
-              <button
-                className="btn"
-                onClick={() => {
-                  if (customHeadline.trim() !== "") {
-                    setSelectedHeadline(customHeadline);
-                    setCustomHeadline("");
-                    toast.success("Headline saved!");
-                  }
-                }}
-              >
-                Enter
-              </button>
-            </div>
+              onChange={setSelectedHeadline} // 👈 dropdown OR custom input will update this
+              className="w-[350px]"
+            />
           </div>
         )}
 
+
         {/* University (index 5) */}
         {currentSpeechIndex === 5 && userHasProfile == false && (
-          <div className="flex justify-center mt-[50%]">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
             <div className="flex flex-row gap-1">
               <input
                 type="text"
@@ -326,62 +346,85 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                 Submit
               </button>
             </div>
-            {console.log("Headline: ", selectedHeadline)}
+            {console.log("Headline from :   {/* University (index 5) */}:", selectedHeadline)}
           </div>
         )}
 
         {/* Skills (index 6) */}
-        {currentSpeechIndex === 6 && userHasProfile == false && (
-          <div className="flex flex-col items-center gap-2 mt-[40%]">
-            <label className="font-semibold">Select Your Skills</label>
-            <select
-              multiple
-              size={10}
-              className="select p-2 w-[70%] text-lg"
-              value={selectedSkills}
-              onChange={handleSkillChange}
-            >
-              {allSkills.map((skill, i) => (
-                <option key={i} value={skill}>
-                  {skill}
-                </option>
-              ))}
-            </select>
-            <p className="mt-2">Selected Skills: {selectedSkills.join(", ")}</p>
-            <button className="btn" onClick={() => toast.success("Skills saved!")}>
-              Submit
-            </button>
+        {currentSpeechIndex === 6 && userHasProfile === false && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
+            <SkillList
+              allSkills={allSkills}
+              selectedSkills={selectedSkills}
+              toggleSkill={toggleSkill}
+              maxSkills={MAX_SKILLS}
+            />
           </div>
         )}
 
         {/* Career goal (index 7) */}
-        {currentSpeechIndex === 7 && userHasProfile == false && (
-          <div className="mt-[50%]">
-            <div className="flex flex-row gap-1">
-              <input
-                type="text"
-                placeholder="Enter career goal here"
-                className="input w-[90%]"
-                value={careerGoal}
-                onChange={(e) => setCareerGoal(e.target.value)}
-              />
-              <button
-                className="btn"
-                onClick={() => {
-                  if (careerGoal.trim() !== "") {
-                    toast.success("Career goal saved!");
-                  }
-                }}
-              >
-                Enter
-              </button>
+        {currentSpeechIndex === 7 && !userHasProfile && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
+            <div className="relative p-6 rounded-2xl shadow-2xl bg-indigo-100/80">
+              {/* Animated border overlay */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 animate-gradient-x blur-lg opacity-50"></div>
+
+              {/* Content */}
+              <div className="relative z-10 bg-indigo-50/90 rounded-2xl border border-indigo-300 p-6">
+                <h3 className="text-2xl font-bold text-indigo-900">
+                  Career Objective Examples
+                </h3>
+                <p className="mt-1 text-sm text-indigo-700">
+                  Useful templates for CVs, LinkedIn, or applications.
+                </p>
+
+                {/* Scrollable container */}
+                <div className="mt-6 max-h-64 overflow-y-auto pr-2 bg-indigo-100/70 border border-indigo-200 rounded-xl p-3 scrollbar-thin scrollbar-thumb-pink-400 scrollbar-track-indigo-200/40">
+                  <div className="space-y-4">
+                    {EXAMPLES.map((ex) => (
+                      <article
+                        key={ex.id}
+                        className="bg-indigo-50/80 border border-indigo-300 rounded-xl p-4 shadow hover:shadow-lg hover:border-pink-400 transition-all duration-300"
+                      >
+                        <h4 className="text-sm font-semibold text-indigo-900">
+                          {ex.title}
+                        </h4>
+                        <p className="mt-2 text-sm text-indigo-700 leading-relaxed">
+                          {ex.text}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Input Section */}
+                <div className="flex flex-row gap-2 mt-6">
+                  <input
+                    type="text"
+                    placeholder="Enter career goal here"
+                    className="flex-1 px-4 py-2 rounded-xl bg-indigo-50/80 text-indigo-900 placeholder-indigo-500 border-2 border-indigo-300 focus:border-pink-400 focus:ring-1 focus:ring-pink-300 transition-colors duration-300 outline-none"
+                    value={careerGoal}
+                    onChange={(e) => setCareerGoal(e.target.value)}
+                  />
+                  <button
+                    className="btn bg-pink-400 hover:bg-pink-500 text-white border-none rounded-xl px-4"
+                    onClick={() => {
+                      if (careerGoal.trim() !== "") {
+                        toast.success("Career goal saved!");
+                      }
+                    }}
+                  >
+                    Enter
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {/* Final preview (index 8) */}
         {currentSpeechIndex === 8 && userHasProfile == false && (
-          <div className="flex flex-col items-center mt-32">
+          <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -390,6 +433,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                   </h1>
                   <p className="text-gray-600 mt-1">{selectedHeadline}</p>
                   <p className="text-gray-500 mt-2 text-sm">{university}</p>
+
+                  {console.log("university: ", university)}
+
                 </div>
 
                 <div>
@@ -419,7 +465,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
             {/* Save Profile button */}
 
             <button
-              className="btn btn-primary mt-4"
+              className="btn btn-white mt-8 align-right"
               onClick={saveProfile}
             >
               Save Profile

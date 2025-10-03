@@ -1,18 +1,146 @@
 import React from 'react';
 import TopNavbar from '../components/TopNavbar';
 import MonitorImage from '../assets/journal-monitor.svg';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
 import SideNavbar from '../components/SideNavbar';
+import api from "../lib/axios";
 
-const Journal = () => {
+const JournalRefined = () => {
+    const [reflections, setReflections] = useState([]);
+    const [goals, setGoals] = useState([]);
+    const [notes, setNotes] = useState([]);
+    const [newFileName, setNewFileName] = useState("");
     const [openFolder, setOpenFolder] = useState(false);
     const [showAddFileModal, setShowAddFileModal] = useState(false);
-    const [newFileName, setNewFileName] = useState("");
     const [openFile, setOpenFile] = useState(false);
+
+    // These are for setting a new goal (i.e making a POST request)
+    const [goalTitle, setGoalTitle] = useState("");
+    const [goal, setGoal] = useState("");
+    const [goalIsCompleted, setGoalIsCompleted] = useState(false); // by defualt false
+
+    // These are for setting a new reflection (i.e making a POST request)
+    const [reflectionTitle, setReflectionTitle] = useState("");
+    const [about, setAbout] = useState("");
+    const [feeling, setFeeling] = useState({
+        emoji: 0,   // or null / default emoji rating
+        text: ""    // empty optional explanation
+    });
+    const [whatWentWell, setWhatWentWell] = useState("");
+    const [improvement, setImprovement] = useState("");
+    // Q5: Rate the event/experience (1–10 stars)
+    const [rating, setRating] = useState("");
+
+
+    // These are for setting a new note (i.e making a POST request)
+    const [noteTitle, setNoteTitle] = useState("");
+    const [thoughts, setThoughts] = useState("");
+
+    const [folders, setFolders] = useState([
+        { name: "Reflections", image: PinkFolder },
+        { name: "Goals", image: YellowFolder },
+        { name: "Notes", image: BlueFolder },
+    ]);
+
+
+    const getAllJournals = async () => {
+        try {
+            const getGoals = await api.get("/users/journal/goals",
+                { withCredentials: true });
+            const getReflections = await api.get("/users/journal/reflections",
+                { withCredentials: true });
+            const getNotes = await api.get("/users/journal/notes",
+                { withCredentials: true });
+            if (getGoals.data.message == "Goals retrieved succesfully!") {
+                setGoals(getGoals);
+            }
+            if (getReflections.data.message == "Reflections retrieved succesfully!") {
+                setReflections(getReflections);
+            }
+            if (getNotes.data.message == "Notes retrieved succesfully!") {
+                setNotes(getNotes);
+            }
+
+        } catch (error) {
+            console.error("Error obtaining journal items", error);
+            toast.error("Error obtaining journal items");
+        }
+
+    }
+
+    // Save goal to backend
+    const saveGoal = async () => {
+        try {
+            const goalSaved = await api.post("/users/journal/goals",
+                {
+                    title: goalTitle,
+                    goal: goal,
+                    isCompleted: goalIsCompleted
+                },
+                { withCredentials: true });
+            setGoals(prevGoals => [...prevGoals, goalSaved.data]);
+
+        } catch (error) {
+            console.error("Error in saving goal", error);
+            toast.error("Error in saving goal");
+        }
+
+    };
+
+    // Save reflection to backend
+    const saveReflection = async () => {
+        try {
+            const reflectionSaved = await api.post("/users/journal/reflections",
+                {
+                    title: reflectionTitle,
+                    about: about,
+                    feeling: feeling,
+                    whatWentWell: whatWentWell,
+                    improvement: improvement,
+                    rating: rating
+                },
+                { withCredentials: true });
+            setReflections(prev => [...prev, reflectionSaved.data]);
+
+        } catch (error) {
+            console.error("Error in saving reflection", error);
+            toast.error("Error in saving reflection");
+        }
+
+    };
+
+    // Save note to backend
+    const saveNote = async () => {
+        try {
+            const noteSaved = await api.post("/users/journal/notes",
+                {
+                    title: noteTitle,
+                    thoughts: thoughts
+                },
+                { withCredentials: true });
+            setNotes(prev => [...prev, noteSaved.data]);
+
+
+        } catch (error) {
+            console.error("Error in saving note", error);
+            toast.error("Error in saving note");
+        }
+
+    };
+
+
+    // Run once when component mounts to check if user already has journal entries
+    useEffect(() => {
+        getAllJournals();
+    }, []);
+
+
+
+    // These are not needed when retrieving data from backend but were used in previous journal implementation
     const [showSmartFormModal, setShowSmartFormModal] = useState(false);
     const [newSmartGoal, setNewSmartGoal] = useState({
         fileName: "",
@@ -28,22 +156,6 @@ const Journal = () => {
         fileName: "",
         text: ""
     })
-    const [folders, setFolders] = useState([
-        { name: "Reflections", image: PinkFolder, files: [{ fileName: "First Networking event!", text: "Was really nervous but found it incredibly helpful to connect with employers!" }] },
-        {
-            name: "Goals", image: YellowFolder, files: [{
-                fileName: "Refining goals: Apply to Microsoft",
-                smart: {
-                    specific: "Apply to Microsoft for a software engineering internship.",
-                    measurable: "Submit application + get interview confirmation.",
-                    achievable: "I meet the qualifications with my current skills.",
-                    relevant: "This aligns with my career goals in tech.",
-                    timebound: "Deadline: October 15, 2025.",
-                },
-            },]
-        },
-        { name: "Notes", image: BlueFolder, files: ["Jobs to apply to", "{date}"] },
-    ]);
 
 
 
@@ -91,7 +203,7 @@ const Journal = () => {
                         </div>
                     </div >
                 </div>
-                
+
 
                 {openFolder && (
                     <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
@@ -552,4 +664,4 @@ const Journal = () => {
     )
 }
 
-export default Journal
+export default JournalRefined;

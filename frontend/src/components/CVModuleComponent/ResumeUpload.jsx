@@ -148,13 +148,13 @@ export default function ResumeUpload({
   };
 
   return (
-    <section className="max-w-3xl mx-auto p-6">
+    <section className="max-w-3xl mx-auto p-6 mt-8">
       {/* Heading */}
       <div className="text-center mb-4">
-        <h1 className="text-[40px] md:text-[54px] font-extrabold" style={{ color: PRIMARY }}>
+        <h1 className="text-[32px] md:text-4xl font-extrabold" style={{ color: PRIMARY }}>
           Upload your Resume
         </h1>
-        <p className="text-[17px] font-semibold" style={{ color: MUTED }}>
+        <p className="mt-3 text-[17px] font-semibold" style={{ color: MUTED }}>
           Help us get to know you by sharing your resume
         </p>
       </div>

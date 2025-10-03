@@ -64,16 +64,16 @@ router.get("/journals/:year/:month", authenticate, usersController.getJournalsBy
 router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
 
 // -- New Journal - Goals Routes --
-router.post("/goals", authenticate, usersController.createGoal);
-router.get("/goals", authenticate, usersController.getGoals);
+router.post("/journal/goals", authenticate, usersController.createGoal);
+router.get("/journal/goals", authenticate, usersController.getGoals);
 
 // -- New Journal - Reflections Routes --
-router.post("/reflections", authenticate, usersController.createReflection);
-router.get("/reflections", authenticate, usersController.getReflections);
+router.post("/journal/reflections", authenticate, usersController.createReflection);
+router.get("/journal/reflections", authenticate, usersController.getReflections);
 
 // -- New Journal - Notes Routes --
-router.post("/notes", authenticate, usersController.createNote);
-router.get("/notes", authenticate, usersController.getNotes);
+router.post("/journal/notes", authenticate, usersController.createNote);
+router.get("/journal/notes", authenticate, usersController.getNotes);
 
 
 // ---------- Leaderboard Routes ----------

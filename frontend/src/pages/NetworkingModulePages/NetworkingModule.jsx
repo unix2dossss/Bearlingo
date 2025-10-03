@@ -12,6 +12,11 @@ import NetworkingSubtask1 from "./NetworkingSubtask1";
 import NetworkingSubtask2 from "./NetworkingSubtask2";
 import NetworkingSubtask3 from "./NetworkingSubtask3";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
+import Floor from "../../assets/NFloor.svg";
+import Cafe from "../../assets/NCafe.svg";
+import Sign from "../../assets/NSign.svg";
+import Table from "../../assets/NTable.svg";
+import SideNavbar from "../../components/SideNavbar";
 
 const NetworkingModule = () => {
 
@@ -80,7 +85,6 @@ const NetworkingModule = () => {
                     }
                 }
             );
-            toast.success("Events obtained sucessfully!");
             const eventsOnly = events.data.allEventsFromBackend;
             console.log(eventsOnly);
             setAllEvents(eventsOnly);
@@ -100,7 +104,6 @@ const NetworkingModule = () => {
                     });
 
                     setUserEvents(res.data.eventsToAttend); // <- update your state
-                    toast.success("User events obtained successfully");
                     console.log("User events:", res.data.eventsToAttend);
                     console.log("userEvents usesState: ", userEvents);
                 } catch (error) {
@@ -270,23 +273,7 @@ const NetworkingModule = () => {
 
     return (
         <>
-            <div className="relative min-h-screen flex flex-col">
-                {/* Background
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage: `url("src/assets/CVFloor.svg")`
-                    }}
-                />
-                 */}
-
-                {/* Background */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage: `url("src/assets/Interview-Floor1.svg")`
-                    }}
-                />
+            <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
                 {/* Top Navbar */}
                 <div className="fixed top-0 inset-x-0 z-[100]">
                     <TopNavbar />
@@ -298,27 +285,55 @@ const NetworkingModule = () => {
                 </div>
 
 
+
+
                 {!showSubtask && (
                     <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
-                        <div className="flex space-x-48 mb-[80px]">
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
-                            >
-                                Task 1
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
-                            >
-                                Task 2
-                            </button>
-                            <button
-                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
-                            >
-                                Task 3
-                            </button>
+
+
+                        {/* Yellow Floor */}
+                        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+
+
+                        <img
+                            src={Cafe}
+                            alt="Unlocked Networking Cafe"
+                            className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto"
+                        />
+
+                        <img
+                            src={Sign}
+                            alt="Unlocked Networking Sign"
+                            className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
+
+                        <img
+                            src={Table}
+                            alt="Unlocked Networking Table"
+                            className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto"
+                        />
+
+                        <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+                            <div className="flex space-x-6">
+
+                                <button
+                                    className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                    onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
+                                >
+                                    Task 1
+                                </button>
+                                <button
+                                    className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                    onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
+                                >
+                                    Task 2
+                                </button>
+                                <button
+                                    className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                    onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
+                                >
+                                    Task 3
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

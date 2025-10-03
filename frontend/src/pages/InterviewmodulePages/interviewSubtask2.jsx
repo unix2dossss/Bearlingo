@@ -116,7 +116,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
         if (Array.isArray(v)) return v.some((q) => q.trim() !== "");
         return v && v.trim() !== "";
       });
-
+    onTaskComplete?.();
     onClose(hasChanges, false);
   };
 
