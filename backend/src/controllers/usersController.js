@@ -87,6 +87,16 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// Checking if 'jwt' cookie is present or not
+export const checkJWT = (req, res) => {
+  console.log("Req: ", req);
+  if (req.cookies.jwt) {
+    return res.status(200).json({ authorized: true });
+  } else {
+    return res.status(200).json({ authorized: false });
+  }
+};
+
 // Logging out a user
 export const logoutUser = (req, res) => {
   try {
