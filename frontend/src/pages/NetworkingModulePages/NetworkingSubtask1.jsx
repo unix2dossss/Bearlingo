@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -255,7 +256,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
             {/* Next & back buttons */}
             <div>
-              {animationDone && (
+              {animationDone && userHasProfile === false && (
                 <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex gap-4">
                   {/* Back button */}
                   {currentSpeechIndex > 0 && (
@@ -360,6 +361,24 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           </div>
         )}
 
+        {/* Lottie animation */}
+        {currentSpeechIndex === 3 && !userHasProfile && (
+          <div className="absolute top-1/2 right-40 transform -translate-y-1/2
+      w-[400px] h-[400px]  /* bigger */
+      flex items-center justify-center
+      rounded-full
+      "
+            style={{ marginRight: "5%" }} /* moves it slightly left from the edge */
+          >
+            <DotLottieReact
+              src="/achievement-animation.lottie"
+              loop
+              autoplay
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+        )}
+
         {/* Headline pick (index 4) */}
         {currentSpeechIndex === 4 && !userHasProfile && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
@@ -373,31 +392,39 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         )}
 
 
-        {/* University (index 5) */}
-        {currentSpeechIndex === 5 && userHasProfile == false && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
-            <div className="flex flex-row gap-1">
-              <input
-                type="text"
-                placeholder="Enter university here"
-                className="input w-3/4 text-xl px-4 py-2"
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
+        {currentSpeechIndex === 5 && !userHasProfile && (
+          <div className="absolute top-1/2 left-[85%] transform -translate-x-1/2 -translate-y-1/2 
+                  flex flex-row items-center gap-12 w-full max-w-4xl px-4">
+
+            <div className="flex flex-col items-center gap-6 w-full max-w-md">
+              <DotLottieReact
+                src="/university.lottie"
+                loop
+                autoplay
+                style={{ width: "100%", height: "250px", maxHeight: "40vh" }}
               />
-              <button
-                className="btn"
-                onClick={() => {
-                  if (university.trim() !== "") {
-                    toast.success("University saved!");
-                  }
-                }}
-              >
-                Submit
-              </button>
+
+              <div className="flex w-full gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter university here"
+                  className="flex-1 input text-lg px-4 py-2"
+                  value={university}
+                  onChange={(e) => setUniversity(e.target.value)}
+                />
+                <button
+                  className="btn"
+                  onClick={() => {
+                    if (university.trim() !== "") toast.success("University saved!");
+                  }}
+                >
+                  Submit
+                </button>
+              </div>
             </div>
-            {console.log("Headline from :   {/* University (index 5) */}:", selectedHeadline)}
           </div>
         )}
+
 
         {/* Skills (index 6) */}
         {currentSpeechIndex === 6 && userHasProfile === false && (
@@ -523,6 +550,6 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }
