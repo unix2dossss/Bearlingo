@@ -1,9 +1,7 @@
 import rateLimit from "express-rate-limit";
 
-// 1. Define the Rate Limiter Middleware
 export const dailyRequestLimiter = rateLimit({
-  // Use a unique identifier for the user (like their ID) to track requests
-  // This must be set to 'user._id' in this case because your endpoint uses 'req.user._id'
+  // Add an unique identifier for the user ('user._id') to track requests
   keyGenerator: (req, res) => {
     return req.user._id.toString();
   },
