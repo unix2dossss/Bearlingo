@@ -3,11 +3,11 @@ import User from "../models/User.js";
 import { buildCVHtml } from "../utils/buildCVHtml.js";
 import { isWithinMaxSentences, hasChanged, updateUserStreak } from "../utils/helpers.js";
 import puppeteer from "puppeteer";
-
-// import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-// import { v4 as uuidv4 } from "uuid";
-// import { GetObjectCommand } from "@aws-sdk/client-s3";
-// import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import pdf from "pdf-parse/lib/pdf-parse.js";
+import OpenAI from "openai";
+import { toFile } from "openai/uploads";
+import env from "dotenv";
+env.config();
 
 // Saving or updating personal information in CV
 export const addPersonalInformation = async (req, res) => {
@@ -371,17 +371,37 @@ export const uploadCV = async (req, res) => {
       return res.status(400).json({ message: "Invalid PDF file" });
     }
 
-    // Unique S3 key
-    // const key = `cvs/${req.user._id}/${uuidv4()}-${req.file.originalname}.pdf`;
+    let resumeText = "";
+    const fileBuffer = req.file.buffer;
 
-    // const uploadParams = {
-    //   Bucket: process.env.S3_BUCKET,
-    //   Key: key,
-    //   Body: req.file.buffer,
-    //   ContentType: "application/pdf"
-    // };
+    try {
+      // --- STEP 1: EXTRACT TEXT FROM THE UPLOADED FILE ---
+      if (req.file.mimetype === "application/pdf") {
+        const data = await pdf(fileBuffer);
+        resumeText = data.text;
+      } else if (
+        req.file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        const docxResult = await extractRawText(fileBuffer);
+        resumeText = docxResult.value;
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Unsupported file type. Please upload a PDF or DOCX file." });
+      }
 
-    // await s3.send(new PutObjectCommand(uploadParams));
+      if (!resumeText.trim()) {
+        return res.status(400).json({
+          message: "Could not extract text from the document. The file might be empty or corrupted."
+        });
+      }
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      return res
+        .status(500)
+        .json({ message: "An error occurred while extracting text from the document." });
+    }
 
     // Update CV record in DB
     let cv = await CV.findOne({ userId: req.user._id });
@@ -392,7 +412,6 @@ export const uploadCV = async (req, res) => {
         lastName: req.body.lastName || "Unknown"
       });
     }
-    // cv.cvUrl = key; // Store S3 key in CV record
     cv.cvFile = {
       data: req.file.buffer,
       filename: req.file.originalname,
@@ -400,6 +419,7 @@ export const uploadCV = async (req, res) => {
       size: req.file.size,
       uploadedAt: new Date()
     };
+    cv.resumeText = resumeText;
     await cv.save();
 
     res.json({ message: "CV uploaded successfully", cv });
@@ -430,34 +450,125 @@ export const deleteCV = async (req, res) => {
 export const getPdfCVFromDB = async (req, res) => {
   const cv = await CV.findOne({ userId: req.user.id }).lean();
   if (!cv || !cv.cvFile || !cv.cvFile.data) {
-    return res.status(404).json({ message: 'CV not found' });
+    return res.status(404).json({ message: "CV not found" });
   }
 
   const { filename, contentType, data } = cv.cvFile;
-  res.setHeader('Content-Type', contentType || 'application/pdf');
+  res.setHeader("Content-Type", contentType || "application/pdf");
   // Force download:
-  res.setHeader('Content-Disposition', `attachment; filename="${filename || 'cv.pdf'}"`);
+  res.setHeader("Content-Disposition", `attachment; filename="${filename || "cv.pdf"}"`);
   res.send(data); // Buffer will be sent
 };
 
-// For large CVs + production
-// const downloadCVFromS3 = async (req, res) => {
-//   try {
-//     const cv = await CV.findOne({ userId: req.user._id });
-//     if (!cv || !cv.cvUrl) {
-//       return res.status(404).json({ message: "No CV found" });
-//     }
+// Analyze CV and give feedback
+const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
+console.log("OpenAI key: ", process.env.OPENAI_KEY);
 
-//     // Generate signed URL valid for 60 seconds
-//     const command = new GetObjectCommand({
-//       Bucket: process.env.S3_BUCKET,
-//       Key: cv.cvUrl
-//     });
-//     const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+export const analyzeCV = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const cv = await CV.findOne({ userId });
+    if (!cv) {
+      return res
+        .status(404)
+        .json({ error: "No CV found. Please upload or fill out the form first." });
+    }
 
-//     res.json({ downloadUrl: url });
-//   } catch (err) {
-//     console.error("Download error:", err);
-//     res.status(500).json({ message: "Could not generate download link" });
-//   }
-// };
+    let pdfBuffer;
+    let filename = "resume.pdf";
+
+    // Case 1: If user uploaded a CV file
+    if (cv.cvFile && cv.cvFile.data) {
+      pdfBuffer = cv.cvFile.data;
+      // If a filename exists on the uploaded file, use it
+      filename = cv.cvFile.filename || "resume.pdf"; // use the uploaded filename
+      if (!filename.toLowerCase().endsWith(".pdf")) {
+        filename += ".pdf"; // make sure it ends with .pdf
+      }
+    } else {
+      // Case 2: If user filled the form → build PDF
+      const html = buildCVHtml(cv);
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: "networkidle0" });
+      pdfBuffer = await page.pdf({
+        format: "A4",
+        printBackground: true,
+        margin: { top: "0.4in", bottom: "0.2in", left: "0.2in", right: "0.2in" }
+      });
+      await browser.close();
+    }
+
+    // Upload the PDF to OpenAI
+    const file = await openai.files.create({
+      file: await toFile(pdfBuffer, filename),
+      purpose: "assistants"
+    });
+
+    // Ask OpenAI for feedback
+    const resp = await openai.responses.create({
+      model: "gpt-4o",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `You are a professional career coach. Analyze the provided CV and return ONLY valid JSON with this exact structure (no explanations, no extra text outside JSON):
+{
+  "strengths": ["point 1", "point 2", ...],
+  "weaknesses": ["point 1", "point 2", ...],
+  "suggestions": ["point 1", "point 2", ...],
+  "missing": ["point 1", "point 2", ...],
+  "score": <overall score out of 100>
+}
+**IMPORTANT RULE:** If the CV is sparse, nearly empty, or contains only placeholder text like "testing" or "lorem ipsum", do not refuse the request. Instead, treat this as a very poorly constructed CV. 
+- Give it a very low score (under 10).
+- The "strengths" array should be empty.
+- The "weaknesses", "suggestions", and "missing" arrays should be filled with feedback explaining what is wrong or absent (e.g., "The CV lacks any personal details", "No work experience is listed", "Contact information is missing", "The skills section is undefined").
+For each field ("strengths", "weaknesses", "suggestions", "missing"), list up to 5 points. If there are fewer relevant points, include only what applies. Be concise and truthful.`
+            },
+            { type: "input_file", file_id: file.id }
+          ]
+        }
+      ]
+    });
+
+    const feedback =
+      resp.output_text ||
+      (resp.output?.[0]?.content || []).find((c) => c.type === "output_text")?.text ||
+      "No feedback generated.";
+    console.log("Feedback:", feedback);
+
+    let cleanFeedback = feedback.trim();
+
+    // Remove ``` or ```json wrappers if present
+    if (cleanFeedback.startsWith("```")) {
+      cleanFeedback = cleanFeedback.replace(/```(?:json)?/g, "").trim();
+    } else {
+      return res.json(cleanFeedback);
+    }
+
+    let feedbackJson;
+    try {
+      feedbackJson = JSON.parse(cleanFeedback);
+    } catch (err) {
+      console.error("JSON parse error:", err);
+      feedbackJson = {
+        error: "Failed to get structured feedback from the analysis service.",
+        strengths: [],
+        weaknesses: [
+          "The AI model could not process the CV. This often happens if the document is empty or unreadable."
+        ],
+        suggestions: ["Please ensure your CV has meaningful content and try again."],
+        missing: ["All sections appear to be missing or unreadable."],
+        score: 0
+      };
+    }
+    console.log("Cleaned Feedback JSON:", feedbackJson);
+    res.json({ feedback: feedbackJson });
+  } catch (err) {
+    console.error("Error analyzing CV:", err);
+    res.status(500).json({ error: "Error analyzing CV" });
+  }
+};

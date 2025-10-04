@@ -19,5 +19,6 @@ router.get("/download", authenticate, cvController.downloadCV);
 router.post("/upload", authenticate, upload.single("cv"), cvController.uploadCV);
 router.delete("/delete", authenticate, cvController.deleteCV);
 router.get("/pdf", authenticate, cvController.getPdfCVFromDB);
+router.get("/analyze-cv", authenticate, upload.single("cv"), cvController.analyzeCV);
 
 export default router;

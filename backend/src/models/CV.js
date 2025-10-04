@@ -89,7 +89,8 @@ const cvSchema = new mongoose.Schema(
       size: Number,
       uploadedAt: Date
     },
-    cvUrl: String // URL/key got from storing PDF in S3 (Amazon Simple Storage Service) object store
+    resumeText: { type: String },
+    cvUrl: { type: String } // URL/key got from storing PDF in S3 (Amazon Simple Storage Service) object store
   },
   {
     timestamps: true

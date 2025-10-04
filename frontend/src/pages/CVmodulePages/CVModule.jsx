@@ -68,20 +68,20 @@ const CVModule = () => {
     fetchUserData();
   }, [navigate, user]);
 
-  // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
-  useEffect(() => {
-    const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
-    if (!skipResume) {
-      // wait before showing resume modal
-      const timer = setTimeout(() => {
-        setShowResumeModal(true);
-      }, 2500); // 2.5s delay
+  // // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
+  // useEffect(() => {
+  //   const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
+  //   if (!skipResume) {
+  //     // wait before showing resume modal
+  //     const timer = setTimeout(() => {
+  //       setShowResumeModal(true);
+  //     }, 2500); // 2.5s delay
 
-      return () => clearTimeout(timer);
-    }
-    const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
-    if (!skipIntro) {setShowLandingIntro(true), 2500};
-  }, []);
+  //     return () => clearTimeout(timer);
+  //   }
+  //   const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
+  //   if (!skipIntro) {setShowLandingIntro(true), 2500};
+  // }, []);
 
   // ⬇️ NEW: lock body scroll when any modal is open
   useEffect(() => {
