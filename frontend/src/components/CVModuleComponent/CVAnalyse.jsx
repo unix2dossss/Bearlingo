@@ -131,7 +131,7 @@ export default function CVAnalyse() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-6">
               <FeedbackCard title="Strengths" points={analysisResult.strengths || []} />
               <FeedbackCard title="Weaknesses" points={analysisResult.weaknesses || []} />
               <FeedbackCard title="Suggestions" points={analysisResult.suggestions || []} />
