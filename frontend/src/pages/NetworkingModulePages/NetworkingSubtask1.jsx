@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -21,6 +22,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [careerGoal, setCareerGoal] = useState("");
   const [userHasProfile, setUserHasProfile] = useState(false);
   const [savedProfile, setSavedProfile] = useState("");
+  const [nextButtonValid, setNextButtonValid] = useState(true);
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -120,10 +122,37 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   }, [currentSpeechIndex, animationDone]);
 
   const handleNext = () => {
-    if (currentSpeechIndex < speechForSubtask1.length - 1) {
+    let valid = true;
+
+    if (currentSpeechIndex === 4 && selectedHeadline.trim() === "") {
+      toast.error("Please choose or type a headline!");
+      valid = false;
+    }
+
+    if (currentSpeechIndex === 5 && university.trim() === "") {
+      toast.error("Please enter your university!");
+      valid = false;
+    }
+
+    if (currentSpeechIndex === 6 && selectedSkills.length === 0) {
+      toast.error("Please select at least one skill!");
+      valid = false;
+    }
+
+    if (currentSpeechIndex === 7 && careerGoal.trim() === "") {
+      toast.error("Please enter your career goal!");
+      valid = false;
+    }
+
+    if (valid && currentSpeechIndex < speechForSubtask1.length - 1) {
       setCurrentSpeechIndex((i) => i + 1);
     }
   };
+
+  const handleBack = () => {
+    setCurrentSpeechIndex((i) => i - 1);
+  }
+
 
   const handleSkillChange = (e) => {
     const value = Array.from(e.target.selectedOptions, (o) => o.value);
@@ -223,18 +252,39 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
             </div>
           )}
 
-          {/* Next button */}
-          {animationDone &&
-            userHasProfile === false &&
-            currentSpeechIndex < speechForSubtask1.length - 1 && (
-              <button
-                className="absolute -bottom-20 left-1/2 -translate-x-1/2 px-6 py-2
-                      bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-lg"
-                onClick={handleNext}
-              >
-                Next
-              </button>
-            )}
+          <div>
+
+            {/* Next & back buttons */}
+            <div>
+              {animationDone && (
+                <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex gap-4">
+                  {/* Back button */}
+                  {currentSpeechIndex > 0 && (
+                    <button
+                      className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 shadow-lg"
+                      onClick={handleBack}
+                    >
+                      Back
+                    </button>
+                  )}
+
+                  {/* Next button */}
+                  {userHasProfile === false &&
+                    currentSpeechIndex < speechForSubtask1.length - 1 && (
+                      <button
+                        className={`px-6 py-2 rounded-lg shadow-lg text-white
+              ${nextButtonValid ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                        onClick={handleNext}
+                        disabled={!nextButtonValid}
+                      >
+                        Next
+                      </button>
+                    )}
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -308,6 +358,24 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Lottie animation */}
+        {currentSpeechIndex === 3 && !userHasProfile && (
+          <div className="absolute top-1/2 right-40 transform -translate-y-1/2
+      w-[400px] h-[400px]  /* bigger */
+      flex items-center justify-center
+      rounded-full
+      "
+            style={{ marginRight: "5%" }} /* moves it slightly left from the edge */
+          >
+            <DotLottieReact
+              src="/achievement-animation.lottie"
+              loop
+              autoplay
+              style={{ width: "100%", height: "100%" }}
+            />
           </div>
         )}
 
@@ -474,6 +542,6 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }

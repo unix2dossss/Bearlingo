@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import api from "../lib/axios";
 import { useUserStore } from "../store/user";
 import OAuth from "../components/OAuth";
+import CookieConsent from '../components/CookieConsent.jsx';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -123,6 +124,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <CookieConsent/>
     </div>
   );
 };
