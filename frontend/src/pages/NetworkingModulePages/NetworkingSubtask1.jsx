@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
-// import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
