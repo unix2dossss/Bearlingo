@@ -65,6 +65,7 @@ const FeedbackCard = ({ title, points }) => {
 // --- Main Component ---
 export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [cvFile, setCvFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -87,6 +88,7 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
 
           if (!isEmpty) {
             setAnalysisResult(analysis);
+            setCvFile(res.data.cvFile || null); // save CV file info
           }
         }
       } catch (err) {
@@ -161,6 +163,23 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
             <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <h2 className="text-2xl font-bold text-gray-800">Your Results are In!</h2>
+                {/* Display CV file info */}
+                {cvFile && (
+                  <div className="mt-3 inline-block bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm">
+                    <p className="text-gray-700">
+                      <span className="font-medium text-gray-800">Analyzed CV:</span>{" "}
+                      <span className="font-semibold text-blue-600">{cvFile.filename}</span>{" "}
+                      <span className="text-gray-500">
+                        ({(cvFile.size / 1024).toFixed(1)} KB, uploaded{" "}
+                        <span className="text-emerald-600 font-medium">
+                          {new Date(cvFile.uploadedAt).toLocaleDateString()}
+                        </span>
+                        )
+                      </span>
+                    </p>
+                  </div>
+                )}
+
                 <button
                   onClick={handleReset}
                   className="mt-4 bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg hover:bg-gray-300 transition-colors duration-300"
