@@ -277,7 +277,25 @@ export const getCV = async (req, res) => {
     if (!cv) {
       return res.status(200).json({ message: "CV not found. Please create one first." });
     }
-    res.status(200).json(cv);
+
+    const formattedCV = {
+      firstName: cv.firstName,
+      lastName: cv.lastName,
+      contact: cv.contact,
+      education: cv.education,
+      aboutMe: cv.aboutMe,
+      skills: cv.skills,
+      projects: cv.projects,
+      experiences: cv.experiences,
+      cvFile: cv.cvFile
+        ? {
+            filename: cv.cvFile.filename,
+            size: cv.cvFile.size,
+            uploadedAt: cv.cvFile.uploadedAt
+          }
+        : null
+    };
+    res.status(200).json(formattedCV);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
