@@ -294,7 +294,7 @@ const InterviewModule = () => {
           <div>
             {/* Floating music control */}
             <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-              <BackgroundMusicBox />
+              <BackgroundMusicBox moduleName="InterviewModule" />
             </div>
 
             {/* Purple Floor */}

@@ -309,7 +309,7 @@ const NetworkingModule = () => {
 
                 {/* Floating music control */}
                 <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-                    <BackgroundMusicBox />
+                    <BackgroundMusicBox moduleName="NetworkingModule" />
                 </div>
 
 
