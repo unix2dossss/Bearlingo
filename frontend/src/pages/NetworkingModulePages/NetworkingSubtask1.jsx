@@ -208,18 +208,18 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
 
   return (
-    <div className="pt-16 bg-[#4f9cf9] relative min-h-screen flex flex-row min-w-0 gap-4 p-4">
+    <div className='pt-16 bg-[#fcf782] relative min-h-screen flex flex-row min-w-0 gap-4 p-4' >
       {/* Go back */}
-      <button
+      < button
         className="btn btn-ghost absolute top-20 left-6 z-10"
         onClick={onBack}
       >
         <ArrowLeftIcon className="size-5" />
         Back to subtasks
-      </button>
+      </button >
 
       {/* Left: Bear + Speech */}
-      <div className="flex flex-1 items-center justify-center">
+      < div className="flex flex-1 items-center justify-center" >
         <div className="relative w-full max-w-[500px] aspect-square">
           <img
             src={Bear}
@@ -286,12 +286,12 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
 
           </div>
         </div>
-      </div>
+      </div >
 
 
 
       {/* Right: Dynamic Panels */}
-      <div className="flex-1">
+      < div className="flex-1" >
 
         {userHasProfile == true && (
           <div className="flex flex-col items-center mt-32">
@@ -327,229 +327,244 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
             </div>
 
           </div>
-        )}
+        )
+        }
 
         {/* Example card preview (index 2) */}
-        {currentSpeechIndex === 2 && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
-            <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
-              <div className="card-body space-y-6">
-                <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
-                  <h1 className="text-2xl font-bold text-gray-900">John Smith</h1>
-                  <p className="text-gray-600 mt-1">Manager at Xero | CEO of Meta</p>
-                  <p className="text-gray-500 mt-2 text-sm">University of Auckland</p>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="badge badge-outline">Python</span>
-                    <span className="badge badge-outline">Java</span>
-                    <span className="badge badge-outline">React</span>
-                    <span className="badge badge-outline">Leadership</span>
+        {
+          currentSpeechIndex === 2 && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+              <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
+                <div className="card-body space-y-6">
+                  <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
+                    <h1 className="text-2xl font-bold text-gray-900">John Smith</h1>
+                    <p className="text-gray-600 mt-1">Manager at Xero | CEO of Meta</p>
+                    <p className="text-gray-500 mt-2 text-sm">University of Auckland</p>
                   </div>
-                </div>
 
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
-                  <p className="text-gray-600 text-sm">
-                    Interested in developing innovative software solutions and leading tech teams in the fintech industry.
-                  </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="badge badge-outline">Python</span>
+                      <span className="badge badge-outline">Java</span>
+                      <span className="badge badge-outline">React</span>
+                      <span className="badge badge-outline">Leadership</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
+                    <p className="text-gray-600 text-sm">
+                      Interested in developing innovative software solutions and leading tech teams in the fintech industry.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Lottie animation */}
-        {currentSpeechIndex === 3 && !userHasProfile && (
-          <div className="absolute top-1/2 right-40 transform -translate-y-1/2
+        {
+          currentSpeechIndex === 3 && !userHasProfile && (
+            <div className="absolute top-1/2 right-40 transform -translate-y-1/2
       w-[400px] h-[400px]  /* bigger */
       flex items-center justify-center
       rounded-full
       "
-            style={{ marginRight: "5%" }} /* moves it slightly left from the edge */
-          >
-            <DotLottieReact
-              src="/achievement-animation.lottie"
-              loop
-              autoplay
-              style={{ width: "100%", height: "100%" }}
-            />
-          </div>
-        )}
-
-        {/* Headline pick (index 4) */}
-        {currentSpeechIndex === 4 && !userHasProfile && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
-            {/* Headline component */}
-            <Headline
-              value={selectedHeadline}
-              onChange={setSelectedHeadline} // 👈 dropdown OR custom input will update this
-              className="w-[350px]"
-            />
-          </div>
-        )}
-
-
-        {currentSpeechIndex === 5 && !userHasProfile && (
-          <div className="absolute top-1/2 left-[85%] transform -translate-x-1/2 -translate-y-1/2 
-                  flex flex-row items-center gap-12 w-full max-w-4xl px-4">
-
-            <div className="flex flex-col items-center gap-6 w-full max-w-md">
+              style={{ marginRight: "5%" }} /* moves it slightly left from the edge */
+            >
               <DotLottieReact
-                src="/university.lottie"
+                src="/achievement-animation.lottie"
                 loop
                 autoplay
-                style={{ width: "100%", height: "250px", maxHeight: "40vh" }}
+                style={{ width: "100%", height: "100%" }}
               />
-
-              <div className="flex w-full gap-2">
-                <input
-                  type="text"
-                  placeholder="Enter university here"
-                  className="flex-1 input text-lg px-4 py-2"
-                  value={university}
-                  onChange={(e) => setUniversity(e.target.value)}
-                />
-                <button
-                  className="btn"
-                  onClick={() => {
-                    if (university.trim() !== "") toast.success("University saved!");
-                  }}
-                >
-                  Submit
-                </button>
-              </div>
             </div>
-          </div>
-        )}
+          )
+        }
+
+        {/* Headline pick (index 4) */}
+        {
+          currentSpeechIndex === 4 && !userHasProfile && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
+              {/* Headline component */}
+              <Headline
+                value={selectedHeadline}
+                onChange={setSelectedHeadline} // 👈 dropdown OR custom input will update this
+                className="w-[350px]"
+              />
+            </div>
+          )
+        }
 
 
-        {/* Skills (index 6) */}
-        {currentSpeechIndex === 6 && userHasProfile === false && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
-            <SkillList
-              allSkills={allSkills}
-              selectedSkills={selectedSkills}
-              toggleSkill={toggleSkill}
-              maxSkills={MAX_SKILLS}
-            />
-          </div>
-        )}
+        {
+          currentSpeechIndex === 5 && !userHasProfile && (
+            <div className="absolute top-1/2 left-[85%] transform -translate-x-1/2 -translate-y-1/2 
+                  flex flex-row items-center gap-12 w-full max-w-4xl px-4">
 
-        {/* Career goal (index 7) */}
-        {currentSpeechIndex === 7 && !userHasProfile && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
-            <div className="relative p-6 rounded-2xl shadow-2xl bg-indigo-100/80">
-              {/* Animated border overlay */}
-              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 animate-gradient-x blur-lg opacity-50"></div>
+              <div className="flex flex-col items-center gap-6 w-full max-w-md">
+                <DotLottieReact
+                  src="/university.lottie"
+                  loop
+                  autoplay
+                  style={{ width: "100%", height: "250px", maxHeight: "40vh" }}
+                />
 
-              {/* Content */}
-              <div className="relative z-10 bg-indigo-50/90 rounded-2xl border border-indigo-300 p-6">
-                <h3 className="text-2xl font-bold text-indigo-900">
-                  Career Objective Examples
-                </h3>
-                <p className="mt-1 text-sm text-indigo-700">
-                  Useful templates for CVs, LinkedIn, or applications.
-                </p>
-
-                {/* Scrollable container */}
-                <div className="mt-6 max-h-64 overflow-y-auto pr-2 bg-indigo-100/70 border border-indigo-200 rounded-xl p-3 scrollbar-thin scrollbar-thumb-pink-400 scrollbar-track-indigo-200/40">
-                  <div className="space-y-4">
-                    {EXAMPLES.map((ex) => (
-                      <article
-                        key={ex.id}
-                        className="bg-indigo-50/80 border border-indigo-300 rounded-xl p-4 shadow hover:shadow-lg hover:border-pink-400 transition-all duration-300"
-                      >
-                        <h4 className="text-sm font-semibold text-indigo-900">
-                          {ex.title}
-                        </h4>
-                        <p className="mt-2 text-sm text-indigo-700 leading-relaxed">
-                          {ex.text}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Input Section */}
-                <div className="flex flex-row gap-2 mt-6">
+                <div className="flex w-full gap-2">
                   <input
                     type="text"
-                    placeholder="Enter career goal here"
-                    className="flex-1 px-4 py-2 rounded-xl bg-indigo-50/80 text-indigo-900 placeholder-indigo-500 border-2 border-indigo-300 focus:border-pink-400 focus:ring-1 focus:ring-pink-300 transition-colors duration-300 outline-none"
-                    value={careerGoal}
-                    onChange={(e) => setCareerGoal(e.target.value)}
+                    placeholder="Enter university here"
+                    className="flex-1 input text-lg px-4 py-2"
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
                   />
                   <button
-                    className="btn bg-pink-400 hover:bg-pink-500 text-white border-none rounded-xl px-4"
+                    className="btn"
                     onClick={() => {
-                      if (careerGoal.trim() !== "") {
-                        toast.success("Career goal saved!");
-                      }
+                      if (university.trim() !== "") toast.success("University saved!");
                     }}
                   >
-                    Enter
+                    Submit
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
-        {/* Final preview (index 8) */}
-        {currentSpeechIndex === 8 && userHasProfile == false && (
-          <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
-            <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
-              <div className="card-body space-y-6">
-                <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {userInfo?.firstName} {userInfo?.lastName}
-                  </h1>
-                  <p className="text-gray-600 mt-1">{selectedHeadline}</p>
-                  <p className="text-gray-500 mt-2 text-sm">{university}</p>
 
-                  {console.log("university: ", university)}
+        {/* Skills (index 6) */}
+        {
+          currentSpeechIndex === 6 && userHasProfile === false && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
+              <SkillList
+                allSkills={allSkills}
+                selectedSkills={selectedSkills}
+                toggleSkill={toggleSkill}
+                maxSkills={MAX_SKILLS}
+              />
+            </div>
+          )
+        }
 
-                </div>
+        {/* Career goal (index 7) */}
+        {
+          currentSpeechIndex === 7 && !userHasProfile && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 translate-x-24 w-[min(92vw,600px)]">
+              <div className="relative p-6 rounded-2xl shadow-2xl bg-indigo-100/80">
+                {/* Animated border overlay */}
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 animate-gradient-x blur-lg opacity-50"></div>
 
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {userHasProfile && savedProfile ? Object.values(savedProfile?.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
-                      if (!skill) return null; // skip empty values
-                      return (
-                        <span key={index} className="badge badge-outline">
-                          {skill}
-                        </span>
-                      );
-                    }) : selectedSkills.map((skill, i) => (
-                      <span key={i} className="badge badge-outline">
-                        {skill}
-                      </span>
-                    ))}
+                {/* Content */}
+                <div className="relative z-10 bg-indigo-50/90 rounded-2xl border border-indigo-300 p-6">
+                  <h3 className="text-2xl font-bold text-indigo-900">
+                    Career Objective Examples
+                  </h3>
+                  <p className="mt-1 text-sm text-indigo-700">
+                    Useful templates for CVs, LinkedIn, or applications.
+                  </p>
+
+                  {/* Scrollable container */}
+                  <div className="mt-6 max-h-64 overflow-y-auto pr-2 bg-indigo-100/70 border border-indigo-200 rounded-xl p-3 scrollbar-thin scrollbar-thumb-pink-400 scrollbar-track-indigo-200/40">
+                    <div className="space-y-4">
+                      {EXAMPLES.map((ex) => (
+                        <article
+                          key={ex.id}
+                          className="bg-indigo-50/80 border border-indigo-300 rounded-xl p-4 shadow hover:shadow-lg hover:border-pink-400 transition-all duration-300"
+                        >
+                          <h4 className="text-sm font-semibold text-indigo-900">
+                            {ex.title}
+                          </h4>
+                          <p className="mt-2 text-sm text-indigo-700 leading-relaxed">
+                            {ex.text}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
-                  <p className="text-gray-600 text-sm">{careerGoal}</p>
+                  {/* Input Section */}
+                  <div className="flex flex-row gap-2 mt-6">
+                    <input
+                      type="text"
+                      placeholder="Enter career goal here"
+                      className="flex-1 px-4 py-2 rounded-xl bg-indigo-50/80 text-indigo-900 placeholder-indigo-500 border-2 border-indigo-300 focus:border-pink-400 focus:ring-1 focus:ring-pink-300 transition-colors duration-300 outline-none"
+                      value={careerGoal}
+                      onChange={(e) => setCareerGoal(e.target.value)}
+                    />
+                    <button
+                      className="btn bg-pink-400 hover:bg-pink-500 text-white border-none rounded-xl px-4"
+                      onClick={() => {
+                        if (careerGoal.trim() !== "") {
+                          toast.success("Career goal saved!");
+                        }
+                      }}
+                    >
+                      Enter
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* Save Profile button */}
+          )
+        }
 
-            <button
-              className="btn btn-white mt-8 align-right"
-              onClick={saveProfile}
-            >
-              Save Profile
-            </button>
+        {/* Final preview (index 8) */}
+        {
+          currentSpeechIndex === 8 && userHasProfile == false && (
+            <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+              <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
+                <div className="card-body space-y-6">
+                  <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {userInfo?.firstName} {userInfo?.lastName}
+                    </h1>
+                    <p className="text-gray-600 mt-1">{selectedHeadline}</p>
+                    <p className="text-gray-500 mt-2 text-sm">{university}</p>
 
-          </div>
-        )}
-      </div>
+                    {console.log("university: ", university)}
+
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Key Skills</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {userHasProfile && savedProfile ? Object.values(savedProfile?.keySkills).map((skill, index) => { //  Object.values(savedProfile.keySkills) converts the keySkills object into an array of its values
+                        if (!skill) return null; // skip empty values
+                        return (
+                          <span key={index} className="badge badge-outline">
+                            {skill}
+                          </span>
+                        );
+                      }) : selectedSkills.map((skill, i) => (
+                        <span key={i} className="badge badge-outline">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Career Goals</h2>
+                    <p className="text-gray-600 text-sm">{careerGoal}</p>
+                  </div>
+                </div>
+              </div>
+              {/* Save Profile button */}
+
+              <button
+                className="btn btn-white mt-8 align-right"
+                onClick={saveProfile}
+              >
+                Save Profile
+              </button>
+
+            </div>
+          )
+        }
+      </div >
     </div >
   );
 }
