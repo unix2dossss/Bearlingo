@@ -171,7 +171,7 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
           </p>
         </div>
       </div>
-      <CVAnalyse />
+      <CVAnalyse onTaskComplete={onTaskComplete} setIsSubmitted={setIsSubmitted} />
     </div>
   );
 };

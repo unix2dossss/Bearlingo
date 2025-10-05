@@ -24,7 +24,8 @@ import InterviewSubtask3 from "./InterviewSubtask3";
 
 /* THEME (blue) */
 const COLORS = {
-  primary: "#4f9cf9",
+  // primary: "#4f9cf9",
+  primary: "#43a047",
   primaryHover: "#3d86ea",
   textMuted: "#767687"
 };
@@ -321,7 +322,7 @@ const InterviewModule = () => {
           <div>
             {/* Floating music control */}
             <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-              <BackgroundMusicBox />
+              <BackgroundMusicBox moduleName="InterviewModule" />
             </div>
 
             {/* Purple Floor */}

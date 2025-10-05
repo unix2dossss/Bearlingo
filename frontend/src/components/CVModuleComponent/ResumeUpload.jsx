@@ -73,7 +73,7 @@ export default function ResumeUpload({
       setUploading(true);
       if (onUpload) {
         await onUpload(file);
-      } 
+      }
       setFileMeta({ name: file.name, size: file.size });
       const res = await defaultUpload(file);
       if (res) {
@@ -144,17 +144,26 @@ export default function ResumeUpload({
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-3 right-3 text-black/80 hover:text-black"
+            className="absolute top-3 right-3 text-red-500 hover:text-red-600 transition-colors"
             aria-label="Remove uploaded file"
             title="Remove"
           >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 7h16M9 7v10m6-10v10M10 4h4l1 2H9l1-2Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-trash-2"
+            >
+              <path d="M3 6h18" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
             </svg>
           </button>
         )}

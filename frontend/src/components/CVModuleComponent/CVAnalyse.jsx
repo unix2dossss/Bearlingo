@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
 import api from "../../lib/axios";
 
 // --- Circular Progress Component ---
@@ -60,11 +63,42 @@ const FeedbackCard = ({ title, points }) => {
 };
 
 // --- Main Component ---
-export default function CVAnalyse() {
+export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [cvFile, setCvFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Fetch analysis if it exists in DB
+  useEffect(() => {
+    const fetchCV = async () => {
+      try {
+        const res = await api.get("/users/me/cv", { withCredentials: true });
+        const analysis = res.data?.analysis;
+
+        if (analysis) {
+          const { strengths, weaknesses, suggestions, missing, score } = analysis;
+
+          const isEmpty =
+            (!score || score === 0) &&
+            (!strengths || strengths.length === 0) &&
+            (!weaknesses || weaknesses.length === 0) &&
+            (!suggestions || suggestions.length === 0) &&
+            (!missing || missing.length === 0);
+
+          if (!isEmpty) {
+            setAnalysisResult(analysis);
+            setCvFile(res.data.cvFile || null); // save CV file info
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch CV:", err);
+      }
+    };
+    fetchCV();
+  }, []);
+
+  const { completeTask } = useUserStore();
   const handleAnalyze = async () => {
     setIsLoading(true);
     setError("");
@@ -76,6 +110,17 @@ export default function CVAnalyse() {
       // Parse JSON string returned from backend
       // const feedbackJson = JSON.parse(response.data.feedback);
       setAnalysisResult(response.data.feedback);
+
+      // Mark Task 3 as complete
+      const subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 3);
+      const res = await completeTask(subtaskId);
+
+      if (res?.data?.message === "Well Done! You completed the subtask") {
+        toast.success("Task 3 completed!");
+      }
+
+      setIsSubmitted(true);
+      onTaskComplete?.();
     } catch (err) {
       setError(err.response?.data?.error || "Error analyzing CV");
       console.error("Analysis error:", err);
@@ -118,6 +163,23 @@ export default function CVAnalyse() {
             <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <h2 className="text-2xl font-bold text-gray-800">Your Results are In!</h2>
+                {/* Display CV file info */}
+                {cvFile && (
+                  <div className="mt-3 inline-block bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm">
+                    <p className="text-gray-700">
+                      <span className="font-medium text-gray-800">Analyzed CV:</span>{" "}
+                      <span className="font-semibold text-blue-600">{cvFile.filename}</span>{" "}
+                      <span className="text-gray-500">
+                        ({(cvFile.size / 1024).toFixed(1)} KB, uploaded{" "}
+                        <span className="text-emerald-600 font-medium">
+                          {new Date(cvFile.uploadedAt).toLocaleDateString()}
+                        </span>
+                        )
+                      </span>
+                    </p>
+                  </div>
+                )}
+
                 <button
                   onClick={handleReset}
                   className="mt-4 bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg hover:bg-gray-300 transition-colors duration-300"

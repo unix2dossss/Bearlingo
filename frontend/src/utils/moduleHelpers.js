@@ -29,7 +29,8 @@ export const getSubtaskBySequenceNumber = async (moduleName, levelNumber, sequen
   const level = getLevelByNumber(module, levelNumber);
   const subtasks = await getSubtasksByLevel(level);
   const subtask = subtasks.find((st) => st.sequenceNumber === sequenceNumber);
-  if (!subtask) throw new Error(`Subtask ${sequenceNumber} not found in "${module.name}" level ${levelNumber}`);
+  if (!subtask)
+    throw new Error(`Subtask ${sequenceNumber} not found in "${module.name}" level ${levelNumber}`);
   return subtask._id;
 };
 
@@ -49,10 +50,13 @@ export const isSubtaskCompleted = async (moduleName, levelNumber, sequenceNumber
     const res = await api.get(`/users/progress/module/${module._id}`, { withCredentials: true });
     const moduleProgress = res.data;
 
+    const levelProgresses = moduleProgress?.levelProgresses;
+    if (!Array.isArray(levelProgresses)) {
+      return false; // no progress yet
+    }
+
     // 5. Find progress for this level
-    const levelProgressObject = moduleProgress.levelProgresses.find(
-      (lp) => lp.levelProgress.level === level._id
-    );
+    const levelProgressObject = levelProgresses.find((lp) => lp.levelProgress.level === level._id);
 
     if (!levelProgressObject) return false; // no progress on this level yet
 
