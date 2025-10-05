@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
+import { isSubtaskCompleted } from "../../utils/moduleHelpers";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -50,6 +51,25 @@ const CVModule = () => {
   // ⬇️ NEW: Resume modal state
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [dontShowResumeAgain, setDontShowResumeAgain] = useState(false);
+
+  // Check if subtasks are already completed before
+  useEffect(() => {
+    const fetchTaskCompletion = async () => {
+      try {
+        const task1Done = await isSubtaskCompleted("CV Builder", 1, 1);
+        const task2Done = await isSubtaskCompleted("CV Builder", 1, 2);
+        const task3Done = await isSubtaskCompleted("CV Builder", 1, 3);
+
+        setTask1Complete(task1Done);
+        setTask2Complete(task2Done);
+        setTask3Complete(task3Done);
+      } catch (err) {
+        console.error("Failed to fetch CV task completion:", err);
+      }
+    };
+
+    fetchTaskCompletion();
+  }, [setTask1Complete, setTask2Complete, setTask3Complete]);
 
   const navigate = useNavigate();
   // const currentUser = useUserStore.getState().user;
