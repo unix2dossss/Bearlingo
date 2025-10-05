@@ -13,6 +13,7 @@ import SofaLocked from "../../assets/ISofaB.svg";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
+import { isSubtaskCompleted } from "../../utils/moduleHelpers";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -36,6 +37,25 @@ const InterviewModule = () => {
   const [task1Complete, setTask1Complete] = useState(false);
   const [task2Complete, setTask2Complete] = useState(false);
   const [task3Complete, setTask3Complete] = useState(false);
+
+  // Check if subtasks are already completed before
+  useEffect(() => {
+    const fetchTaskCompletion = async () => {
+      try {
+        const task1Done = await isSubtaskCompleted("Interview", 1, 1);
+        const task2Done = await isSubtaskCompleted("Interview", 1, 2);
+        const task3Done = await isSubtaskCompleted("Interview", 1, 3);
+
+        setTask1Complete(task1Done);
+        setTask2Complete(task2Done);
+        setTask3Complete(task3Done);
+      } catch (err) {
+        console.error("Failed to fetch CV task completion:", err);
+      }
+    };
+
+    fetchTaskCompletion();
+  }, [setTask1Complete, setTask2Complete, setTask3Complete]);
 
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
@@ -327,11 +347,8 @@ const InterviewModule = () => {
                 </button>
               </div>
             </div>
-
           </div>
-
         </div>
-        
       </div>
 
       {/* Modal */}
