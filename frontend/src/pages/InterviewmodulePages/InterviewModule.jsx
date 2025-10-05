@@ -254,125 +254,130 @@ const InterviewModule = () => {
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
-      {/* Top Navbar */}
-      <div className="relative z-[100] bg-[#deffbd]">
-        <TopNavbar />
-      </div>
-
-      <div>
-        {/* Floating music control */}
-        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-          <BackgroundMusicBox />
+      {/* Background */}
+      <div className="flex-1 relative bg-cover bg-center bg-[#deffbd]">
+        {/* Top Navbar */}
+        <div className="relative z-[100]">
+          <TopNavbar />
         </div>
 
-        {/* Purple Floor */}
-        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
-
-        <div className="flex bg-[#deffbd]">
-          <div className="mt-4 z-10">
-            <SideNavbar />
-          </div>
-
-          <div className="relative w-full">
-            {/* Subtask 3 Object: Wall */}
-            <div className="relative">
-              <img
-                ref={wallLockedRef}
-                src={WallLocked}
-                alt="Unlocked Interview Wall"
-                className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
-              />
-
-              <img
-                ref={wallUnlockedRef}
-                src={Wall}
-                alt="Unlocked Interview Wall"
-                className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
-              />
+        <div>
+          <div>
+            {/* Floating music control */}
+            <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+              <BackgroundMusicBox />
             </div>
 
-            {/* Subtask 1 Object: Desk */}
+            {/* Purple Floor */}
+            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-            <div className="relative w-full flex justify-center">
-              <img
-                ref={deskLockedRef}
-                src={DeskLocked}
-                alt="Locked CV Desk"
-                className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
-              />
-              <img
-                ref={deskUnlockedRef}
-                src={Desk}
-                alt="Unlocked CV Desk"
-                className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
-              />
-            </div>
+            <div className="flex">
+              <div className="mt-4 z-40">
+                <SideNavbar />
+              </div>
 
-            {/* Subtask 2 Object: Sofa */}
-            <div className="relative w-full flex justify-center">
-              <img
-                ref={sofaLockedRef}
-                src={SofaLocked}
-                alt="Locked CV Desk"
-                className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
-              />
-              <img
-                ref={sofaUnlockedRef}
-                src={Sofa}
-                alt="Unlocked CV Desk"
-                className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
-              />
-            </div>
+              <div className="relative w-full">
+                {/* Subtask 3 Object: Wall */}
+                <div className="relative">
+                  <img
+                    ref={wallLockedRef}
+                    src={WallLocked}
+                    alt="Unlocked Interview Wall"
+                    className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
+                  />
 
-            {/* Bottom Button Container */}
-            <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
-              <div className="flex space-x-6">
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask1")}
-                >
-                  Task 1
-                </button>
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask2")}
-                >
-                  Task 2
-                </button>
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask3")}
-                >
-                  Task 3
-                </button>
+                  <img
+                    ref={wallUnlockedRef}
+                    src={Wall}
+                    alt="Unlocked Interview Wall"
+                    className="absolute top-[2vh] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1100px] h-auto z-20"
+                  />
+                </div>
+
+                {/* Subtask 1 Object: Desk */}
+
+                <div className="relative w-full flex justify-center">
+                  <img
+                    ref={deskLockedRef}
+                    src={DeskLocked}
+                    alt="Locked CV Desk"
+                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                  />
+                  <img
+                    ref={deskUnlockedRef}
+                    src={Desk}
+                    alt="Unlocked CV Desk"
+                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                  />
+                </div>
+
+                {/* Subtask 2 Object: Sofa */}
+                <div className="relative w-full flex justify-center">
+                  <img
+                    ref={sofaLockedRef}
+                    src={SofaLocked}
+                    alt="Locked CV Desk"
+                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                  />
+                  <img
+                    ref={sofaUnlockedRef}
+                    src={Sofa}
+                    alt="Unlocked CV Desk"
+                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                  />
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Bottom Button Container */}
+          <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+            <div className="flex space-x-6">
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask1")}
+              >
+                Task 1
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask2")}
+              >
+                Task 2
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                onClick={() => handleSubtaskClick("subtask3")}
+              >
+                Task 3
+              </button>
+            </div>
+          </div>
+
+          {/* Modal */}
+          {showSubtask && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+              <div
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl relative h-[700px] flex flex-col border-4"
+                style={{ borderColor: COLORS.primary }}
+              >
+                <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Confirmation Modal */}
+          {showConfirmLeave && (
+            <ConfirmLeaveDialog
+              isOpen={showConfirmLeave}
+              title="Your changes will be lost!"
+              message="Please finish the task to save your progress."
+              onConfirm={confirmLeave}
+              onCancel={() => setShowConfirmLeave(false)}
+            />
+          )}
         </div>
       </div>
-
-      {/* Modal */}
-      {showSubtask && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl relative h-[700px] flex flex-col border-4"
-            style={{ borderColor: COLORS.primary }}
-          >
-            <div className="overflow-y-auto pr-2">{renderSubtask()}</div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Modal */}
-      {showConfirmLeave && (
-        <ConfirmLeaveDialog
-          isOpen={showConfirmLeave}
-          title="Your changes will be lost!"
-          message="Please finish the task to save your progress."
-          onConfirm={confirmLeave}
-          onCancel={() => setShowConfirmLeave(false)}
-        />
-      )}
     </div>
   );
 };
