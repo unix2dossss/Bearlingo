@@ -417,14 +417,14 @@ const CVModule = () => {
                     ref={bookcaseLockedRef}
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
-                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
                     style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={bookcaseUnlockedRef}
                     src={Bookcase}
                     alt="Unlocked CV Bookcase"
-                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
                   />
                 </div>
 
@@ -492,7 +492,8 @@ const CVModule = () => {
                   ref={bearRef}
                   src={Bear}
                   alt="Bear peeking"
-                  className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+
                 />
               </div>
             </div>

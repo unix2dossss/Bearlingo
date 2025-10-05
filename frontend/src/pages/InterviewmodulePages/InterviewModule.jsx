@@ -252,8 +252,36 @@ const InterviewModule = () => {
     }
   }, [task3Complete]);
 
+  // Elevator doors
+    const leftDoor = useRef(null);
+    const rightDoor = useRef(null);
+  
+    // Animate elevator opening when CVModule loads
+    useEffect(() => {
+      gsap.set(leftDoor.current, { x: "0%" });
+      gsap.set(rightDoor.current, { x: "0%" });
+  
+      gsap.to(leftDoor.current, {
+        x: "-100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
+  
+      gsap.to(rightDoor.current, {
+        x: "100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
+    }, []);
+  
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
+      {/* Elevator Doors Overlay */}
+      <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+      <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#deffbd]">
         {/* Top Navbar */}
@@ -331,7 +359,7 @@ const InterviewModule = () => {
           </div>
 
           {/* Bottom Button Container */}
-          <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+          <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
             <div className="flex space-x-6">
               <button
                 className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
