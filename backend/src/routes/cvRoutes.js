@@ -3,6 +3,7 @@ import express from "express";
 //middlewares
 import { authenticate } from "../middlewares/authMiddleware.js";
 import { upload } from "../middlewares/fileUploadMiddleware.js";
+import {dailyRequestLimiter} from "../middlewares/rateLimiter.js";
 
 //controllers
 import * as cvController from "../controllers/cvController.js";
@@ -19,5 +20,6 @@ router.get("/download", authenticate, cvController.downloadCV);
 router.post("/upload", authenticate, upload.single("cv"), cvController.uploadCV);
 router.delete("/delete", authenticate, cvController.deleteCV);
 router.get("/pdf", authenticate, cvController.getPdfCVFromDB);
+router.get("/analyze-cv", authenticate, dailyRequestLimiter, upload.single("cv"), cvController.analyzeCV);
 
 export default router;

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
+import { isSubtaskCompleted } from "../../utils/moduleHelpers";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -51,6 +52,25 @@ const CVModule = () => {
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [dontShowResumeAgain, setDontShowResumeAgain] = useState(false);
 
+  // Check if subtasks are already completed before
+  useEffect(() => {
+    const fetchTaskCompletion = async () => {
+      try {
+        const task1Done = await isSubtaskCompleted("CV Builder", 1, 1);
+        const task2Done = await isSubtaskCompleted("CV Builder", 1, 2);
+        const task3Done = await isSubtaskCompleted("CV Builder", 1, 3);
+
+        setTask1Complete(task1Done);
+        setTask2Complete(task2Done);
+        setTask3Complete(task3Done);
+      } catch (err) {
+        console.error("Failed to fetch CV task completion:", err);
+      }
+    };
+
+    fetchTaskCompletion();
+  }, [setTask1Complete, setTask2Complete, setTask3Complete]);
+
   const navigate = useNavigate();
   // const currentUser = useUserStore.getState().user;
   const user = useUserStore((state) => state.user);
@@ -68,20 +88,20 @@ const CVModule = () => {
     fetchUserData();
   }, [navigate, user]);
 
-  // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
-  useEffect(() => {
-    const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
-    if (!skipResume) {
-      // wait before showing resume modal
-      const timer = setTimeout(() => {
-        setShowResumeModal(true);
-      }, 2500); // 2.5s delay
+  // // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
+  // useEffect(() => {
+  //   const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
+  //   if (!skipResume) {
+  //     // wait before showing resume modal
+  //     const timer = setTimeout(() => {
+  //       setShowResumeModal(true);
+  //     }, 2500); // 2.5s delay
 
-      return () => clearTimeout(timer);
-    }
-    const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
-    if (!skipIntro) {setShowLandingIntro(true), 2500};
-  }, []);
+  //     return () => clearTimeout(timer);
+  //   }
+  //   const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
+  //   if (!skipIntro) {setShowLandingIntro(true), 2500};
+  // }, []);
 
   // ⬇️ NEW: lock body scroll when any modal is open
   useEffect(() => {
@@ -278,6 +298,9 @@ const CVModule = () => {
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
             onTaskComplete={() => setTask1Complete(true)}
+            setTask1Complete={setTask1Complete}
+            setTask2Complete={setTask2Complete}
+            setTask3Complete={setTask3Complete}
           />
         );
       case "subtask2":
@@ -344,7 +367,7 @@ const CVModule = () => {
         <div>
           <div>
             {/* Floating music control */}
-            <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+            <div className="fixed top-20 right-6 z-40 pointer-events-auto">
               <BackgroundMusicBox />
             </div>
 
@@ -364,6 +387,8 @@ const CVModule = () => {
                     src={DeskLocked}
                     alt="Locked CV Desk"
                     className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                    style={{ opacity: 0.4 }}
+
                   />
                   <img
                     ref={deskUnlockedRef}
@@ -380,6 +405,7 @@ const CVModule = () => {
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
                     className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={drawersUnlockedRef}
@@ -391,13 +417,14 @@ const CVModule = () => {
                     ref={bookcaseLockedRef}
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
-                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={bookcaseUnlockedRef}
                     src={Bookcase}
                     alt="Unlocked CV Bookcase"
-                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
                   />
                 </div>
 
@@ -408,6 +435,7 @@ const CVModule = () => {
                     src={WindowLocked}
                     alt="Locked CV Window"
                     className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={windowUnlockedRef}
@@ -416,7 +444,6 @@ const CVModule = () => {
                     className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
                   />
                 </div>
-
               </div>
             </div>
           </div>
@@ -431,13 +458,25 @@ const CVModule = () => {
                 Task 1
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                disabled={!task1Complete}
+                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                ${
+                  task1Complete
+                    ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                }`}
                 onClick={() => handleSubtaskClick("subtask2")}
               >
                 Task 2
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                disabled={!task2Complete}
+                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                ${
+                  task2Complete
+                    ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                }`}
                 onClick={() => handleSubtaskClick("subtask3")}
               >
                 Task 3
@@ -453,7 +492,8 @@ const CVModule = () => {
                   ref={bearRef}
                   src={Bear}
                   alt="Bear peeking"
-                  className="w-[25vw] max-w-[300px] sm:w-[20vw] sm:max-w-[250px] md:w-[18vw] md:max-w-[240px]"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+
                 />
               </div>
             </div>
@@ -565,7 +605,9 @@ const CVModule = () => {
                     onClick={() => closeLandingIntro("subtask1")}
                     className="h-10 px-5 rounded-full font-bold text-sm text-white"
                     style={{ backgroundColor: COLORS.primary }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = COLORS.primaryHover)
+                    }
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
                   >
                     Start Task 1
@@ -594,9 +636,7 @@ const CVModule = () => {
               onCancel={() => setShowConfirmLeave(false)}
             />
           )}
-
         </div>
-
       </div>
     </div>
   );

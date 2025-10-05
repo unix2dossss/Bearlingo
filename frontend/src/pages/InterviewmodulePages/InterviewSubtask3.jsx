@@ -5,7 +5,8 @@ import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
-const ACCENT = "#4f9cf9"; // Interview theme color (green)
+// const ACCENT = "#4f9cf9"; // Interview theme color (green)
+const ACCENT = "#43a047";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",

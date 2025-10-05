@@ -3,22 +3,23 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
+import CVAnalyse from "../../components/CVModuleComponent/CVAnalyse";
 
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
-  textMuted: "#767687",
+  textMuted: "#767687"
 };
 
 const SIZING = {
   panelMaxW: "max-w-3xl",
-  panelHPx: 700,
+  panelHPx: 700
 };
 
 const BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 const ENDPOINTS = {
   preview: `${BASE}/users/me/cv/preview`,
-  download: `${BASE}/users/me/cv/download`,
+  download: `${BASE}/users/me/cv/download`
 };
 
 /* Small utility */
@@ -31,7 +32,7 @@ function ActionButton({
   disabled = false,
   onClick,
   minWidth = 200,
-  ariaBusy = false,
+  ariaBusy = false
 }) {
   const base =
     "inline-flex items-center justify-center h-12 md:h-14 px-8 md:px-10 rounded-full font-extrabold text-base md:text-lg shadow-sm focus:outline-none focus:ring-2";
@@ -46,11 +47,7 @@ function ActionButton({
       onClick={onClick}
       disabled={disabled}
       aria-busy={ariaBusy || undefined}
-      className={cx(
-        base,
-        variant === "solid" ? solid : outline,
-        disabled ? disabledCls : ""
-      )}
+      className={cx(base, variant === "solid" ? solid : outline, disabled ? disabledCls : "")}
       style={{ minWidth }}
     >
       {children}
@@ -58,11 +55,7 @@ function ActionButton({
   );
 }
 
-const CVSubtask3 = ({
-  onClose = () => {},
-  setIsSubmitted = () => {},
-  onTaskComplete,
-}) => {
+const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskComplete }) => {
   const { completeTask } = useUserStore();
   const [downloading, setDownloading] = useState(false);
 
@@ -85,8 +78,9 @@ const CVSubtask3 = ({
 
   const handlePreview = () => {
     try {
-      const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
-      if (!win) throw new Error("Popup blocked");
+      // const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
+      // if (!win) throw new Error("Popup blocked");
+      window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
     } catch (err) {
       console.error(err);
       toast.error("Failed to open preview");
@@ -177,6 +171,7 @@ const CVSubtask3 = ({
           </p>
         </div>
       </div>
+      <CVAnalyse onTaskComplete={onTaskComplete} setIsSubmitted={setIsSubmitted} />
     </div>
   );
 };

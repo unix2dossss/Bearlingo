@@ -21,7 +21,7 @@ export default function SkillsView({
         <div className="flex items-center justify-between mb-3">
           <p className="text-[#767687] font-semibold">
             Skills ({selectedSkills.length}/{maxSkills}){" "}
-            <span className="text-[#4f9cf9]">*</span>
+            <span className="text-red-500">*</span>
           </p>
         </div>
 

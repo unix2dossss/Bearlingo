@@ -1,5 +1,6 @@
 import React from "react";
-const ACCENT = "#4f9cf9"; 
+// const ACCENT = "#4f9cf9"; 
+const ACCENT = "#43a047";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
