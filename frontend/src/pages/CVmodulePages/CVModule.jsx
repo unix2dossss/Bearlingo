@@ -278,6 +278,9 @@ const CVModule = () => {
             setIsSubmitted={setIsSubmitted}
             onClose={handleClose}
             onTaskComplete={() => setTask1Complete(true)}
+            setTask1Complete={setTask1Complete}
+            setTask2Complete={setTask2Complete}
+            setTask3Complete={setTask3Complete}
           />
         );
       case "subtask2":
@@ -344,7 +347,7 @@ const CVModule = () => {
         <div>
           <div>
             {/* Floating music control */}
-            <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+            <div className="fixed top-20 right-6 z-40 pointer-events-auto">
               <BackgroundMusicBox />
             </div>
 
@@ -416,7 +419,6 @@ const CVModule = () => {
                     className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
                   />
                 </div>
-
               </div>
             </div>
           </div>
@@ -431,13 +433,25 @@ const CVModule = () => {
                 Task 1
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                disabled={!task1Complete}
+                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                ${
+                  task1Complete
+                    ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                }`}
                 onClick={() => handleSubtaskClick("subtask2")}
               >
                 Task 2
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                disabled={!task2Complete}
+                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                ${
+                  task2Complete
+                    ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                }`}
                 onClick={() => handleSubtaskClick("subtask3")}
               >
                 Task 3
@@ -565,7 +579,9 @@ const CVModule = () => {
                     onClick={() => closeLandingIntro("subtask1")}
                     className="h-10 px-5 rounded-full font-bold text-sm text-white"
                     style={{ backgroundColor: COLORS.primary }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = COLORS.primaryHover)
+                    }
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
                   >
                     Start Task 1
@@ -594,9 +610,7 @@ const CVModule = () => {
               onCancel={() => setShowConfirmLeave(false)}
             />
           )}
-
         </div>
-
       </div>
     </div>
   );

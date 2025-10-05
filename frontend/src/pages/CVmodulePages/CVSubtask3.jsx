@@ -78,8 +78,9 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
 
   const handlePreview = () => {
     try {
-      const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
-      if (!win) throw new Error("Popup blocked");
+      // const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
+      // if (!win) throw new Error("Popup blocked");
+      window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
     } catch (err) {
       console.error(err);
       toast.error("Failed to open preview");

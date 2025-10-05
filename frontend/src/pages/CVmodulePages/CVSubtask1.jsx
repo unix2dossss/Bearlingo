@@ -17,7 +17,7 @@ const COLORS = {
   textMuted: "#767687"
 };
 
-const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
+const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete, setTask1Complete, setTask2Complete, setTask3Complete }) => {
   // To choose between manual and upload CV: "chooser" | "manual" | "upload"
   const [mode, setMode] = useState("chooser");
 
@@ -181,6 +181,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
     if (step === 3) setAboutMe("");
   };
 
+  // Normal form submission
   // Sending data to backend after form submission
   const { completeTask } = useUserStore();
   const handleSubmit = async (e) => {
@@ -254,6 +255,32 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
     }
   };
 
+// Handle resume upload
+const handleResumeUpload = async () => {
+  try {
+    // Mark Task 1 complete
+    let subtask1Id = await getSubtaskBySequenceNumber("CV Builder", 1, 1);
+    const task1Done = await completeTask(subtask1Id);
+    setTask1Complete(true);
+
+    // Mark Task 2 complete
+    let subtask2Id = await getSubtaskBySequenceNumber("CV Builder", 1, 2);
+    const task2Done = await completeTask(subtask2Id);
+    setTask2Complete(true);
+
+    // Unlock Task 3
+    setTask3Complete(false); // not completed yet, but unlocked
+    if (task1Done?.data?.message === "Well Done! You completed the subtask" && task2Done?.data?.message === "Well Done! You completed the subtask") {
+        toast.success("Tasks 1 & 2 marked as complete!");
+    }
+    
+  } catch (err) {
+    console.error("Failed to auto-complete tasks", err);
+    toast.error("Could not mark tasks as complete");
+  }
+};
+
+
   // Check if step is valid
   const isStepValid = () => {
     if (step === 0) return personal.firstName && personal.lastName && personal.email;
@@ -324,7 +351,7 @@ const CVSubtask1 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
           </button>
 
           <ResumeUpload
-            onUpload={async (file) => console.log("Uploaded:", file)}
+            onUpload={handleResumeUpload}
             onRemove={async () => console.log("Removed")}
             onAddUrl={async (url) => console.log("Added URL:", url)}
           />
