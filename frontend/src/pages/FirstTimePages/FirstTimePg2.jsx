@@ -1,13 +1,30 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { React, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import background from "../../assets/Background1.svg";
-import bear from "../../assets/Bear.svg";
+// import bear from "../../assets/Bear.svg";
 import cvbutton from "../../assets/CVButton.svg";
-import TopNavbar from '../../components/TopNavbar';
+import TopNavbar from "../../components/TopNavbar";
 import StartButton from "../../assets/StartingButton.svg";
+import { useUserStore } from "../../store/user";
 
 const FirstTimePg2 = () => {
   const navigate = useNavigate();
+
+  // Check if user logined before allowing to come to this page
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) {
+        await useUserStore.getState().fetchUser();
+      }
+      const currentUser = useUserStore.getState().user;
+      if (!currentUser) {
+        navigate("/login");
+      }
+    };
+    fetchUserData();
+  }, [navigate, user]);
 
   const handleClick = () => {
     navigate("/First Level"); // navigate to FirstTimePg3
@@ -15,7 +32,7 @@ const FirstTimePg2 = () => {
 
   return (
     <div className="relative w-full h-screen bg-[#D0EAFB]">
-        {/* Navbar at top */}
+      {/* Navbar at top */}
       <div className="absolute top-0 left-0 w-full z-20">
         <TopNavbar />
       </div>
@@ -26,11 +43,7 @@ const FirstTimePg2 = () => {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      <img
-        src={StartButton}
-        alt="Start Button"
-        className="fixed right-[90px] top-[140px]"
-      />
+      <img src={StartButton} alt="Start Button" className="fixed right-[90px] top-[140px]" />
 
       {/* White Glowing CV Button */}
       {/* CV Button with hover glow */}
