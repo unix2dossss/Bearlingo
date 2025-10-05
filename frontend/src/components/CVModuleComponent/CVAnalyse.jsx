@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
 import api from "../../lib/axios";
 
 // --- Circular Progress Component ---
@@ -60,11 +63,12 @@ const FeedbackCard = ({ title, points }) => {
 };
 
 // --- Main Component ---
-export default function CVAnalyse() {
+export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const { completeTask } = useUserStore();
   const handleAnalyze = async () => {
     setIsLoading(true);
     setError("");
@@ -76,6 +80,17 @@ export default function CVAnalyse() {
       // Parse JSON string returned from backend
       // const feedbackJson = JSON.parse(response.data.feedback);
       setAnalysisResult(response.data.feedback);
+
+      // Mark Task 3 as complete
+      const subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 3);
+      const res = await completeTask(subtaskId);
+
+      if (res?.data?.message === "Well Done! You completed the subtask") {
+        toast.success("Task 3 completed!");
+      }
+
+      setIsSubmitted(true);
+      onTaskComplete?.();
     } catch (err) {
       setError(err.response?.data?.error || "Error analyzing CV");
       console.error("Analysis error:", err);
