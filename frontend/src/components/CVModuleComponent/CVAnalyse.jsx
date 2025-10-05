@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
@@ -67,6 +67,34 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch analysis if it exists in DB
+  useEffect(() => {
+    const fetchCV = async () => {
+      try {
+        const res = await api.get("/users/me/cv", { withCredentials: true });
+        const analysis = res.data?.analysis;
+
+        if (analysis) {
+          const { strengths, weaknesses, suggestions, missing, score } = analysis;
+
+          const isEmpty =
+            (!score || score === 0) &&
+            (!strengths || strengths.length === 0) &&
+            (!weaknesses || weaknesses.length === 0) &&
+            (!suggestions || suggestions.length === 0) &&
+            (!missing || missing.length === 0);
+
+          if (!isEmpty) {
+            setAnalysisResult(analysis);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch CV:", err);
+      }
+    };
+    fetchCV();
+  }, []);
 
   const { completeTask } = useUserStore();
   const handleAnalyze = async () => {

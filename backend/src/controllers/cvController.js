@@ -293,7 +293,8 @@ export const getCV = async (req, res) => {
             size: cv.cvFile.size,
             uploadedAt: cv.cvFile.uploadedAt
           }
-        : null
+        : null,
+      analysis: cv.analysis
     };
     res.status(200).json(formattedCV);
   } catch (error) {
@@ -570,6 +571,9 @@ For each field ("strengths", "weaknesses", "suggestions", "missing"), list up to
     let feedbackJson;
     try {
       feedbackJson = JSON.parse(cleanFeedback);
+      // Store analysis in DB
+      cv.analysis = feedbackJson;
+      await cv.save();
     } catch (err) {
       console.error("JSON parse error:", err);
       feedbackJson = {
