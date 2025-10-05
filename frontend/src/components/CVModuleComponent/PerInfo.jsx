@@ -1,5 +1,4 @@
 import React from "react";
-import CVuploadBox from "../../components/CVModuleComponent/CVuploadBox";
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
 export default function PersonalInfoCard({ personal, setPersonal }) {
