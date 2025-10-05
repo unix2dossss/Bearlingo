@@ -1,12 +1,29 @@
-import React from "react";
+import { React, useEffect } from "react";
 import messyFloor from "../../assets/MessyFloor.svg";
 import word from "../../assets/Welcome to Bearlingo.svg";
 import bear from "../../assets/Bear.svg";
 import { useNavigate } from "react-router-dom";
 import TopNavbar from "../../components/TopNavbar";
+import { useUserStore } from "../../store/user";
 
 const FirstTimePg1 = () => {
   const navigate = useNavigate();
+
+  // Check if user logined before allowing to come to this page
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) {
+        await useUserStore.getState().fetchUser();
+      }
+      const currentUser = useUserStore.getState().user;
+      if (!currentUser) {
+        navigate("/login");
+      }
+    };
+    fetchUserData();
+  }, [navigate, user]);
 
   const handleClick = () => {
     navigate("/Getting Started");
@@ -37,13 +54,13 @@ const FirstTimePg1 = () => {
               className="absolute left-[51px] top-[-3px] w-[675px] h-[373px]"
             />
             <div className="absolute inset-0 flex items-end justify-center pb-[5%]">
-            <button
-              className="px-8 py-4 bg-blue-500 text-white text-2xl font-bold rounded-lg shadow-lg hover:bg-blue-600 transition"
-              onClick={handleClick}
-            >
-              Get Started →
-            </button>
-          </div>
+              <button
+                className="px-8 py-4 bg-blue-500 text-white text-2xl font-bold rounded-lg shadow-lg hover:bg-blue-600 transition"
+                onClick={handleClick}
+              >
+                Get Started →
+              </button>
+            </div>
           </div>
         </div>
         <img src={bear} alt="Bear Mascot" className="absolute right-[40px] bottom-[100px]" />

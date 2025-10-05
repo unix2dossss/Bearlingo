@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+// import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -22,7 +22,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [careerGoal, setCareerGoal] = useState("");
   const [userHasProfile, setUserHasProfile] = useState(false);
   const [savedProfile, setSavedProfile] = useState("");
-  const [nextButtonValid, setNextButtonValid] = useState(true);
+  const [nextButtonValid, _] = useState(true);
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -154,10 +154,10 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   }
 
 
-  const handleSkillChange = (e) => {
-    const value = Array.from(e.target.selectedOptions, (o) => o.value);
-    setSelectedSkills(value);
-  };
+  // const handleSkillChange = (e) => {
+  //   const value = Array.from(e.target.selectedOptions, (o) => o.value);
+  //   setSelectedSkills(value);
+  // };
 
   // Save profile to database
   const saveProfile = async () => {
