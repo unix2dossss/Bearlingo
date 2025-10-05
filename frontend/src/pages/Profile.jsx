@@ -6,11 +6,11 @@ import SideNavbar from "../components/SideNavbar";
 import { useUserStore } from "../store/user";
 import api from "../lib/axios";
 import { getModuleByName } from "../utils/moduleHelpers";
+import { Flame, Star } from "lucide-react";
 
 import CV from "../assets/CVStats.svg";
 import Net from "../assets/NetStats.svg";
 import Int from "../assets/IntStats.svg";
-import Jou from "../assets/JouStats.svg";
 
 import gsap from "gsap";
 
@@ -104,14 +104,15 @@ const Profile = () => {
             statsData.push({ ...mod, progress: 0 });
           }
         }
-        // Dummy last stat for now
+        // Updated to show streak and XP
         const lastStat = {
-          label: "Journal",
-          colorClass: "text-[#5CA3FF]",
+          label: "Profile Stats",          
+          colorClass: "text-[#5CA3FF]",  
           borderColor: "border-[#5CA3FF]",
           hoverShadow: "hover:shadow-[0_0_15px_#5CA3FF]",
-          imageSrc: Jou,
-          progress: 0
+          isProfileStat: true,           
+          streak: user?.streak?.current ?? 0,
+          xp: user?.xp ?? 0,
         };
         statsData.push(lastStat);
         // console.log("Stats loaded:", statsData);
@@ -215,11 +216,32 @@ const Profile = () => {
                     // Each stat card
                     <div
                       key={index}
-                      className={`aspect-square bg-white p-4 rounded-2xl shadow-md flex flex-col items-center justify-center 
-                      border-4 ${stat.borderColor} ${stat.hoverShadow} hover:scale-105 hover:shadow-lg transition-transform duration-300 ease-in-out`}>
-                    
-                      {/* Title/Label */}
-                      <p className="mt-1 text-base font-semibold text-gray-700 mb-3">{stat.label}</p>
+                      className={`aspect-square bg-white p-4 rounded-2xl shadow-md flex flex-col items-center 
+                      justify-center border-4 ${stat.borderColor} ${stat.hoverShadow} hover:scale-105 hover:shadow-lg 
+                      transition-transform duration-300 ease-in-out`}
+                    >
+                    {/* Title/Label */}
+                    <p className="mt-1 text-base font-semibold text-gray-700 mb-3">{stat.label}</p>
+
+                      {/* Last Card: Streak + XP */}
+                      {stat.isProfileStat ? (
+                        <div className="flex flex-col items-center justify-center space-y-4 w-full h-full ">
+                          {/* Label */}
+                          
+                          {/* Streak */}
+                          <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
+                            <Flame className="w-10 h-10 text-white mr-3 animate-pulse" />
+                            <span className="text-lg font-semibold text-white ">{user?.streak?.current ?? 0} Streak</span>
+                          </div>
+                          {/* XP */}
+                          <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
+                            <Star className="w-10 h-10 text-white mr-3 animate-pulse" />
+                            <span className="text-lg font-semibold text-white ">{user?.xp ?? 0} XP</span>
+                          </div>
+                        </div>
+                      ) : (
+                    <>
+                      {/*regular stats card */}
                       <div className="relative w-full h-full flex items-center justify-center">
                         {/* Image as circle, same size as progress */}
                         <img
@@ -245,7 +267,9 @@ const Profile = () => {
                             {stat.progress}%
                           </div>
                         </div>
-                      </div>
+                        </div>
+                      </>
+                      )}
                     </div>
                   ))}
                 </div>

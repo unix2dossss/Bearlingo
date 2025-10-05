@@ -364,6 +364,8 @@ const CVModule = () => {
                     src={DeskLocked}
                     alt="Locked CV Desk"
                     className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                    style={{ opacity: 0.4 }}
+
                   />
                   <img
                     ref={deskUnlockedRef}
@@ -380,6 +382,7 @@ const CVModule = () => {
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
                     className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={drawersUnlockedRef}
@@ -391,7 +394,8 @@ const CVModule = () => {
                     ref={bookcaseLockedRef}
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
-                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[8vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={bookcaseUnlockedRef}
@@ -408,6 +412,7 @@ const CVModule = () => {
                     src={WindowLocked}
                     alt="Locked CV Window"
                     className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={windowUnlockedRef}
