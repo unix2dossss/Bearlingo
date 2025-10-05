@@ -71,6 +71,31 @@ const CVModule = () => {
     fetchTaskCompletion();
   }, [setTask1Complete, setTask2Complete, setTask3Complete]);
 
+  // 🧠 Bear logic
+  const [bearMessage, setBearMessage] = useState("Time to build our CV!");
+
+  // Change bear message based on progress
+  useEffect(() => {
+    if (task1Complete && !task2Complete && !task3Complete) {
+      setBearMessage("Nice! One step done! 🏆");
+    } else if (task1Complete && task2Complete && !task3Complete) {
+      setBearMessage("Almost there — keep going! 💪");
+    } else if (task1Complete && task2Complete && task3Complete) {
+      setBearMessage("You did it! CV ready! 🎉");
+    } else {
+      setBearMessage("Time to build our CV!");
+    }
+  }, [task1Complete, task2Complete, task3Complete]);
+
+  // Animate bear each time message changes
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
+    );
+  }, [bearMessage]);
+
   const navigate = useNavigate();
   // const currentUser = useUserStore.getState().user;
   const user = useUserStore((state) => state.user);
@@ -434,14 +459,14 @@ const CVModule = () => {
                     ref={windowLockedRef}
                     src={WindowLocked}
                     alt="Locked CV Window"
-                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-10"
                     style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={windowUnlockedRef}
                     src={Window}
                     alt="Unlocked CV Window"
-                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-20"
+                    className="absolute left-1/2 -translate-x-1/2 w-[1000px] z-10"
                   />
                 </div>
               </div>
@@ -483,20 +508,21 @@ const CVModule = () => {
               </button>
 
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] left-16 flex flex-col items-start z-40">
-                <div className="speech-bubble relative bg-white text-black font-semibold px-4 py-2 rounded-xl shadow-md mb-2 text-lg sm:text-xl md:text-xl">
-                  Time to build our CV!
-                  <div className="absolute -bottom-2 left- w-4 h-4 bg-white rotate-45 shadow-md" />
+              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
+                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-90%]">
+                  {bearMessage}
+                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
                 </div>
+
                 <img
                   ref={bearRef}
                   src={Bear}
-                  alt="Bear peeking"
+                  alt="Bear mascot"
                   className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
-
                 />
               </div>
             </div>
+          
           </div>
 
           {/* ⬇️ NEW: Resume Upload Landing Modal */}

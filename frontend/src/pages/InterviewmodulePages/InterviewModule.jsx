@@ -14,6 +14,8 @@ import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
 import { isSubtaskCompleted } from "../../utils/moduleHelpers";
+import Bear from "../../assets/Bear.svg";
+
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -275,6 +277,32 @@ const InterviewModule = () => {
         delay: 0.3
       });
     }, []);
+
+  // 🧠 Bear logic
+  const [bearMessage, setBearMessage] = useState("Ready to ace that interview?");
+  const bearRef = useRef(null);
+
+  // Update bear message as user progresses
+  useEffect(() => {
+    if (task1Complete && !task2Complete && !task3Complete) {
+      setBearMessage("Good start! Let's keep practicing 💬");
+    } else if (task1Complete && task2Complete && !task3Complete) {
+      setBearMessage("You're getting interview-ready! 💼");
+    } else if (task1Complete && task2Complete && task3Complete) {
+      setBearMessage("Interview master! You're all set! 🎉");
+    } else {
+      setBearMessage("Ready to ace that interview?");
+    }
+  }, [task1Complete, task2Complete, task3Complete]);
+
+  // Animate bear each time message changes
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
+    );
+  }, [bearMessage]);
   
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
@@ -379,6 +407,21 @@ const InterviewModule = () => {
               >
                 Task 3
               </button>
+
+              {/* Bear + Speech Bubble */}
+              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
+                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-60%]">
+                  {bearMessage}
+                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+                </div>
+
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear mascot"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+                />
+              </div>
             </div>
           </div>
 

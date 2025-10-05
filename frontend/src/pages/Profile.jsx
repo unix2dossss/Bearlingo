@@ -222,6 +222,7 @@ const Profile = () => {
                     >
                     {/* Title/Label */}
                     <p className="mt-1 text-base font-semibold text-gray-700 mb-3">{stat.label}</p>
+
                       {/* Last Card: Streak + XP */}
                       {stat.isProfileStat ? (
                         <div className="flex flex-col items-center justify-center space-y-4 w-full h-full ">
