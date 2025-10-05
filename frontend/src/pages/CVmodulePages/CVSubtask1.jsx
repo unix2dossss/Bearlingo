@@ -382,13 +382,13 @@ const CVSubtask1 = ({
           {step === 0 && (
             <button
               onClick={handleBackToChoice}
-              className="absolute top-2 left-4 text-gray-600 hover:text-[#4f9cf9] text-sm "
+              className="absolute top-2 left-4 p-3 text-gray-600 hover:text-[#4f9cf9] text-sm "
             >
               ← Change Method
             </button>
           )}
           {/* Sticky white header with Back • centered pills • Close */}
-          <header className="sticky top-0 z-40 bg-white">
+          <header className="sticky top-0 z-40 bg-white mt-4">
             <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
               {/* Left: Back (reserve width when hidden to keep center centered) */}
               <div className="min-w-[60px]">
