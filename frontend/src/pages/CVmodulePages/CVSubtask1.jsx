@@ -28,6 +28,7 @@ const CVSubtask1 = ({
   // To choose between manual and upload CV: "chooser" | "manual" | "upload"
   const [mode, setMode] = useState("chooser");
   const [cvFileMeta, setCvFileMeta] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleBackToChoice = () => {
     setMode("chooser");
@@ -37,6 +38,7 @@ const CVSubtask1 = ({
   const [personal, setPersonal] = useState({
     firstName: "",
     lastName: "",
+    countryCode: "+64", // default: NZ
     phone: "",
     email: "",
     linkedin: ""
@@ -44,7 +46,7 @@ const CVSubtask1 = ({
 
   const [secondary, setSecondary] = useState({
     school: "",
-    subjects: "",
+    subjects: [],
     achievements: "",
     startYear: "",
     endYear: ""
@@ -82,7 +84,87 @@ const CVSubtask1 = ({
     }
   };
 
+  // Check if inputs are valid
+  const validateFields = (personal, secondary, tertiary) => {
+    const errors = {};
+
+    // --- Personal ---
+
+    // Phone (7–15 digits only)
+    if (!/^\d{7,15}$/.test(personal.phone.trim())) {
+      errors.phone = "Enter a valid phone number (7–15 digits)";
+    }
+
+    // Email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(personal.email.trim())) {
+      errors.email = "Enter a valid email address";
+    }
+
+    // LinkedIn (must start with https://www.linkedin.com/)
+    if (
+      personal.linkedin.trim() &&
+      !/^https?:\/\/(www\.)?linkedin\.com\/.*$/.test(personal.linkedin.trim())
+    ) {
+      errors.linkedin = "Enter a valid LinkedIn profile URL";
+    }
+
+    // --- Secondary Education ---
+    const currentYear = new Date().getFullYear();
+    if (secondary.startYear) {
+      if (!/^\d{4}$/.test(secondary.startYear)) {
+        errors.secondaryStartYear = "Enter a valid year";
+      } else if (parseInt(secondary.startYear) > currentYear) {
+        errors.secondaryStartYear = "Start year cannot be in the future";
+      }
+    }
+    if (secondary.endYear) {
+      if (!/^\d{4}$/.test(secondary.endYear)) {
+        errors.secondaryEndYear = "Enter a valid year";
+      } else if (parseInt(secondary.endYear) > currentYear) {
+        errors.secondaryEndYear = "End year cannot be in the future";
+      }
+    }
+    if (
+      secondary.startYear &&
+      secondary.endYear &&
+      parseInt(secondary.startYear) > parseInt(secondary.endYear)
+    ) {
+      errors.secondaryEndYear = "End year must be later than start year";
+    }
+
+    // --- Tertiary Education ---
+    if (tertiary.startYear) {
+      if (!/^\d{4}$/.test(tertiary.startYear)) {
+        errors.tertiaryStartYear = "Enter a valid year";
+      } else if (parseInt(tertiary.startYear) > currentYear) {
+        errors.tertiaryStartYear = "Start year cannot be in the future";
+      }
+    }
+    if (!tertiary.studying && tertiary.endYear) {
+      if (!/^\d{4}$/.test(tertiary.endYear)) {
+        errors.tertiaryEndYear = "Enter a valid year";
+      } else if (parseInt(tertiary.endYear) > currentYear) {
+        errors.tertiaryEndYear = "End year cannot be in the future";
+      }
+    }
+    if (
+      tertiary.startYear &&
+      tertiary.endYear &&
+      parseInt(tertiary.startYear) > parseInt(tertiary.endYear)
+    ) {
+      errors.tertiaryEndYear = "End year must be later than start year";
+    }
+
+    return errors;
+  };
+
   const handleSaveAndContinue = () => {
+    const validationErrors = validateFields(personal, secondary, tertiary);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     blurActive();
     setStep((s) => s + 1);
   };
@@ -114,10 +196,27 @@ const CVSubtask1 = ({
         }
 
         if (data) {
+          // Split full phone into code and number
+          let countryCode = "+64";
+          let phoneNumber = "";
+          const fullPhone = data.contact?.phone || "";
+
+          if (fullPhone.startsWith("+")) {
+            // find where country code ends (first non-digit after +)
+            const match = fullPhone.match(/^(\+\d{1,3})(.*)$/);
+            if (match) {
+              countryCode = match[1];
+              phoneNumber = match[2].trim();
+            }
+          } else {
+            phoneNumber = fullPhone;
+          }
+
           const loadedPersonal = {
             firstName: data.firstName || "",
             lastName: data.lastName || "",
-            phone: data.contact?.phone || "",
+            countryCode,
+            phone: phoneNumber,
             email: data.contact?.email || "",
             linkedin: data.contact?.linkedin || ""
           };
@@ -126,7 +225,7 @@ const CVSubtask1 = ({
 
           const loadedSecondary = {
             school: data.education?.secondary?.schoolName || "",
-            subjects: data.education?.secondary?.subjects || "",
+            subjects: data.education?.secondary?.subjects || [],
             achievements: data.education?.secondary?.achievements || "",
             startYear: data.education?.secondary?.startYear || "",
             endYear: data.education?.secondary?.endYear || ""
@@ -188,9 +287,9 @@ const CVSubtask1 = ({
 
   const handleClear = () => {
     if (step === 0)
-      setPersonal({ firstName: "", lastName: "", phone: "", email: "", linkedin: "" });
+      setPersonal({ firstName: "", lastName: "", countryCode: "+64", phone: "", email: "", linkedin: "" });
     if (step === 1)
-      setSecondary({ school: "", subjects: "", achievements: "", startYear: "", endYear: "" });
+      setSecondary({ school: "", subjects: [], achievements: "", startYear: "", endYear: "" });
     if (step === 2)
       setTertiary({ university: "", degree: "", startYear: "", endYear: "", studying: false });
     if (step === 3) setAboutMe("");
@@ -201,13 +300,20 @@ const CVSubtask1 = ({
   const { completeTask } = useUserStore();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateFields(personal, secondary, tertiary);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast.error("Please fix errors before submitting");
+      return;
+    }
+    setErrors({});
     const payload = {
       firstName: personal.firstName,
       lastName: personal.lastName,
       contact: {
-        phone: personal.phone,
+        phone: personal.countryCode + personal.phone,
         // NOTE: if you’re splitting the email UI, make sure this is a full email
-        email: personal.email + "gmail.com", // ← don’t append "gmail.com" here unless that’s intentional
+        email: personal.email, // ← don’t append "gmail.com" here unless that’s intentional
         linkedin: personal.linkedin
       },
       education: {
@@ -317,11 +423,11 @@ const CVSubtask1 = ({
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <PerInfo personal={personal} setPersonal={setPersonal} />;
+        return <PerInfo personal={personal} setPersonal={setPersonal} errors={errors} />;
       case 1:
-        return <SecEdu secondary={secondary} setSecondary={setSecondary} />;
+        return <SecEdu secondary={secondary} setSecondary={setSecondary} errors={errors} />;
       case 2:
-        return <TerEdu tertiary={tertiary} setTertiary={setTertiary} />;
+        return <TerEdu tertiary={tertiary} setTertiary={setTertiary} errors={errors} />;
       case 3:
         return <Aboutme aboutMe={aboutMe} setAboutMe={setAboutMe} />;
       default:
