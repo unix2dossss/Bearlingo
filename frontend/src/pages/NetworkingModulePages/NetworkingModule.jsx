@@ -32,6 +32,7 @@ const NetworkingModule = () => {
     const [careerGoal, setCareerGoal] = useState("");
     const [selectedHeadline, setSelectedHeadline] = useState(""); // default empty or ""
     const [customHeadline, setCustomHeadline] = useState(""); // default empty
+    const [elevatorOpen, setElevatorOpen] = useState(true);
 
     const navigate = useNavigate();
 
@@ -271,37 +272,41 @@ const NetworkingModule = () => {
 
     };
 
-        
+
     // Elevator doors
-        const leftDoor = useRef(null);
-        const rightDoor = useRef(null);
-      
-        // Animate elevator opening when CVModule loads
-        useEffect(() => {
-          gsap.set(leftDoor.current, { x: "0%" });
-          gsap.set(rightDoor.current, { x: "0%" });
-      
-          gsap.to(leftDoor.current, {
-            x: "-100%",
-            duration: 1.5,
-            ease: "power2.inOut",
-            delay: 0.3
-          });
-      
-          gsap.to(rightDoor.current, {
-            x: "100%",
-            duration: 1.5,
-            ease: "power2.inOut",
-            delay: 0.3
-          });
-        }, []);
+    const leftDoor = useRef(null);
+    const rightDoor = useRef(null);
+
+    // Animate elevator opening when CVModule loads
+    useEffect(() => {
+        if (!showSubtask && elevatorOpen) {
+            gsap.set(leftDoor.current, { x: "0%" });
+            gsap.set(rightDoor.current, { x: "0%" });
+
+            gsap.to(leftDoor.current, {
+                x: "-100%",
+                duration: 1.5,
+                ease: "power2.inOut",
+                delay: 0.3
+            });
+
+            gsap.to(rightDoor.current, {
+                x: "100%",
+                duration: 1.5,
+                ease: "power2.inOut",
+                delay: 0.3
+            });
+
+            setElevatorOpen(false);
+        }
+    }, [showSubtask]);
 
     return (
         <>
             <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
 
                 {/* Elevator Doors Overlay */}
-      
+
                 {/* Top Navbar */}
                 <div className="fixed top-0 inset-x-0 z-[100]">
                     <TopNavbar />
@@ -319,10 +324,10 @@ const NetworkingModule = () => {
                     <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
 
                         {/* Elevator Doors Overlay */}
-      <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
-      <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+                        <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+                        <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
-      {/* Background */}
+                        {/* Background */}
 
 
                         {/* Yellow Floor */}
@@ -351,19 +356,19 @@ const NetworkingModule = () => {
 
                                 <button
                                     className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                    onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); }}
+                                    onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
                                 >
                                     Task 1
                                 </button>
                                 <button
                                     className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                    onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); }}
+                                    onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true); }}
                                 >
                                     Task 2
                                 </button>
                                 <button
                                     className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                    onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); }}
+                                    onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true); }}
                                 >
                                     Task 3
                                 </button>
