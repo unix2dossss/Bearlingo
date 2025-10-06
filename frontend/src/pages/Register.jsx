@@ -13,8 +13,8 @@ const Register = () => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  // const [linkedIn, setLinkedIn] = useState("");
-  const [linkedIn, _] = useState("");
+  const [linkedIn, setLinkedIn] = useState("");
+  // const [linkedIn, _] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ const Register = () => {
   const nameRegex = /^[A-Za-z\s]{2,30}$/;
   const usernameRegex = /^[\w\s-]{3,20}$/;
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i; ///^[^\s@]+@gmail\.com$/;
-  // const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
+  const linkedInRegex = /^((https?:\/\/)?(www\.)?linkedin\.com\/.*)$/;
 
   const navigate = useNavigate();
 
@@ -79,10 +79,10 @@ const Register = () => {
       return false;
     }
 
-    // if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
-    //   toast.error("Please enter a valid LinkedIn URL.");
-    //   return false;
-    // }
+    if (linkedIn.trim() !== "" && !linkedInRegex.test(linkedIn.trim())) {
+      toast.error("Please enter a valid LinkedIn URL.");
+      return false;
+    }
 
     return true;
   };
@@ -211,7 +211,7 @@ const Register = () => {
                         <p className="text-sm text-red-600 mt-2">{errors.username[0]}</p>
                       )}
                     </div>
-                    {/* <div className="form-control mb-4">
+                    <div className="form-control mb-4">
                       <label className="label">
                         <span className="label-text">LinkedIn URL (Optional)</span>
                       </label>
@@ -222,7 +222,7 @@ const Register = () => {
                         value={linkedIn}
                         onChange={(e) => setLinkedIn(e.target.value)}
                       ></input>
-                    </div> */}
+                    </div>
                     <div className="form-control mb-4">
                       <label className="label">
                         <span className="label-text">
