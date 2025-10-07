@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { Volume2, VolumeX, Music } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Volume2, VolumeX, RotateCcw } from "lucide-react";
 
-// Accent colors by module
 const moduleColors = {
   CVModule: {
     border: "border-purple-500",
@@ -30,10 +29,10 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
   const [muted, setMuted] = useState(true);
   const [currentTrack, setCurrentTrack] = useState("/sounds/about-wish-138203.mp3");
   const bgMusicRef = useRef(null);
+  const boxRef = useRef(null);
 
   const colors = moduleColors[moduleName] || moduleColors.CVModule;
 
-  // ✅ Full list of available music tracks
   const tracks = [
     {
       name: "Kids Game Gaming Background",
@@ -64,9 +63,7 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
     if (bgMusicRef.current) {
       bgMusicRef.current.volume = 0.3;
       if (!muted) {
-        bgMusicRef.current.play().catch(() => {
-          console.log("Autoplay blocked, waiting for user action.");
-        });
+        bgMusicRef.current.play().catch(() => console.log("Autoplay blocked"));
       } else {
         bgMusicRef.current.pause();
       }
@@ -82,13 +79,70 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
     }
   };
 
+  // Draggable Logic
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: window.innerWidth - 200, y: 80 });
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    dragOffset.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    };
+  };
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isDragging) return;
+      const boxWidth = boxRef.current.offsetWidth;
+      const boxHeight = boxRef.current.offsetHeight;
+
+      const newX = Math.min(
+        Math.max(e.clientX - dragOffset.current.x, 0),
+        window.innerWidth - boxWidth
+      );
+      const newY = Math.min(
+        Math.max(e.clientY - dragOffset.current.y, 0),
+        window.innerHeight - boxHeight
+      );
+      setPosition({ x: newX, y: newY });
+    },
+    [isDragging]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   return (
     <div
-      className={`p-4 bg-black/70 border-2 rounded-2xl shadow-lg flex flex-col items-center space-y-3 w-40 ${colors.border}`}
+      ref={boxRef}
+      onMouseDown={handleMouseDown}
+      className={`absolute cursor-move p-4 bg-black/70 border-2 rounded-2xl shadow-lg flex flex-col items-center space-y-3 w-40 ${colors.border} cursor-grab active:cursor-grabbing 
+              hover:scale-105 active:scale-95`}
+      style={{
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        zIndex: 10000,
+        userSelect: "none"
+      }}
     >
       <h2 className={`font-bold text-sm ${colors.text}`}>Sound</h2>
 
-      {/* Mute/Unmute */}
       <button
         onClick={() => setMuted(!muted)}
         className={`w-12 h-12 rounded-full flex items-center justify-center shadow-md transition ${colors.bgMain}`}
@@ -96,24 +150,24 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
         {muted ? <VolumeX size={24} color="white" /> : <Volume2 size={24} color="white" />}
       </button>
 
-      {/* Restart Track */}
       <button
         className={`w-12 h-12 rounded-full flex items-center justify-center shadow-md transition ${colors.bgAlt}`}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           if (bgMusicRef.current) {
             bgMusicRef.current.currentTime = 0;
             bgMusicRef.current.play();
           }
         }}
       >
-        <Music size={24} color="white" />
+        <RotateCcw size={24} color="white" />
       </button>
 
-      {/* Track Selector */}
       <select
         value={currentTrack}
         onChange={handleTrackChange}
-        className={`${colors.select} text-white p-2 rounded-lg shadow-md text-sm w-full z-[100000] relative cursor-pointer`}
+        onMouseDown={(e) => e.stopPropagation()} // prevent dragging while interacting
+        className={`${colors.select} text-white p-2 rounded-lg shadow-md text-sm w-full cursor-pointer`}
       >
         {tracks.map((track, index) => (
           <option key={index} value={track.file}>
@@ -122,7 +176,6 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
         ))}
       </select>
 
-      {/* Audio */}
       <audio ref={bgMusicRef} src={currentTrack} loop />
     </div>
   );

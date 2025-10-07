@@ -115,17 +115,19 @@ const CVModule = () => {
 
   // // ⬇️ NEW: First-visit behavior → show ResumeUpload first; if skipped, show landing intro
   useEffect(() => {
-    const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
-    if (!skipResume) {
-      // wait before showing resume modal
-      const timer = setTimeout(() => {
-        setShowResumeModal(true);
-      }, 2500); // 2.5s delay
+    // const skipResume = localStorage.getItem("cv_resume_prompt_skip") === "1";
+    // if (!skipResume) {
+    //   // wait before showing resume modal
+    //   const timer = setTimeout(() => {
+    //     setShowResumeModal(true);
+    //   }, 2500); // 2.5s delay
 
-      return () => clearTimeout(timer);
-    }
+    //   return () => clearTimeout(timer);
+    // }
     const skipIntro = localStorage.getItem("cv_landing_intro_skip") === "1";
-    if (!skipIntro) {setShowLandingIntro(true), 2500};
+    if (!skipIntro) {
+      setShowLandingIntro(true), 2500;
+    }
   }, []);
 
   // ⬇️ NEW: lock body scroll when any modal is open
@@ -326,6 +328,7 @@ const CVModule = () => {
             setTask1Complete={setTask1Complete}
             setTask2Complete={setTask2Complete}
             setTask3Complete={setTask3Complete}
+            user={user}
           />
         );
       case "subtask2":
@@ -392,9 +395,10 @@ const CVModule = () => {
         <div>
           <div>
             {/* Floating music control */}
-            <div className="fixed top-20 right-6 z-40 pointer-events-auto">
+            {/* <div className="fixed top-20 right-6 z-40 pointer-events-auto">
               <BackgroundMusicBox />
-            </div>
+            </div> */}
+            <BackgroundMusicBox />
 
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
@@ -413,7 +417,6 @@ const CVModule = () => {
                     alt="Locked CV Desk"
                     className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
                     style={{ opacity: 0.4 }}
-
                   />
                   <img
                     ref={deskUnlockedRef}
@@ -522,7 +525,6 @@ const CVModule = () => {
                 />
               </div>
             </div>
-          
           </div>
 
           {/* ⬇️ NEW: Resume Upload Landing Modal */}
