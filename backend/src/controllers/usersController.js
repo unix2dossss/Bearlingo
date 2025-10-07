@@ -118,7 +118,7 @@ export const googleCallback = (req, res) => {
   try {
     const token = generateToken(res, req.user._id);
     // Successful authentication, redirect home page
-    res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}`);
+    res.redirect(`${process.env.CLIENT_URL}/auth-success`);
   } catch (error) {
     console.error("Google authentication error:", error);
     res.redirect(`${process.env.CLIENT_URL}/login?error=google_failed`);
