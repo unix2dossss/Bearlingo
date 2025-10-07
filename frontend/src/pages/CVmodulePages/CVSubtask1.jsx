@@ -23,7 +23,8 @@ const CVSubtask1 = ({
   onTaskComplete,
   setTask1Complete,
   setTask2Complete,
-  setTask3Complete
+  setTask3Complete,
+  user
 }) => {
   // To choose between manual and upload CV: "chooser" | "manual" | "upload"
   const [mode, setMode] = useState("chooser");
@@ -213,12 +214,12 @@ const CVSubtask1 = ({
           }
 
           const loadedPersonal = {
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
+            firstName: data.firstName || user.firstName || "",
+            lastName: data.lastName || user.lastName || "",
             countryCode,
             phone: phoneNumber,
-            email: data.contact?.email || "",
-            linkedin: data.contact?.linkedin || ""
+            email: data.contact?.email || user.email || "",
+            linkedin: data.contact?.linkedin || user.linkedin || ""
           };
           setPersonal(loadedPersonal);
           setDbPersonal(loadedPersonal); // snapshot of database data
@@ -254,7 +255,7 @@ const CVSubtask1 = ({
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   // Warn before reload/close browser
   useEffect(() => {

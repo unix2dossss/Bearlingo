@@ -326,6 +326,7 @@ const CVModule = () => {
             setTask1Complete={setTask1Complete}
             setTask2Complete={setTask2Complete}
             setTask3Complete={setTask3Complete}
+            user={user}
           />
         );
       case "subtask2":
