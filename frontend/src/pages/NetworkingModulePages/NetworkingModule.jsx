@@ -333,8 +333,9 @@ const NetworkingModule = () => {
                         {/* Yellow Floor */}
                         <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-
-                        <img
+                        <div>
+                            <div>
+                            <img
                             src={Cafe}
                             alt="Unlocked Networking Cafe"
                             className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto"
@@ -375,6 +376,12 @@ const NetworkingModule = () => {
                             </div>
                         </div>
                     </div>
+
+                            </div>
+                        </div>
+
+
+                        
                 )}
 
                 {showSubtask && selectedSubtask === "subtask1" && (
