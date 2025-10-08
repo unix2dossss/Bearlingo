@@ -5,7 +5,6 @@ import User from "../models/User.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -29,16 +28,25 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let existingUser = await User.findOne({ googleId: profile.id });
+        // Check if a user with the same googleId or email already exists
+        let existingUser = await User.findOne({
+          $or: [{ googleId: profile.id }, { email: profile.emails?.[0]?.value }]
+        });
+
         if (existingUser) {
+          // Link Google account if not already linked
+          if (!existingUser.googleId) {
+            existingUser.googleId = profile.id;
+            await existingUser.save();
+          }
           return done(null, existingUser);
         }
         const user = new User({
           googleId: profile.id,
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
+          ...(profile.name?.givenName && { firstName: profile.name.givenName }),
+          ...(profile.name?.familyName && { lastName: profile.name.familyName }),
           username: profile.displayName,
-          email: profile.emails[0].value
+          email: profile.emails?.[0]?.value
         });
         await user.save();
         return done(null, user);

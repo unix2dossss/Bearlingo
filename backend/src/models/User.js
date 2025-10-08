@@ -10,12 +10,10 @@ import AttendedEvents from "./AttendedEvent.js";
 const userSchema = new mongoose.Schema(
   {
     firstName: {
-      type: String,
-      required: true
+      type: String
     },
     lastName: {
-      type: String,
-      required: true
+      type: String
     },
     username: {
       type: String,
@@ -23,7 +21,6 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
       unique: true
     },
     linkedIn: {
@@ -73,7 +70,7 @@ const userSchema = new mongoose.Schema(
     ]
   },
   {
-    timestamp: true
+    timestamps: true
   }
 );
 

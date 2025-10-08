@@ -21,7 +21,7 @@ const cvSchema = new mongoose.Schema(
       phone: {
         type: String,
         trim: true,
-        maxlength: 11
+        maxlength: 17
       },
       email: {
         type: String,

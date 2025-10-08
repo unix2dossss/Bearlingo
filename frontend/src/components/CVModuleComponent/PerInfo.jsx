@@ -1,8 +1,7 @@
 import React from "react";
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
-export default function PersonalInfoCard({ personal, setPersonal }) {
-
+export default function PersonalInfoCard({ personal, setPersonal, errors }) {
   return (
     <div>
       {/* <CVuploadBox /> */}
@@ -24,7 +23,7 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
             <div>
               <label className="block text-sm font-semibold mb-1">
                 First Name <label className="text-red-500">*</label>
-                </label>
+              </label>
               <input
                 className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
                 placeholder="Enter your first name"
@@ -34,7 +33,7 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1">
-                Last Name <label className="text-red-500">*</label> 
+                Last Name <label className="text-red-500">*</label>
               </label>
               <input
                 className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
@@ -44,7 +43,7 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
               />
             </div>
           </div>
-        </div> 
+        </div>
 
         {/* Contact Information */}
         <div className="border rounded-2xl border-gray-200 p-4">
@@ -52,33 +51,73 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
 
           <div className="mb-3">
             <label className="block text-sm font-semibold mb-1">
-              Phone Number <label className="text-red-500">*</label></label>
-            <input
-              className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
-              placeholder="12345646"
-              value={personal.phone}
-              onChange={(e) => setPersonal({ ...personal, phone: e.target.value })}
-            />
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+
+            <div className="flex flex-col">
+              <div className="flex gap-2">
+                <div className="relative w-32">
+                  {/* Country Code Selector */}
+                  <select
+                    className="w-32 h-10 rounded bg-gray-100 px-2 text-sm border appearance-none"
+                    value={personal.countryCode}
+                    onChange={(e) => setPersonal((p) => ({ ...p, countryCode: e.target.value }))}
+                  >
+                    <option value="+64">🇳🇿 +64 (NZ)</option>
+                    <option value="+61">🇦🇺 +61 (AU)</option>
+                    {/* <option value="+1">🇺🇸 +1 (US)</option>
+                  <option value="+44">🇬🇧 +44 (UK)</option>
+                  <option value="+91">🇮🇳 +91 (India)</option> */}
+                    {/* Add all countries if needed later */}
+                  </select>
+
+                  {/* custom dropdown arrow */}
+                  <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                    <svg
+                      className="w-4 h-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Phone Input */}
+                <input
+                  className={`flex-1 h-10 rounded px-3 placeholder:text-gray-400 ${
+                    errors.phone ? "border border-red-500" : "bg-gray-100"
+                  }`}
+                  placeholder="12345646"
+                  value={personal.phone}
+                  onChange={(e) => setPersonal((p) => ({ ...p, phone: e.target.value }))}
+                />
+              </div>
+
+              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+            </div>
           </div>
 
           <div className="mb-3">
             <label className="block text-sm font-semibold mb-1">
-              Email <label className="text-red-500">*</label> </label>
-            <div className="relative flex">
+              Email <label className="text-red-500">*</label>{" "}
+            </label>
+            <div className="flex flex-col">
               <input
-                className="flex-1 h-10 rounded bg-gray-100 px-3 pr-28 placeholder:text-gray-400"
-                placeholder="username"
-                value={personal.email.split("@")[0] || ""}
-                onChange={(e) =>
-                  setPersonal((p) => ({
-                    ...p,
-                    email: `${e.target.value}@${p.email.split("@")[1] || ""}`
-                  }))
-                }
+                className={`h-10 rounded px-3 placeholder:text-gray-400 ${
+                  errors.email ? "border border-red-500" : "bg-gray-100"
+                }`}
+                placeholder="you@example.com"
+                value={personal.email}
+                onChange={(e) => setPersonal((p) => ({ ...p, email: e.target.value }))}
               />
-              <div className="absolute right-2 inset-y-0 flex items-center gap-2">
+              {errors.email && <p className="text-red-500 text-sm mt-1 mb-1">{errors.email}</p>}
+
+              {/* <div className="absolute right-2 inset-y-0 flex items-center gap-2">
                 <span className="text-gray-500">@gmail.com</span>
-                {/* <input
+                <input
                   className="w-28 h-8 rounded bg-gray-100 px-2 text-sm"
                   value={personal.email.split("@")[1] || ""}
                   onChange={(e) =>
@@ -87,22 +126,27 @@ export default function PersonalInfoCard({ personal, setPersonal }) {
                       email: `${p.email.split("@")[0] || ""}@${e.target.value}`
                     }))
                   }
-                /> */}
-              </div>
+                />
+              </div> */}
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-semibold mb-1">
-              LinkedIn Profile  
+              LinkedIn Profile
               <span className="text-xs font-normal text-gray-500"> (optional) </span>
             </label>
-            <input
-              className="w-full h-10 rounded bg-gray-100 px-3 placeholder:text-gray-400"
-              placeholder="https://linkedin.com/in/yourprofile"
-              value={personal.linkedin}
-              onChange={(e) => setPersonal({ ...personal, linkedin: e.target.value })}
-            />
+            <div className="flex flex-col">
+              <input
+                className={`w-full h-10 rounded px-3 placeholder:text-gray-400 ${
+                  errors.linkedin ? "border border-red-500" : "bg-gray-100"
+                }`}
+                placeholder="https://linkedin.com/in/yourprofile"
+                value={personal.linkedin}
+                onChange={(e) => setPersonal({ ...personal, linkedin: e.target.value })}
+              />
+              {errors.linkedin && <p className="text-red-500 text-sm mt-1 mb-1">{errors.linkedin}</p>}
+            </div>
           </div>
         </div>
       </div>

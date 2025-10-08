@@ -321,9 +321,10 @@ const InterviewModule = () => {
         <div>
           <div>
             {/* Floating music control */}
-            <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+            {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
               <BackgroundMusicBox moduleName="InterviewModule" />
-            </div>
+            </div> */}
+            <BackgroundMusicBox moduleName="InterviewModule" />
 
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
