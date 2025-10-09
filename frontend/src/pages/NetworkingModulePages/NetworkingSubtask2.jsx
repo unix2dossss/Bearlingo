@@ -2,14 +2,17 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import api from "../../lib/axios";
 import toast from "react-hot-toast";
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
   const COLORS = {
-    primary: "#4f9cf9",       
-    primaryHover: "#3d86ea",  
-    bgLight: "#f8fafc",       
-    textMain: "#1e293b",      
-    textMuted: "#64748b"}      
+    primary: "#4f9cf9",
+    primaryHover: "#3d86ea",
+    bgLight: "#f8fafc",
+    textMain: "#1e293b",
+    textMuted: "#64748b"
+  }
 
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
@@ -17,6 +20,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
   const [typeFilter, setTypeFilter] = useState("All");
   const [costFilter, setCostFilter] = useState("All");
   const railRef = useRef(null);
+  const { completeTask } = useUserStore();
 
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
 
@@ -83,6 +87,25 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         }
         return [updated];
       });
+      let subtaskId;
+      try {
+        subtaskId = await getSubtaskBySequenceNumber("Networking Hub", 1, 2);
+      } catch (err) {
+        console.error("Failed to get subtask ID", err);
+        toast.error("Could not find subtask");
+        return;
+      }
+
+      try {
+        const done = await completeTask(subtaskId);
+        if (done?.data?.message === "Well Done! You completed the subtask") {
+          toast.success("Task 2 completed!");
+        }
+      } catch (err) {
+        console.error("Failed to complete task", err);
+        toast.error("Could not mark task complete");
+      }
+
     } catch (error) {
       console.error("Error updating events", error);
       toast.error("Events were not updated");
@@ -211,34 +234,34 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
               return (
                 <div
-                key={item.id ?? index}
-                className="carousel-item snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[45%] lg:w-[32%]
+                  key={item.id ?? index}
+                  className="carousel-item snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[45%] lg:w-[32%]
                             bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105
                             flex flex-col overflow-hidden border border-gray-100"
                 >
-                {/* Banner */}
-                <div className="h-40 flex items-center justify-center text-white font-bold text-lg"
+                  {/* Banner */}
+                  <div className="h-40 flex items-center justify-center text-white font-bold text-lg"
                     style={{
-                        background: `linear-gradient(135deg, #14b8a6, #0ea5e9)` // teal → sky blue
+                      background: `linear-gradient(135deg, #14b8a6, #0ea5e9)` // teal → sky blue
                     }}>
                     {item.type}
-                </div>
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1 flex flex-col p-4 gap-3">
+                  {/* Content */}
+                  <div className="flex-1 flex flex-col p-4 gap-3">
                     {/* Event name */}
                     <h3 className="text-xl font-bold text-gray-900">
-                    {item.name}
+                      {item.name}
                     </h3>
 
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-2 py-1 rounded-md text-xs bg-amber-100 text-amber-700 font-medium">
+                      <span className="px-2 py-1 rounded-md text-xs bg-amber-100 text-amber-700 font-medium">
                         {item.type}
-                    </span>
-                    <span className="px-2 py-1 rounded-md text-xs bg-emerald-100 text-emerald-700 font-medium">
+                      </span>
+                      <span className="px-2 py-1 rounded-md text-xs bg-emerald-100 text-emerald-700 font-medium">
                         {item.costType}
-                    </span>
+                      </span>
                     </div>
 
                     {/* Info */}
@@ -249,40 +272,40 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
                     <h4 className="mt-2 font-semibold text-sm text-amber-600">Description</h4>
                     <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-gray-200 rounded-lg
                                     scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-                    <p className="text-sm text-gray-700">{item.description}</p>
+                      <p className="text-sm text-gray-700">{item.description}</p>
                     </div>
 
                     {/* Buttons */}
                     <div className="mt-auto pt-2 flex flex-col gap-2">
-                    <a href={item.link} target="_blank" rel="noreferrer"
+                      <a href={item.link} target="_blank" rel="noreferrer"
                         className="btn btn-sm w-full text-white hover:scale-105 hover:shadow-md transition-transform duration-200"
                         style={{ backgroundColor: "#4f9cf9" }}>
                         View Event
-                    </a>
+                      </a>
 
-                    <button
+                      <button
                         className="btn btn-sm w-full transition-transform duration-200 hover:scale-105"
                         style={{
-                        backgroundColor:
+                          backgroundColor:
                             status === "going"
-                            ? "#22c55e" // emerald green
-                            : status === "attended"
-                            ? "#9ca3af" // neutral gray
-                            : "#fbbf24", // amber for "Going to Attend"
-                        color: "white",
-                        opacity: status === "attended" ? 0.8 : 1
+                              ? "#22c55e" // emerald green
+                              : status === "attended"
+                                ? "#9ca3af" // neutral gray
+                                : "#fbbf24", // amber for "Going to Attend"
+                          color: "white",
+                          opacity: status === "attended" ? 0.8 : 1
                         }}
                         onClick={() => handleAttendance(item.id, status)}
                         disabled={status === "attended"}
-                    >
+                      >
                         {status === "attended"
-                        ? "Attended ✅"
-                        : status === "going"
-                        ? "Locked In 🫡 (tap to mark attended)"
-                        : "Going to Attend"}
-                    </button>
+                          ? "Attended ✅"
+                          : status === "going"
+                            ? "Locked In 🫡 (tap to mark attended)"
+                            : "Going to Attend"}
+                      </button>
                     </div>
-                </div>
+                  </div>
                 </div>
 
               );

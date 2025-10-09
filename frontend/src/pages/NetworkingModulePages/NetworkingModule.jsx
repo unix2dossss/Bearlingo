@@ -18,6 +18,7 @@ import Sign from "../../assets/NSign.svg";
 import Table from "../../assets/NTable.svg";
 import SideNavbar from "../../components/SideNavbar";
 
+
 const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
@@ -334,8 +335,12 @@ const NetworkingModule = () => {
                             {/* Yellow Floor */}
                             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-                            <div>
-                                <div>
+                            <div className="flex">
+                                <div className="mt-4">
+                                    <SideNavbar />
+                                </div>
+
+                                <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
                                     <img
                                         src={Cafe}
                                         alt="Unlocked Networking Cafe"
@@ -358,7 +363,7 @@ const NetworkingModule = () => {
 
                                             <button
                                                 className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                                onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
+                                                onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); }}
                                             >
                                                 Task 1
                                             </button>
@@ -376,13 +381,15 @@ const NetworkingModule = () => {
                                             </button>
                                         </div>
                                     </div>
+
                                 </div>
 
                             </div>
+
+
+
+
                         </div>
-
-
-
                     )}
 
                     {showSubtask && selectedSubtask === "subtask1" && (
