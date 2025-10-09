@@ -42,10 +42,18 @@ const JournalRefined = () => {
     const [thoughts, setThoughts] = useState("");
 
     const [folders, setFolders] = useState([
-        { name: "Reflections", image: PinkFolder },
-        { name: "Goals", image: YellowFolder },
-        { name: "Notes", image: BlueFolder },
+        { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
+        { id: 2, name: "Goals", image: YellowFolder, items: goals },
+        { id: 3, name: "Notes", image: BlueFolder, items: notes },
     ]);
+
+    useEffect(() => {
+        setFolders([
+            { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
+            { id: 2, name: "Goals", image: YellowFolder, items: goals },
+            { id: 3, name: "Notes", image: BlueFolder, items: notes },
+        ]);
+    }, [reflections, goals, notes]);
 
 
     const getAllJournals = async () => {
@@ -57,13 +65,13 @@ const JournalRefined = () => {
             const getNotes = await api.get("/users/journal/notes",
                 { withCredentials: true });
             if (getGoals.data.message == "Goals retrieved succesfully!") {
-                setGoals(getGoals);
+                setGoals(getGoals.data.goals);
             }
             if (getReflections.data.message == "Reflections retrieved succesfully!") {
-                setReflections(getReflections);
+                setReflections(getReflections.data.reflections);
             }
             if (getNotes.data.message == "Notes retrieved succesfully!") {
-                setNotes(getNotes);
+                setNotes(getNotes.data.notes);
             }
 
         } catch (error) {
@@ -83,7 +91,8 @@ const JournalRefined = () => {
                     isCompleted: goalIsCompleted
                 },
                 { withCredentials: true });
-            setGoals(prevGoals => [...prevGoals, goalSaved.data]);
+            setGoals(prevGoals => [...prevGoals, goalSaved.data])
+
 
         } catch (error) {
             console.error("Error in saving goal", error);
@@ -239,13 +248,14 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    {openFolder.files.map((file, i) => (
+                                    {console.log("openFolder.items: ", openFolder.items)}
+                                    {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setOpenFile(file)}
                                             className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
-                                            {file.fileName}
+                                            {file.title}
                                         </button>
                                     ))}
                                     <button
@@ -571,7 +581,7 @@ const JournalRefined = () => {
                                         ) : (
                                             // Show default list of goals
                                             <ul className="space-y-3">
-                                                {openFolder.files.map((file, index) => (
+                                                {openFolder.items.map((file, index) => (
                                                     <li
                                                         key={index}
                                                         className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
@@ -639,7 +649,7 @@ const JournalRefined = () => {
                                         ) : (
                                             // Show default overview of reflections
                                             <ul className="space-y-3">
-                                                {openFolder.files.map((file, index) => (
+                                                {openFolder.items.map((file, index) => (
                                                     <li
                                                         key={index}
                                                         className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
