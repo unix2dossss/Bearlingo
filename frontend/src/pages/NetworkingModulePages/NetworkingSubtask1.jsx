@@ -11,6 +11,12 @@ import SkillList from "../../components/NetworkingModuleComponents/NetworkingSub
 import Headline from "../../components/NetworkingModuleComponents/NetworkingSubtask1/HeadLine";
 
 
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
+
 export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);

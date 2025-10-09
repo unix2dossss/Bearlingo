@@ -24,8 +24,7 @@ import InterviewSubtask3 from "./InterviewSubtask3";
 
 /* THEME (blue) */
 const COLORS = {
-  // primary: "#4f9cf9",
-  primary: "#43a047",
+  primary: "#4f9cf9" ,
   primaryHover: "#3d86ea",
   textMuted: "#767687"
 };

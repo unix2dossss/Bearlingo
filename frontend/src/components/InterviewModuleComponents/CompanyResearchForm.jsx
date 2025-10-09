@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-const ACCENT = "#43a047"; // Interview theme color (green)
+const ACCENT = "#4f9cf9"; // Interview theme color (green)
 
 const CompanyResearchForm = ({ onSave, onCancel, initialData, onDraftChange }) => {
   const [form, setForm] = useState({
@@ -52,10 +52,7 @@ const CompanyResearchForm = ({ onSave, onCancel, initialData, onDraftChange }) =
   };
 
   return (
-    <section
-      className="max-w-3xl mx-auto p-6 flex flex-col h-full
-             bg-white border border-gray-200 rounded-2xl shadow-lg"
-    >
+    <section className="flex h-full flex-col">
       {/* Scrollable form content */}
       <div className="flex-1 overflow-y-auto p-4">
         {/* Sticky header */}

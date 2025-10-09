@@ -18,6 +18,14 @@ import Sign from "../../assets/NSign.svg";
 import Table from "../../assets/NTable.svg";
 import SideNavbar from "../../components/SideNavbar";
 
+const COLORS = {
+  bg: "#fff9c7",
+  primary: "#3d86ea",       // Task button
+  primaryHover: "#4f9cf9",
+  doorLeft: "#9ca3af",      // gray-400
+  doorRight: "#6b7280",     // gray-500
+};
+
 const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
@@ -302,124 +310,143 @@ const NetworkingModule = () => {
     }, [showSubtask]);
 
     return (
-        <>
-            {/* Top Navbar */}
-            <div className="fixed top-0 inset-x-0 z-[100]">
-                <TopNavbar />
+  <>
+    {/* Top Navbar */}
+    <div className="fixed top-0 inset-x-0 z-[100]">
+      <TopNavbar />
+    </div>
+
+    <div>
+      <div
+        className="relative min-h-screen flex flex-col bg-[var(--bg)]"
+        style={
+          {
+            "--bg": COLORS.bg,
+            "--primary": COLORS.primary,
+            "--primary-hover": COLORS.primaryHover,
+            "--door-left": COLORS.doorLeft,
+            "--door-right": COLORS.doorRight,
+          }
+          // If you're in TSX, add: as React.CSSProperties
+        }
+      >
+        {/* Floating music control */}
+        <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+          <BackgroundMusicBox moduleName="NetworkingModule" />
+        </div>
+
+        {!showSubtask && (
+          <div>
+            {/* Elevator Doors Overlay */}
+            <div
+              ref={leftDoor}
+              className="absolute top-0 left-0 w-1/2 h-full bg-[var(--door-left)] z-50"
+            />
+            <div
+              ref={rightDoor}
+              className="absolute top-0 right-0 w-1/2 h-full bg-[var(--door-right)] z-50"
+            />
+
+            {/* Yellow Floor */}
+            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+
+            <div className="flex">
+              <div className="mt-4">
+                <SideNavbar />
+              </div>
+
+              <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
+                <img
+                  src={Cafe}
+                  alt="Unlocked Networking Cafe"
+                  className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto"
+                />
+
+                <img
+                  src={Sign}
+                  alt="Unlocked Networking Sign"
+                  className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto"
+                />
+
+                <img
+                  src={Table}
+                  alt="Unlocked Networking Table"
+                  className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto"
+                />
+
+                {/* Bottom bar with tasks */}
+                <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+                  <div className="flex space-x-6">
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                      onClick={() => {
+                        setSelectedSubtask("subtask1");
+                        setShowSubtask(true);
+                        setElevatorOpen(true);
+                      }}
+                    >
+                      Task 1
+                    </button>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                      onClick={() => {
+                        setSelectedSubtask("subtask2");
+                        setShowSubtask(true);
+                        setElevatorOpen(true);
+                      }}
+                    >
+                      Task 2
+                    </button>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                      onClick={() => {
+                        setSelectedSubtask("subtask3");
+                        setShowSubtask(true);
+                        setElevatorOpen(true);
+                      }}
+                    >
+                      Task 3
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+        )}
 
-            <div>
-                <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
+        {showSubtask && selectedSubtask === "subtask1" && (
+          <NetworkingSubtask1
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
 
-                    {/* Elevator Doors Overlay */}
+        {showSubtask && selectedSubtask === "subtask2" && (
+          <NetworkingSubtask2
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
 
-                    {/* Floating music control */}
-                    <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-                        <BackgroundMusicBox moduleName="NetworkingModule" />
-                    </div>
-
-
-
-
-                    {!showSubtask && (
-                        <div>
-
-                            {/* Elevator Doors Overlay */}
-                            <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
-                            <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
-
-                            {/* Background */}
-
-
-                            {/* Yellow Floor */}
-                            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
-
-                            <div className="flex"> 
-                                <div className="mt-4">
-                                    <SideNavbar />
-                                </div>
-
-                                <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14"> 
-                                    <img
-                                        src={Cafe}
-                                        alt="Unlocked Networking Cafe"
-                                        className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto"
-                                    />
-
-                                    <img
-                                        src={Sign}
-                                        alt="Unlocked Networking Sign"
-                                        className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
-
-                                    <img
-                                        src={Table}
-                                        alt="Unlocked Networking Table"
-                                        className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto"
-                                    />
-
-                                    <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
-                                        <div className="flex space-x-6">
-
-                                            <button
-                                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                                onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true);}}
-                                            >
-                                                Task 1
-                                            </button>
-                                            <button
-                                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                                onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true);}}
-                                            >
-                                                Task 2
-                                            </button>
-                                            <button
-                                                className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                                onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true);}}
-                                            >
-                                                Task 3
-                                            </button>
-                                        </div>
-                                    </div>
-                                  
-                                </div>
-
-                            </div>
-                
-
-
-                            
-                        </div>
-                    )}
-
-                    {showSubtask && selectedSubtask === "subtask1" && (
-                        <NetworkingSubtask1
-                            userInfo={userInfo}
-                            onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                        />
-                    )}
-
-                    {showSubtask && selectedSubtask === "subtask2" && (
-                        <NetworkingSubtask2
-                            userInfo={userInfo}
-                            onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                        />
-                    )}
-
-                    {showSubtask && selectedSubtask === "subtask3" && (
-                        <NetworkingSubtask3
-                            userInfo={userInfo}
-                            onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                        />
-                    )}
-
-
-                </div >
-
-            </div>
-
-            
-        </>
-    )
+        {showSubtask && selectedSubtask === "subtask3" && (
+          <NetworkingSubtask3
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
+      </div>
+    </div>
+  </>
+);
 }
 
 export default NetworkingModule;

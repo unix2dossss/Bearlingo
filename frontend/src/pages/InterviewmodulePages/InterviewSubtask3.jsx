@@ -6,7 +6,7 @@ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
 // const ACCENT = "#4f9cf9"; // Interview theme color (green)
-const ACCENT = "#43a047";
+const ACCENT = "#4f9cf9";
 const COLORS = {
   primary: "#4f9cf9",
   primaryHover: "#3d86ea",
@@ -161,7 +161,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplet
   return (
   <div className="flex flex-col h-full">
     {/* Sticky white header (close only) */}
-    <header className="sticky top-0 z-40 bg-white">
+    <header className="sticky top-0 z-40 bg-white rounded-full">
       <div className="mx-auto max-w-[880px] px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center">
         <div className="min-w-[60px]"/><div/>
         <button
@@ -203,7 +203,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplet
               What went well? <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="w-full min-h-[120px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
+              className="w-full min-h-[80px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
               style={{ borderColor: "transparent", outline: "none", boxShadow: `0 0 0 2px transparent` }}
               onFocus={(e) => (e.currentTarget.style.boxShadow = `0 0 0 2px ${ACCENT}55`)}
               onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
@@ -219,7 +219,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplet
               What was difficult? <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="w-full min-h-[120px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
+              className="w-full min-h-[80px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
               style={{ borderColor: "transparent", outline: "none", boxShadow: `0 0 0 2px transparent` }}
               onFocus={(e) => (e.currentTarget.style.boxShadow = `0 0 0 2px ${ACCENT}55`)}
               onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
@@ -235,7 +235,7 @@ const InterviewSubtask3 = ({ isSubmitted, setIsSubmitted, onClose, onTaskComplet
               What will I improve next time? <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="w-full min-h-[120px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
+              className="w-full min-h-[80px] rounded bg-gray-100 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2"
               style={{ borderColor: "transparent", outline: "none", boxShadow: `0 0 0 2px transparent` }}
               onFocus={(e) => (e.currentTarget.style.boxShadow = `0 0 0 2px ${ACCENT}55`)}
               onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
