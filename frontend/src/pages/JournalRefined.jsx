@@ -517,7 +517,7 @@ const JournalRefined = () => {
 
                                 </div>
 
-                                {/* actual file content in Goals folder + typing area */}
+                                {/* File content in Goals folder + typing area */}
                                 {openFolder.name == "Goals" && (
 
                                     < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
