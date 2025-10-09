@@ -11,7 +11,9 @@ const COLORS = {
   primaryHover: "#fbbf24",
   textMuted: "#767687",
 };
- 
+ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
+
 export default function NetworkingSubtask2({ userInfo, onBack }) {
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
@@ -31,6 +33,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
       return s;
     });
   };
+  const { completeTask } = useUserStore();
 
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
   const getEventId = (e) => e?.id ?? e?._id;

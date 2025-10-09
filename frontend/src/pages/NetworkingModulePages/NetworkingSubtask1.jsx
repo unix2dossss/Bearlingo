@@ -4,7 +4,9 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
+import { useUserStore } from "../../store/user";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -29,6 +31,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [userHasProfile, setUserHasProfile] = useState(false);
   const [savedProfile, setSavedProfile] = useState("");
   const [nextButtonValid, _] = useState(true);
+  const { completeTask } = useUserStore();
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -189,6 +192,25 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       setUserHasProfile(true);
 
       toast.success("Profile saved!");
+      // Get subtaskId by module name, level number and subtask sequence number
+      let subtaskId;
+      try {
+        subtaskId = await getSubtaskBySequenceNumber("Networking Hub", 1, 1);
+      } catch (err) {
+        console.error("Failed to get subtask ID", err);
+        toast.error("Could not find subtask");
+        return;
+      }
+
+      try {
+        const done = await completeTask(subtaskId);
+        if (done?.data?.message === "Well Done! You completed the subtask") {
+          toast.success("Task 1 completed!");
+        }
+      } catch (err) {
+        console.error("Failed to complete task", err);
+        toast.error("Could not mark task complete");
+      }
 
     } catch (error) {
       console.log("Error in saving profile to database: ", error);
@@ -210,6 +232,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       return [...prev, skill];
     });
   };
+
 
 
 

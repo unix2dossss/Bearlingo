@@ -1,17 +1,20 @@
 import mongoose from "mongoose";
 import linkedinprofile from "../models/LinkedInProfile.js";
+import User from "../models/User.js";
 import events from "../models/AttendedEvent.js";
 import networkingReflection from "../models/networkingReflection.js";
 import definedQuestions from "../utils/networkingReflectionQs.js";
 import linkedinpost from "../models/LinkedInPost.js";
 import LinkedInProfile from "../models/LinkedInProfile.js";
 import allEvents from "../utils/networkingEvents.js";
+import { updateUserStreak } from "../utils/helpers.js";
 // NEED TO ADD HELPER FOR UPDATING THE STREAK!!!! Weeks 9 - 10 add validation for fields from body e.g. if event exists for the user in database when created a post to the related event!! Also when creating an new instance of a schema (POST request) e.g. linkedinpost check if the user already has a post of the same user id and event then it will jsut need to be updated (PUT request)
 
 // -------- LinkedIn profile handlers --------
 
 export const createLinkedInProfile = async (req, res) => {
     const userId = req.user._id;
+    const user = await User.findById(userId);
     // Check if id is valid
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
@@ -31,6 +34,7 @@ export const createLinkedInProfile = async (req, res) => {
             objective
         });
         await linkedInProfile.save();
+        updateUserStreak(user);
         res.status(201).json({
             message: "Linked In Profile Created Succesfully!",
             linkedInProfile: linkedInProfile
@@ -99,6 +103,7 @@ export const updateLinkedInProfile = async (req, res) => {
 
 export const createEventsToAttend = async (req, res) => {
     const userId = req.user._id;
+    const user = await User.findById(userId);
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -113,6 +118,7 @@ export const createEventsToAttend = async (req, res) => {
         });
 
         await attendingEvents.save();
+        updateUserStreak(user);
         return res.status(201).json({
             message: "Events saved succesfully!",
         });
@@ -172,6 +178,7 @@ export const updateEventsToAttend = async (req, res) => {
 
 export const createReflection = async (req, res) => {
     const userId = req.user._id;
+    const user = await User.findById(userId);
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -205,6 +212,7 @@ export const createReflection = async (req, res) => {
         });
 
         await newNetworkingReflection.save();
+        updateUserStreak(user);
         return res.status(201).json({ message: "Reflection saved!", reflection: newNetworkingReflection });
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
@@ -226,6 +234,7 @@ export const getReflections = async (req, res) => {
 
 export const createLinkedInPost = async (req, res) => {
     const userId = req.user._id;
+    const user = await User.findById(userId);
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -240,6 +249,7 @@ export const createLinkedInPost = async (req, res) => {
             hashtags
         });
         await linkedInPost.save();
+        updateUserStreak(user);
         return res.status(201).json({ message: "LinkedIn post created succesfully!" });
 
     } catch (error) {

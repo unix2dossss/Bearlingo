@@ -26,6 +26,7 @@ const COLORS = {
   doorRight: "#6b7280",     // gray-500
 };
 
+
 const NetworkingModule = () => {
 
     const [selectedSubtask, setSelectedSubtask] = useState(false);
@@ -280,12 +281,12 @@ const NetworkingModule = () => {
 
     };
 
-        
+
     // Elevator doors
-        const leftDoor = useRef(null);
-        const rightDoor = useRef(null);
-      
-// Animate elevator opening when CVModule loads
+    const leftDoor = useRef(null);
+    const rightDoor = useRef(null);
+
+    // Animate elevator opening when CVModule loads
     useEffect(() => {
         if (!showSubtask && elevatorOpen) {
             gsap.set(leftDoor.current, { x: "0%" });
@@ -350,10 +351,10 @@ const NetworkingModule = () => {
             {/* Yellow Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
-            <div className="flex">
-              <div className="mt-4">
-                <SideNavbar />
-              </div>
+                            <div className="flex">
+                                <div className="mt-4">
+                                    <SideNavbar />
+                                </div>
 
               <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
                 <img
