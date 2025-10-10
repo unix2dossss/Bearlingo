@@ -16,6 +16,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
+  const [actualUserEvents, setActualUserEvents] = useState([]);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [costFilter, setCostFilter] = useState("All");
@@ -51,17 +52,29 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
         withCredentials: true,
       });
       setUserEvents(res?.data?.eventsToAttend || []);
+      const userEvents = res.data.eventsToAttend[0].attendingEventIds;
+      const userEventIds = userEvents.map(event => event.eventId);
+      const attendedEvents = allEvents.filter(event =>
+        userEventIds.includes(event.id)
+      );
+      setActualUserEvents(attendedEvents);
+
     } catch (error) {
       console.error("User events were not fetched", error);
       toast.error("User events were not fetched");
     }
   };
-
   useEffect(() => {
     fetchAllEvents();
-    fetchEventsOfUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // only run when allEvents has been loaded
+    if (allEvents.length > 0) {
+      fetchEventsOfUser();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvents]);
 
   const handleAttendance = async (eventId, buttonState) => {
     const nextStatus = buttonState === "going" ? "attended" : "going"; // default->going, going->attended
