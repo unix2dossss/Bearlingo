@@ -7,9 +7,13 @@ import Calendar from "../../components/NetworkingModuleComponents/NetworkingSubt
 
 
 const COLORS = {
-  primary: "#fcf782",
-  primaryHover: "#fbbf24",
-  textMuted: "#767687",
+  primary: "#fcf782",        // pill / accent fill
+  primaryHover: "#fbe24f",   // hover / stronger
+  border: "#f4e58b",         // borders
+  text: "#111827",           // main text
+  muted: "#767687",          // subtext
+  bg: "#fffbe6",             // page background (soft yellow)
+  panel: "#fffdf0",          // card/panel background
 };
  import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
@@ -143,9 +147,16 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
   };
 
   return (
-    <div className="pt-16 bg-white relative min-h-screen flex flex-col min-w-auto min-h-auto gap-4 p-4">
+    <div
+      className="pt-16 relative min-h-screen flex flex-col min-w-0 gap-4 p-4"
+      style={{ backgroundColor: COLORS.bg, color: COLORS.text }}
+    >
       {/* Back */}
-      <button className="btn btn-ghost absolute top-20 left-6 z-10" onClick={onBack}>
+      <button
+        className="btn btn-ghost absolute top-20 left-6 z-10"
+        onClick={onBack}
+        style={{ color: COLORS.text }}
+      >
         <ArrowLeftIcon className="size-5" />
         Back to subtasks
       </button>
@@ -154,69 +165,99 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Events</h1>
+        <h1 className="text-2xl font-bold inline-block rounded-lg px-2 py-1 text-[var(--text)]">My Events</h1>
       </div>
 
       {/* Search + selects (top row) */}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <input
-          className="input input-md input-bordered flex-1 min-w-[240px]"
+          className="input input-md flex-1 min-w-[240px] bg-white"
           placeholder="Search events…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          style={{
+            borderColor: COLORS.border,
+            color: COLORS.text,
+          }}
         />
-        <select className="select select-md select-bordered" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+        <select
+          className="select select-md bg-white"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          style={{ borderColor: COLORS.border, color: COLORS.text }}
+        >
           {uniqueTypes.map((t) => <option key={t}>{t}</option>)}
         </select>
-        <select className="select select-md select-bordered" value={costFilter} onChange={(e) => setCostFilter(e.target.value)}>
+        <select
+          className="select select-md bg-white"
+          value={costFilter}
+          onChange={(e) => setCostFilter(e.target.value)}
+          style={{ borderColor: COLORS.border, color: COLORS.text }}
+        >
           {uniqueCosts.map((c) => <option key={c}>{c}</option>)}
         </select>
       </div>
 
       {/* Filter pills (All / Going / Favourite / Attended) */}
       <div className="flex items-center gap-2 mt-3">
-        {["All", "Going", "Favourite", "Attended"].map((t) => (
-          <button
-            key={t}
-            onClick={() => setActiveTab(t)}
-            className={[
-              "px-3 py-1.5 rounded-full text-sm border",
-              activeTab === t
-                ? "bg-[#fadb14] text-black border-[#fcf782]"
-                : "bg-white text-slate-700 border-slate-200",
-            ].join(" ")}
-          >
-            {t}
-          </button>
-        ))}
+        {["All", "Going", "Favourite", "Attended"].map((t) => {
+          const active = activeTab === t;
+          return (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className="px-3 py-1.5 rounded-full text-sm border transition"
+              style={{
+                backgroundColor: active ? COLORS.primary : "#ffffff",
+                borderColor: active ? COLORS.primary : COLORS.border,
+                color: active ? COLORS.text : "#374151", // slate-700
+              }}
+              onMouseEnter={(e) => {
+                if (!active) e.currentTarget.style.backgroundColor = "#fffaf0";
+              }}
+              onMouseLeave={(e) => {
+                if (!active) e.currentTarget.style.backgroundColor = "#ffffff";
+              }}
+            >
+              {t}
+            </button>
+          );
+        })}
       </div>
 
       {/* Main area */}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-6 min-h-0">
         {/* Scrollable list */}
         <section
-          className="rounded-xl bg-white/60 p-4 border border-slate-200 min-h-0
-                     h-[65vh] lg:h-[calc(100vh-240px)] overflow-y-auto pr-1
-                     overscroll-contain [scrollbar-gutter:stable] scrollbar-thin
-                     scrollbar-thumb-slate-300 scrollbar-track-transparent"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className="rounded-xl p-4 min-h-0 h-[65vh] lg:h-[calc(100vh-240px)] overflow-y-auto pr-1
+                     overscroll-contain [scrollbar-gutter:stable] scrollbar-thin"
+          style={{
+            backgroundColor: COLORS.panel,
+            border: `1px solid ${COLORS.border}`,
+            WebkitOverflowScrolling: "touch",
+          }}
         >
           <div className="flex flex-col gap-3">
             {(Array.isArray(filteredEvents) ? filteredEvents : []).map((item, i) => {
               const id = getEventId(item);
               return (
-                <EventCard
+                <div
                   key={id ?? i}
-                  item={item}
-                  status={getStatus(id)}
-                  onAttendanceClick={handleAttendance}
-                  isFavorite={favourites.has(String(id))}
-                  onToggleFavorite={toggleFavourite}
-                />
+                  className="rounded-xl border"
+                  style={{ backgroundColor: "#ffffff", borderColor: COLORS.border }}
+                >
+                  <EventCard
+                    item={item}
+                    status={getStatus(id)}
+                    onAttendanceClick={handleAttendance}
+                    isFavorite={favourites.has(String(id))}
+                    onToggleFavorite={toggleFavourite}
+                  />
+                </div>
               );
             })}
             {filteredEvents.length === 0 && (
-              <div className="w-full text-center text-sm text-slate-600 py-12">
+              <div className="w-full text-center text-sm py-12" style={{ color: COLORS.muted }}>
                 No events match your filters.
               </div>
             )}
@@ -225,26 +266,46 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
         {/* Schedule panel */}
         <aside className="xl:sticky xl:top-24 self-start">
-          <Calendar value={selectedDate} onChange={setSelectedDate} events={allEvents} />
-          <div className="mt-4 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-            <div className="text-sm font-semibold text-slate-800 mb-2">Upcoming</div>
+          <div
+            className="rounded-2xl p-4 shadow-sm"
+            style={{ backgroundColor: "#ffffff", border: `1px solid ${COLORS.border}` }}
+          >
+            <Calendar value={selectedDate} onChange={setSelectedDate} events={allEvents} />
+          </div>
+
+          <div
+            className="mt-4 rounded-2xl p-4 shadow-sm"
+            style={{ backgroundColor: "#ffffff", border: `1px solid ${COLORS.border}` }}
+          >
+            <div className="text-sm font-semibold mb-2" style={{ color: "#92400e" /* amber-800 */ }}>
+              Upcoming
+            </div>
             <div className="space-y-2 text-sm">
-              {(baseFiltered.slice(0, 3)).map((e) => (
+              {baseFiltered.slice(0, 3).map((e) => (
                 <div key={getEventId(e)} className="flex items-center justify-between">
                   <div className="truncate">
-                    <div className="font-medium text-slate-900 truncate">{e.name}</div>
-                    <div className="text-slate-500">{e.date} · {e.time || "TBC"}</div>
+                    <div className="font-medium truncate" style={{ color: COLORS.text }}>
+                      {e.name}
+                    </div>
+                    <div style={{ color: COLORS.muted }}>
+                      {e.date} · {e.time || "TBC"}
+                    </div>
                   </div>
                   <a
-                    href={e.link || "#"} onClick={(ev) => { if (!e.link) ev.preventDefault(); }}
-                    target="_blank" rel="noreferrer"
-                    className="text-sky-600 hover:underline ml-3"
+                    href={e.link || "#"}
+                    onClick={(ev) => { if (!e.link) ev.preventDefault(); }}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="ml-3 underline"
+                    style={{ color: "#b45309" /* amber-700 */ }}
                   >
                     Open
                   </a>
                 </div>
               ))}
-              {baseFiltered.length === 0 && <div className="text-slate-500">No upcoming items</div>}
+              {baseFiltered.length === 0 && (
+                <div style={{ color: COLORS.muted }}>No upcoming items</div>
+              )}
             </div>
           </div>
         </aside>
