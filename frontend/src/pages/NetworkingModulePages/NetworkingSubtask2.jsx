@@ -67,12 +67,16 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     try {
       const res = await api.get("/users/me/networking/events", { withCredentials: true });
       setUserEvents(res?.data?.eventsToAttend || []);
-      const userEvents = res.data.eventsToAttend[0].attendingEventIds;
-      const userEventIds = userEvents.map(event => event.eventId);
-      const attendedEvents = allEvents.filter(event =>
-        userEventIds.includes(event.id)
-      );
-      setActualUserEvents(attendedEvents);
+      if (res.data.eventstoAttend == []) {
+
+
+        const userEvents = res.data.eventsToAttend[0].attendingEventIds;
+        const userEventIds = userEvents.map(event => event.eventId);
+        const attendedEvents = allEvents.filter(event =>
+          userEventIds.includes(event.id)
+        );
+        setActualUserEvents(attendedEvents);
+      }
 
     } catch (error) {
       console.error("User events were not fetched", error);
