@@ -19,7 +19,7 @@ const COLORS = {
   textMuted: "#767687",
 };
 
-export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
+export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComplete }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);
 
@@ -32,6 +32,8 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [savedProfile, setSavedProfile] = useState("");
   const [nextButtonValid, _] = useState(true);
   const { completeTask } = useUserStore();
+  const [isSaving, setIsSaving] = useState(false);
+
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -90,6 +92,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         setUserHasProfile(true);
         console.log("profileExists.data.linkedInProfile", profileExists.data.linkedInProfile);
         toast.success("Profile retrieved!");
+        onTaskComplete?.();   // mark completed in parent
       } else {
         setUserHasProfile(false);
       }
@@ -192,6 +195,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       setUserHasProfile(true);
 
       toast.success("Profile saved!");
+      onTaskComplete?.();      // parent sets completed.subtask1 = true
+      onBack?.(false, true);   // hasChanges=false, force=true (close without popup)
+
       // Get subtaskId by module name, level number and subtask sequence number
       let subtaskId;
       try {
@@ -206,6 +212,8 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         const done = await completeTask(subtaskId);
         if (done?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
+          onTaskComplete?.();    // mark completed
+          onBack?.(false, true);
         }
       } catch (err) {
         console.error("Failed to complete task", err);

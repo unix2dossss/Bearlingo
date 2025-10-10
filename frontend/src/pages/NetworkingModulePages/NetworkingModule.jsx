@@ -149,54 +149,85 @@ const NetworkingModule = () => {
     }
   }, [showSubtask, elevatorOpen]);
 
-  // Actions
-  const handleSubtaskClick = (task) => {
-    setSelectedSubtask(task);
-    setShowSubtask(true); // full-page swap
-  };
+  // --- flags per subtask
+const [dirty, setDirty] = useState({ subtask1: false, subtask2: false, subtask3: false });
+const [completed, setCompleted] = useState({ subtask1: false, subtask2: false, subtask3: false });
 
-  const handleClose = (hasChanges, force = false) => {
-    if (force) {
-      setShowSubtask(false);
-      setSelectedSubtask(null);
-      setIsSubmitted(false);
-      return;
-    }
-    if (hasChanges) {
-      setShowConfirmLeave(true);
-    } else {
-      setShowSubtask(false);
-      setSelectedSubtask(null);
-      setIsSubmitted(false);
-    }
-  };
+const markDirty = (key, val = true) => setDirty(d => ({ ...d, [key]: val }));
+const markComplete = (key, val = true) => setCompleted(c => ({ ...c, [key]: val }));
 
-  const confirmLeave = () => {
-    setShowConfirmLeave(false);
-    setShowSubtask(false);
-    setSelectedSubtask(null);
-    setIsSubmitted(false);
-  };
+// open a subtask → reset only that subtask's flags
+const handleSubtaskClick = (task) => {
+   setShowConfirmLeave(false);
+   setIsSubmitted(false);
+   markDirty(task, false);      // reset dirty
+   setSelectedSubtask(task);
+   setShowSubtask(true);
+ };
 
-  const renderSubtask = () => {
-    switch (selectedSubtask) {
-      case "subtask1":
-        return <NetworkingSubtask1 userInfo={userInfo} onBack={(hasChanges) => handleClose(hasChanges)} />;
-      case "subtask2":
-        return (
-          <NetworkingSubtask2
-            userInfo={userInfo}
-            onBack={(hasChanges) => handleClose(hasChanges)}
-            allEvents={allEvents}
-            userEvents={userEvents}
-          />
-        );
-      case "subtask3":
-        return <NetworkingSubtask3 userInfo={userInfo} onBack={(hasChanges) => handleClose(hasChanges)} />;
-      default:
-        return null;
-    }
-  };
+const closeView = () => {
+  setShowConfirmLeave(false);
+  setShowSubtask(false);
+  setSelectedSubtask(null);
+};
+
+const handleClose = (hasChanges = false, force = false) => {
+  const key = selectedSubtask;
+  const isDone = key ? completed[key] : false;
+  const isDirty = key ? (dirty[key] || hasChanges) : hasChanges;
+
+  if (force || isDone) {
+    // ✅ finished tasks always close without confirm
+    return closeView();
+  }
+  if (isDirty) {
+    // show confirm only if not finished and there are unsaved edits
+    return setShowConfirmLeave(true);
+  }
+  closeView();
+};
+
+const confirmLeave = () => {
+  setShowConfirmLeave(false);
+  closeView();
+};
+
+// --- render selected subtask with the correct callbacks
+const renderSubtask = () => {
+  switch (selectedSubtask) {
+    case "subtask1":
+      return (
+        <NetworkingSubtask1
+          userInfo={userInfo}
+          onTaskComplete={() => markComplete("subtask1")}     // finished = reached end / saved
+          onBack={(hasChanges, force) => handleClose(hasChanges, force)}
+        />
+      );
+    case "subtask2":
+    return (
+        <NetworkingSubtask2
+        userInfo={userInfo}
+        allEvents={allEvents}
+        userEvents={userEvents}
+        onDirtyChange={(v) => markDirty("subtask2", v)}
+        onTaskComplete={() => markComplete("subtask2")}
+        onBack={() => handleClose(false, true)}   // <- force close, no confirm
+        />
+    );
+    case "subtask3":
+      return (
+        <NetworkingSubtask3
+          userInfo={userInfo}
+          onDirtyChange={(v) => markDirty("subtask3", v)}
+          onTaskComplete={() => markComplete("subtask3")}
+          onBack={(hasChanges, force) => handleClose(hasChanges, force)}
+        />
+      );
+    default:
+      return null;
+  }
+};
+
 
   return (
     <div

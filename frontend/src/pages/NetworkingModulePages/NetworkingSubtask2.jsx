@@ -39,7 +39,8 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     });
   };
   const { completeTask } = useUserStore();
-  
+
+
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
   const getEventId = (e) => e?.id ?? e?._id;
 
@@ -99,28 +100,43 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allEvents]);
 
-  // --- Attendance toggle ---
-  const handleAttendance = async (eventId, currentStatus) => {
-    const nextStatus = currentStatus === "going" ? "attended" : "going";
-    try {
-      await api.put(
-        "/users/me/networking/events",
-        { attendingEventIds: [{ eventId, status: nextStatus }] },
-        { withCredentials: true }
-      );
-      setUserEvents((prev) => {
-        if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: nextStatus }] }];
-        const updated = { ...prev[0] };
-        const idx = updated.attendingEventIds.findIndex((ev) => String(ev.eventId) === String(eventId));
-        if (idx !== -1) updated.attendingEventIds[idx].status = nextStatus;
-        else updated.attendingEventIds.push({ eventId, status: nextStatus });
-        return [updated];
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("Events were not updated");
-    }
-  };
+ const handleAttendance = async (eventId, currentStatus) => {
+  const prevStatus = currentStatus;
+  const nextStatus = prevStatus === "going" ? "attended" : "going";
+
+  // 1) Optimistic update: instant UI change, no “reset” feeling
+  setUserEvents((prev) => {
+    // ensure shape always exists
+    const base = prev[0] ?? { attendingEventIds: [] };
+    const updated = { ...base, attendingEventIds: [...base.attendingEventIds] };
+    const idx = updated.attendingEventIds.findIndex((ev) => String(ev.eventId) === String(eventId));
+    if (idx !== -1) updated.attendingEventIds[idx] = { ...updated.attendingEventIds[idx], status: nextStatus };
+    else updated.attendingEventIds.push({ eventId, status: nextStatus });
+    return [updated];
+  });
+
+  try {
+    // 2) Persist to server
+    await api.put(
+      "/users/me/networking/events",
+      { attendingEventIds: [{ eventId, status: nextStatus }] },
+      { withCredentials: true }
+    );
+    toast.success(nextStatus === "attended" ? "Marked attended ✅" : "Locked in 🫡");
+  } catch (err) {
+    // 3) Revert on error
+    setUserEvents((prev) => {
+      const base = prev[0] ?? { attendingEventIds: [] };
+      const updated = { ...base, attendingEventIds: [...base.attendingEventIds] };
+      const idx = updated.attendingEventIds.findIndex((ev) => String(ev.eventId) === String(eventId));
+      if (idx !== -1) updated.attendingEventIds[idx] = { ...updated.attendingEventIds[idx], status: prevStatus };
+      else updated.attendingEventIds.push({ eventId, status: prevStatus });
+      return [updated];
+    });
+    console.error(err);
+    toast.error("Couldn’t update attendance");
+  }
+};
 
   // --- Filtering / search ---
   const uniqueTypes = useMemo(
