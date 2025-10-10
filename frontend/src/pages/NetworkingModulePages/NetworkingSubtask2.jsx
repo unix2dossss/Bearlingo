@@ -39,7 +39,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     });
   };
   const { completeTask } = useUserStore();
-
+  
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
   const getEventId = (e) => e?.id ?? e?._id;
 
