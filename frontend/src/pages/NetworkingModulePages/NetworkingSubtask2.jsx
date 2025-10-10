@@ -15,12 +15,13 @@ const COLORS = {
   bg: "#fffbe6",             // page background (soft yellow)
   panel: "#fffdf0",          // card/panel background
 };
- import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import { useUserStore } from "../../store/user";
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
+  const [actualUserEvents, setActualUserEvents] = useState([]);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [costFilter, setCostFilter] = useState("All");
@@ -70,17 +71,33 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     try {
       const res = await api.get("/users/me/networking/events", { withCredentials: true });
       setUserEvents(res?.data?.eventsToAttend || []);
+      if (res.data.eventstoAttend == []) {
+
+
+        const userEvents = res.data.eventsToAttend[0].attendingEventIds;
+        const userEventIds = userEvents.map(event => event.eventId);
+        const attendedEvents = allEvents.filter(event =>
+          userEventIds.includes(event.id)
+        );
+        setActualUserEvents(attendedEvents);
+      }
+
     } catch (error) {
       console.error("User events were not fetched", error);
       toast.error("User events were not fetched");
     }
   };
-
   useEffect(() => {
     fetchAllEvents();
-    fetchEventsOfUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // only run when allEvents has been loaded
+    if (allEvents.length > 0) {
+      fetchEventsOfUser();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvents]);
 
   // --- Attendance toggle ---
   const handleAttendance = async (eventId, currentStatus) => {
