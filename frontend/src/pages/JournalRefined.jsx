@@ -175,7 +175,7 @@ const JournalRefined = () => {
                 <TopNavbar />
 
                 <div className="flex">
-                    <div className="mt-8">
+                    <div className="">
                         <SideNavbar />
                     </div>
 

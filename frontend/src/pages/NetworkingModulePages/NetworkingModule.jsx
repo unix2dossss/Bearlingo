@@ -264,7 +264,7 @@ const renderSubtask = () => {
 
           <div className="flex">
             {/* Side Nav */}
-            <div className="mt-4 z-40">
+            <div className="z-40">
               <SideNavbar />
             </div>
 
