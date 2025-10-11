@@ -54,7 +54,7 @@ export default function SubtaskInfoPopup({ subtask, taskNumber }) {
 
         {/* Rewards Badge */}
         <div className="inline-flex items-center gap-2 bg-yellow-400 text-yellow-900 font-bold px-6 py-3 rounded-full border-b-4 border-yellow-600 active:border-b-0 active:mt-1 shadow-sm transition-all">
-          <Trophy className="w-5 h-5 text-yellow-700" />
+          <Star className="w-5 h-5 text-yellow-700" />
           <span className="text-lg">XP: {subtask.xpReward}</span>
         </div>
       </div>
