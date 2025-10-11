@@ -1,40 +1,67 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import api from "../../lib/axios";
 import toast from "react-hot-toast";
+import EventCard from "../../components/NetworkingModuleComponents/NetworkingSubtask2/EventCard.jsx";
+import Calendar from "../../components/NetworkingModuleComponents/NetworkingSubtask2/Calendar.jsx";
+
+
+const COLORS = {
+  primary: "#fcf782",        // pill / accent fill
+  primaryHover: "#fbe24f",   // hover / stronger
+  border: "#f4e58b",         // borders
+  text: "#111827",           // main text
+  muted: "#767687",          // subtext
+  bg: "#fffbe6",             // page background (soft yellow)
+  panel: "#fffdf0",          // card/panel background
+};
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import { useUserStore } from "../../store/user";
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
-  const COLORS = {
-    primary: "#4f9cf9",       
-    primaryHover: "#3d86ea",  
-    bgLight: "#f8fafc",       
-    textMain: "#1e293b",      
-    textMuted: "#64748b"}      
-
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
+  const [actualUserEvents, setActualUserEvents] = useState([]);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [costFilter, setCostFilter] = useState("All");
-  const railRef = useRef(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [activeTab, setActiveTab] = useState("All"); // All | Going | Favourite | Attended
+
+  // --- favourites (client-side; wire to API if needed)
+  const [favourites, setFavourites] = useState(() => new Set());
+  const toggleFavourite = (id, next) => {
+    setFavourites((prev) => {
+      const s = new Set(prev);
+      const key = String(id);
+      if (next ?? !s.has(key)) s.add(key); else s.delete(key);
+      return s;
+    });
+  };
+  const { completeTask } = useUserStore();
+
 
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
+  const getEventId = (e) => e?.id ?? e?._id;
 
-  const getEventStatus = (eventId) =>
-    attendingEventIds.find((ev) => ev.eventId === eventId)?.status || "default";
+  const statusById = useMemo(() => {
+    const m = new Map();
+    (attendingEventIds || []).forEach(({ eventId, status }) => {
+      if (eventId != null) m.set(String(eventId), status);
+    });
+    return m;
+  }, [attendingEventIds]);
 
+  const getStatus = (id) => statusById.get(String(id)) || "default";
+
+  // --- Data fetch ---
   const fetchAllEvents = async () => {
     try {
       const res = await api.get("/users/me/networking/all-events", {
         withCredentials: true,
-        headers: userInfo?.token
-          ? { Authorization: `Bearer ${userInfo.token}` }
-          : undefined,
+        headers: userInfo?.token ? { Authorization: `Bearer ${userInfo.token}` } : undefined,
       });
-      const eventsOnly = Array.isArray(res?.data?.allEventsFromBackend)
-        ? res.data.allEventsFromBackend
-        : [];
-      setAllEvents(eventsOnly);
+      setAllEvents(Array.isArray(res?.data?.allEventsFromBackend) ? res.data.allEventsFromBackend : []);
     } catch (error) {
       console.error("Error obtaining events", error);
       toast.error("Error obtaining events");
@@ -43,52 +70,75 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
   const fetchEventsOfUser = async () => {
     try {
-      const res = await api.get("/users/me/networking/events", {
-        withCredentials: true,
-      });
+      const res = await api.get("/users/me/networking/events", { withCredentials: true });
       setUserEvents(res?.data?.eventsToAttend || []);
+      if (res.data.eventstoAttend == []) {
+
+
+        const userEvents = res.data.eventsToAttend[0].attendingEventIds;
+        const userEventIds = userEvents.map(event => event.eventId);
+        const attendedEvents = allEvents.filter(event =>
+          userEventIds.includes(event.id)
+        );
+        setActualUserEvents(attendedEvents);
+      }
+
     } catch (error) {
       console.error("User events were not fetched", error);
       toast.error("User events were not fetched");
     }
   };
-
   useEffect(() => {
     fetchAllEvents();
-    fetchEventsOfUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAttendance = async (eventId, buttonState) => {
-    const nextStatus = buttonState === "going" ? "attended" : "going"; // default->going, going->attended
-    try {
-      await api.put(
-        "/users/me/networking/events",
-        { attendingEventIds: [{ eventId, status: nextStatus }] },
-        { withCredentials: true }
-      );
-
-      // Optimistic update
-      setUserEvents((prev) => {
-        if (!prev[0])
-          return [{ attendingEventIds: [{ eventId, status: nextStatus }] }];
-        const updated = { ...prev[0] };
-        const idx = updated.attendingEventIds.findIndex(
-          (ev) => ev.eventId === eventId
-        );
-        if (idx !== -1) {
-          updated.attendingEventIds[idx].status = nextStatus;
-        } else {
-          updated.attendingEventIds.push({ eventId, status: nextStatus });
-        }
-        return [updated];
-      });
-    } catch (error) {
-      console.error("Error updating events", error);
-      toast.error("Events were not updated");
+  useEffect(() => {
+    // only run when allEvents has been loaded
+    if (allEvents.length > 0) {
+      fetchEventsOfUser();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvents]);
 
+ const handleAttendance = async (eventId, currentStatus) => {
+  const prevStatus = currentStatus;
+  const nextStatus = prevStatus === "going" ? "attended" : "going";
+
+  // 1) Optimistic update: instant UI change, no “reset” feeling
+  setUserEvents((prev) => {
+    // ensure shape always exists
+    const base = prev[0] ?? { attendingEventIds: [] };
+    const updated = { ...base, attendingEventIds: [...base.attendingEventIds] };
+    const idx = updated.attendingEventIds.findIndex((ev) => String(ev.eventId) === String(eventId));
+    if (idx !== -1) updated.attendingEventIds[idx] = { ...updated.attendingEventIds[idx], status: nextStatus };
+    else updated.attendingEventIds.push({ eventId, status: nextStatus });
+    return [updated];
+  });
+
+  try {
+    // 2) Persist to server
+    await api.put(
+      "/users/me/networking/events",
+      { attendingEventIds: [{ eventId, status: nextStatus }] },
+      { withCredentials: true }
+    );
+    toast.success(nextStatus === "attended" ? "Marked attended ✅" : "Locked in 🫡");
+  } catch (err) {
+    // 3) Revert on error
+    setUserEvents((prev) => {
+      const base = prev[0] ?? { attendingEventIds: [] };
+      const updated = { ...base, attendingEventIds: [...base.attendingEventIds] };
+      const idx = updated.attendingEventIds.findIndex((ev) => String(ev.eventId) === String(eventId));
+      if (idx !== -1) updated.attendingEventIds[idx] = { ...updated.attendingEventIds[idx], status: prevStatus };
+      else updated.attendingEventIds.push({ eventId, status: prevStatus });
+      return [updated];
+    });
+    console.error(err);
+    toast.error("Couldn’t update attendance");
+  }
+};
+
+  // --- Filtering / search ---
   const uniqueTypes = useMemo(
     () => ["All", ...new Set(allEvents.map((e) => e.type).filter(Boolean))],
     [allEvents]
@@ -98,203 +148,200 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     [allEvents]
   );
 
-  const filteredEvents = useMemo(() => {
+  const baseFiltered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const selectedISO = selectedDate ? selectedDate.toISOString().slice(0, 10) : null;
+
     return allEvents.filter((e) => {
       const matchesQ =
         !q ||
-        `${e.name} ${e.description} ${e.location} ${e.type} ${e.costType}`
-          .toLowerCase()
-          .includes(q);
+        `${e.name} ${e.description} ${e.location} ${e.type} ${e.costType}`.toLowerCase().includes(q);
       const matchesType = typeFilter === "All" || e.type === typeFilter;
       const matchesCost = costFilter === "All" || e.costType === costFilter;
-      return matchesQ && matchesType && matchesCost;
+      const matchesDate = !selectedISO || e.dateISO === selectedISO; // if you store ISO dates
+      return matchesQ && matchesType && matchesCost && matchesDate;
     });
-  }, [allEvents, query, typeFilter, costFilter]);
+  }, [allEvents, query, typeFilter, costFilter, selectedDate]);
 
-  const scrollByCards = (dir = 1) => {
-    const el = railRef.current;
-    if (!el) return;
-    const card = el.querySelector(".carousel-item");
-    const gap = 16;
-    const delta = card
-      ? card.getBoundingClientRect().width + gap
-      : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * delta, behavior: "smooth" });
+  const filteredEvents = useMemo(() => {
+    if (activeTab === "Going") return baseFiltered.filter((e) => getStatus(getEventId(e)) === "going");
+    if (activeTab === "Attended") return baseFiltered.filter((e) => getStatus(getEventId(e)) === "attended");
+    if (activeTab === "Favourite") return baseFiltered.filter((e) => favourites.has(String(getEventId(e))));
+    return baseFiltered;
+  }, [baseFiltered, activeTab, favourites, userEvents]);
+
+  // --- UI helpers ---
+  const clearFilters = () => {
+    setQuery("");
+    setTypeFilter("All");
+    setCostFilter("All");
+    setSelectedDate(null);
+    setActiveTab("All");
   };
 
   return (
-    <div className="pt-16 bg-[#4f9cf9] relative min-h-screen flex flex-col min-w-0 gap-4 p-4">
+    <div
+      className="pt-16 relative min-h-screen flex flex-col min-w-0 gap-4 p-4"
+      style={{ backgroundColor: COLORS.bg, color: COLORS.text }}
+    >
       {/* Back */}
       <button
         className="btn btn-ghost absolute top-20 left-6 z-10"
         onClick={onBack}
+        style={{ color: COLORS.text }}
       >
         <ArrowLeftIcon className="size-5" />
         Back to subtasks
       </button>
 
-      {/* spacer equal to button height + gap */}
-      <div className="h-16" />
+      <div className="h-10" />
 
-      <h2 className="text-2xl font-bold text-slate-800 mb-1">
-        🎉 Join an Event & Earn Points!
-      </h2>
-      <p className="text-base text-slate-700 -mt-2">
-        Participate, learn, and get rewarded for attending events!
-      </p>
-
-      {/* Controls bar */}
-      <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[#4f9cf9]/80 backdrop-blur rounded-b-xl">
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            className="input input-sm input-bordered w-full sm:w-64"
-            placeholder="Search events…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <select
-            className="select select-sm select-bordered"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            {uniqueTypes.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-          <select
-            className="select select-sm select-bordered"
-            value={costFilter}
-            onChange={(e) => setCostFilter(e.target.value)}
-          >
-            {uniqueCosts.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-
-          <div className="ml-auto text-sm opacity-80">
-            Showing {filteredEvents.length}/{allEvents.length}
-          </div>
-        </div>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold inline-block rounded-lg px-2 py-1 text-[var(--text)]">My Events</h1>
       </div>
 
-      <div className="rounded-3xl bg-[#fef9c3]  overflow-hidden">
-        {/* Prev / Next buttons (desktop) */}
-        <button
-          aria-label="Previous"
-          onClick={() => scrollByCards(-1)}
-          className="hidden md:flex btn btn-circle btn-sm absolute left-2 top-1/2 -translate-y-1/2 z-10"
+      {/* Search + selects (top row) */}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input
+          className="input input-md flex-1 min-w-[240px] bg-white"
+          placeholder="Search events…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{
+            borderColor: COLORS.border,
+            color: COLORS.text,
+          }}
+        />
+        <select
+          className="select select-md bg-white"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          style={{ borderColor: COLORS.border, color: COLORS.text }}
         >
-          ‹
-        </button>
-        <button
-          aria-label="Next"
-          onClick={() => scrollByCards(1)}
-          className="hidden md:flex btn btn-circle btn-sm absolute right-2 top-1/2 -translate-y-1/2 z-10"
+          {uniqueTypes.map((t) => <option key={t}>{t}</option>)}
+        </select>
+        <select
+          className="select select-md bg-white"
+          value={costFilter}
+          onChange={(e) => setCostFilter(e.target.value)}
+          style={{ borderColor: COLORS.border, color: COLORS.text }}
         >
-          ›
-        </button>
+          {uniqueCosts.map((c) => <option key={c}>{c}</option>)}
+        </select>
+      </div>
 
-        <div
-          ref={railRef}
-          className="w-full p-5 overflow-x-auto flex gap-4 snap-x snap-mandatory scroll-smooth"
-        >
-          {(Array.isArray(filteredEvents) ? filteredEvents : []).map(
-            (item, index) => {
-              const status = getEventStatus(item.id);
-              const btnClass =
-                status === "going"
-                  ? "bg-green-500 hover:bg-green-600 text-white shadow-lg"
-                  : status === "attended"
-                    ? "bg-blue-400 hover:bg-blue-700 text-white shadow-lg opacity-50 cursor-not-allowed"
-                    : "bg-white-400 hover:bg-white-500 text-black shadow-md";
+      {/* Filter pills (All / Going / Favourite / Attended) */}
+      <div className="flex items-center gap-2 mt-3">
+        {["All", "Going", "Favourite", "Attended"].map((t) => {
+          const active = activeTab === t;
+          return (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className="px-3 py-1.5 rounded-full text-sm border transition"
+              style={{
+                backgroundColor: active ? COLORS.primary : "#ffffff",
+                borderColor: active ? COLORS.primary : COLORS.border,
+                color: active ? COLORS.text : "#374151", // slate-700
+              }}
+              onMouseEnter={(e) => {
+                if (!active) e.currentTarget.style.backgroundColor = "#fffaf0";
+              }}
+              onMouseLeave={(e) => {
+                if (!active) e.currentTarget.style.backgroundColor = "#ffffff";
+              }}
+            >
+              {t}
+            </button>
+          );
+        })}
+      </div>
 
+      {/* Main area */}
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-6 min-h-0">
+        {/* Scrollable list */}
+        <section
+          className="rounded-xl p-4 min-h-0 h-[65vh] lg:h-[calc(100vh-240px)] overflow-y-auto pr-1
+                     overscroll-contain [scrollbar-gutter:stable] scrollbar-thin"
+          style={{
+            backgroundColor: COLORS.panel,
+            border: `1px solid ${COLORS.border}`,
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          <div className="flex flex-col gap-3">
+            {(Array.isArray(filteredEvents) ? filteredEvents : []).map((item, i) => {
+              const id = getEventId(item);
               return (
                 <div
-                key={item.id ?? index}
-                className="carousel-item snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[45%] lg:w-[32%]
-                            bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105
-                            flex flex-col overflow-hidden border border-gray-100"
+                  key={id ?? i}
+                  className="rounded-xl border"
+                  style={{ backgroundColor: "#ffffff", borderColor: COLORS.border }}
                 >
-                {/* Banner */}
-                <div className="h-40 flex items-center justify-center text-white font-bold text-lg"
-                    style={{
-                        background: `linear-gradient(135deg, #14b8a6, #0ea5e9)` // teal → sky blue
-                    }}>
-                    {item.type}
+                  <EventCard
+                    item={item}
+                    status={getStatus(id)}
+                    onAttendanceClick={handleAttendance}
+                    isFavorite={favourites.has(String(id))}
+                    onToggleFavorite={toggleFavourite}
+                  />
                 </div>
-
-                {/* Content */}
-                <div className="flex-1 flex flex-col p-4 gap-3">
-                    {/* Event name */}
-                    <h3 className="text-xl font-bold text-gray-900">
-                    {item.name}
-                    </h3>
-
-                    {/* Badges */}
-                    <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-2 py-1 rounded-md text-xs bg-amber-100 text-amber-700 font-medium">
-                        {item.type}
-                    </span>
-                    <span className="px-2 py-1 rounded-md text-xs bg-emerald-100 text-emerald-700 font-medium">
-                        {item.costType}
-                    </span>
-                    </div>
-
-                    {/* Info */}
-                    <p className="text-sm text-gray-600">📅 {item.date} · {item.time}</p>
-                    <p className="text-sm text-gray-600">📍 {item.location}</p>
-
-                    {/* Description */}
-                    <h4 className="mt-2 font-semibold text-sm text-amber-600">Description</h4>
-                    <div className="mt-1 flex-1 max-h-28 overflow-y-auto p-2 border border-gray-200 rounded-lg
-                                    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-                    <p className="text-sm text-gray-700">{item.description}</p>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="mt-auto pt-2 flex flex-col gap-2">
-                    <a href={item.link} target="_blank" rel="noreferrer"
-                        className="btn btn-sm w-full text-white hover:scale-105 hover:shadow-md transition-transform duration-200"
-                        style={{ backgroundColor: "#4f9cf9" }}>
-                        View Event
-                    </a>
-
-                    <button
-                        className="btn btn-sm w-full transition-transform duration-200 hover:scale-105"
-                        style={{
-                        backgroundColor:
-                            status === "going"
-                            ? "#22c55e" // emerald green
-                            : status === "attended"
-                            ? "#9ca3af" // neutral gray
-                            : "#fbbf24", // amber for "Going to Attend"
-                        color: "white",
-                        opacity: status === "attended" ? 0.8 : 1
-                        }}
-                        onClick={() => handleAttendance(item.id, status)}
-                        disabled={status === "attended"}
-                    >
-                        {status === "attended"
-                        ? "Attended ✅"
-                        : status === "going"
-                        ? "Locked In 🫡 (tap to mark attended)"
-                        : "Going to Attend"}
-                    </button>
-                    </div>
-                </div>
-                </div>
-
               );
-            }
-          )}
+            })}
+            {filteredEvents.length === 0 && (
+              <div className="w-full text-center text-sm py-12" style={{ color: COLORS.muted }}>
+                No events match your filters.
+              </div>
+            )}
+          </div>
+        </section>
 
-          {filteredEvents.length === 0 && (
-            <div className="w-full text-center text-sm text-gray-700 py-8">
-              No events match your filters.
+        {/* Schedule panel */}
+        <aside className="xl:sticky xl:top-24 self-start">
+          <div
+            className="rounded-2xl p-4 shadow-sm"
+            style={{ backgroundColor: "#ffffff", border: `1px solid ${COLORS.border}` }}
+          >
+            <Calendar value={selectedDate} onChange={setSelectedDate} events={allEvents} />
+          </div>
+
+          <div
+            className="mt-4 rounded-2xl p-4 shadow-sm"
+            style={{ backgroundColor: "#ffffff", border: `1px solid ${COLORS.border}` }}
+          >
+            <div className="text-sm font-semibold mb-2" style={{ color: "#92400e" /* amber-800 */ }}>
+              Upcoming
             </div>
-          )}
-        </div>
+            <div className="space-y-2 text-sm">
+              {baseFiltered.slice(0, 3).map((e) => (
+                <div key={getEventId(e)} className="flex items-center justify-between">
+                  <div className="truncate">
+                    <div className="font-medium truncate" style={{ color: COLORS.text }}>
+                      {e.name}
+                    </div>
+                    <div style={{ color: COLORS.muted }}>
+                      {e.date} · {e.time || "TBC"}
+                    </div>
+                  </div>
+                  <a
+                    href={e.link || "#"}
+                    onClick={(ev) => { if (!e.link) ev.preventDefault(); }}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="ml-3 underline"
+                    style={{ color: "#b45309" /* amber-700 */ }}
+                  >
+                    Open
+                  </a>
+                </div>
+              ))}
+              {baseFiltered.length === 0 && (
+                <div style={{ color: COLORS.muted }}>No upcoming items</div>
+              )}
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

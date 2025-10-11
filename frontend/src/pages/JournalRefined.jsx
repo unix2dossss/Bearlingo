@@ -8,6 +8,7 @@ import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
 import SideNavbar from '../components/SideNavbar';
 import api from "../lib/axios";
+import BackgroundMusicBox from '../components/BackgroundMusicBox';
 
 
 const JournalRefined = () => {
@@ -18,6 +19,23 @@ const JournalRefined = () => {
     const [openFolder, setOpenFolder] = useState(false);
     const [showAddFileModal, setShowAddFileModal] = useState(false);
     const [openFile, setOpenFile] = useState(false);
+    const [addFile, setAddFile] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState("");
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isTyping, setIsTyping] = useState(false);
+
+    const reflectionQuestions = [
+        "Let's create a reflection together!",
+        "Ready to get started?",
+        "What would you like to title this reflection?",
+        "Which event or experience are you reflecting on?",
+        "Nice! How did that make you feel? Choose an emoji to express it.",
+        "What was the positive takeaway or silver lining from this experience?",
+        "What could you do differently or improve next time?",
+        "How would you rate this event or experience?",
+        "Great work! 👍 Give this reflection a thumbs up if you’re ready to save it."
+    ];
 
     // These are for setting a new goal (i.e making a POST request)
     const [goalTitle, setGoalTitle] = useState("");
@@ -42,10 +60,18 @@ const JournalRefined = () => {
     const [thoughts, setThoughts] = useState("");
 
     const [folders, setFolders] = useState([
-        { name: "Reflections", image: PinkFolder },
-        { name: "Goals", image: YellowFolder },
-        { name: "Notes", image: BlueFolder },
+        { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
+        { id: 2, name: "Goals", image: YellowFolder, items: goals },
+        { id: 3, name: "Notes", image: BlueFolder, items: notes },
     ]);
+
+    useEffect(() => {
+        setFolders([
+            { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
+            { id: 2, name: "Goals", image: YellowFolder, items: goals },
+            { id: 3, name: "Notes", image: BlueFolder, items: notes },
+        ]);
+    }, [reflections, goals, notes]);
 
 
     const getAllJournals = async () => {
@@ -57,13 +83,13 @@ const JournalRefined = () => {
             const getNotes = await api.get("/users/journal/notes",
                 { withCredentials: true });
             if (getGoals.data.message == "Goals retrieved succesfully!") {
-                setGoals(getGoals);
+                setGoals(getGoals.data.goals);
             }
             if (getReflections.data.message == "Reflections retrieved succesfully!") {
-                setReflections(getReflections);
+                setReflections(getReflections.data.reflections);
             }
             if (getNotes.data.message == "Notes retrieved succesfully!") {
-                setNotes(getNotes);
+                setNotes(getNotes.data.notes);
             }
 
         } catch (error) {
@@ -83,7 +109,8 @@ const JournalRefined = () => {
                     isCompleted: goalIsCompleted
                 },
                 { withCredentials: true });
-            setGoals(prevGoals => [...prevGoals, goalSaved.data]);
+            setGoals(prevGoals => [...prevGoals, goalSaved.data])
+
 
         } catch (error) {
             console.error("Error in saving goal", error);
@@ -141,22 +168,31 @@ const JournalRefined = () => {
 
 
 
-    // These are not needed when retrieving data from backend but were used in previous journal implementation
-    const [showSmartFormModal, setShowSmartFormModal] = useState(false);
-    const [newSmartGoal, setNewSmartGoal] = useState({
-        fileName: "",
-        smart: {
-            specific: "",
-            measurable: "",
-            achievable: "",
-            relevant: "",
-            timebound: "",
-        },
-    });
-    const [newReflection, setNewReflection] = useState({
-        fileName: "",
-        text: ""
-    })
+    useEffect(() => {
+        if (currentIndex < reflectionQuestions.length) {
+            setIsTyping(true);
+            const timer = setTimeout(() => {
+                setMessages((prev) => [
+                    ...prev,
+                    { sender: "bear", text: reflectionQuestions[currentIndex] }
+                ]);
+                setIsTyping(false);
+            }, 1000); // typing delay
+            return () => clearTimeout(timer);
+        }
+    }, [currentIndex]);
+
+    const handleSend = () => {
+        if (input.trim() === "") return;
+        setMessages((prev) => [...prev, { sender: "user", text: input }]);
+        setInput("");
+        setCurrentIndex((prev) => prev + 1);
+        if (currentIndex == reflectionQuestions.length - 1) {
+            setInput("");
+            setMessages("");
+        }
+    };
+
 
 
 
@@ -165,8 +201,10 @@ const JournalRefined = () => {
             <div className="bg-blue-200 min-h-screen border border-black">
                 <TopNavbar />
 
+                <BackgroundMusicBox moduleName="Journal" />
+
                 <div className="flex">
-                    <div className="mt-8">
+                    <div className="">
                         <SideNavbar />
                     </div>
 
@@ -239,25 +277,31 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    {openFolder.files.map((file, i) => (
+                                    {console.log("openFolder.items: ", openFolder.items)}
+                                    {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setOpenFile(file)}
                                             className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
-                                            {file.fileName}
+                                            {file.title}
                                         </button>
                                     ))}
                                     <button
                                         className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
-                                        onClick={() => setShowAddFileModal(true)}
+                                        onClick={() => {
+                                            setShowAddFileModal(true);
+                                            setAddFile(true);
+                                        }
+                                        }
                                     >
                                         + Add New File
                                     </button>
 
                                     {/* Creating a new file and adding it to the goals folder */}
                                     {showAddFileModal && openFolder.name == "Goals" && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+
+                                        < div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
                                             <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
                                                 <h2 className="text-lg font-bold mb-4 text-purple-600">
                                                     Add A New Entry To {openFolder.name}
@@ -314,200 +358,10 @@ const JournalRefined = () => {
                                         </div>
                                     )}
 
-                                    {/* Creating a new file and adding it to the reflections folder */}
-                                    {showAddFileModal && openFolder.name == "Reflections" && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                                            <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
-                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
-                                                    Add A New Entry To {openFolder.name}
-                                                </h2>
-
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter name of Reflection"
-                                                    value={newFileName}
-                                                    onChange={(e) => setNewFileName(e.target.value)}
-                                                    className="input input-bordered w-full mb-4"
-                                                />
-
-                                                <div className="flex justify-end gap-3">
-                                                    <button
-                                                        className="btn btn-ghost"
-                                                        onClick={() => {
-                                                            setNewFileName("");
-                                                            setShowAddFileModal(false);
-                                                        }}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        className="btn btn-primary"
-                                                        onClick={() => {
-                                                            if (newFileName.trim()) {
-                                                                // Initialize the new goal
-                                                                setNewReflection({
-                                                                    fileName: newFileName,
-                                                                    text: ""
-                                                                });
-
-                                                                setShowAddFileModal(false);
-                                                                setShowSmartFormModal(true);
-                                                                setNewFileName("");
-                                                            }
-
-
-                                                        }}
-                                                    >
-                                                        Next
-                                                    </button>
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Filling out SMART goals in modal for Goals folder */}
-                                    {showSmartFormModal && openFolder.name == "Goals" && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                                            <div className="bg-white w-[600px] p-6 rounded-xl shadow-lg">
-                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
-                                                    Fill SMART details for {newSmartGoal.fileName}
-                                                </h2>
-
-                                                {["Specific - What is one specific thing you want to achieve in the next 2 weeks? ", "measurable - How will you measure progress toward this goal?", "achievable - Is this goal achievable with the resources you have? ", "relevant - Why is this goal relevant to your long-term vision? ", "timebound - What is your deadline for completing this goal?"].map((field) => {
-                                                    const [label, placeholder] = field.split(" - ");
-                                                    return (
-                                                        <div key={field} className="mb-3">
-
-                                                            <label className="block font-semibold text-purple-700 capitalize">{label}</label>
-                                                            <input
-                                                                type="text"
-                                                                className="input input-bordered w-full"
-                                                                placeholder={placeholder}
-                                                                value={newSmartGoal.smart[field]}
-                                                                onChange={(e) =>
-                                                                    setNewSmartGoal((prev) => ({
-                                                                        ...prev,
-                                                                        smart: { ...prev.smart, [label.toLowerCase()]: e.target.value }
-                                                                    }))
-                                                                }
-                                                            />
-                                                        </div>
-                                                    );
-                                                })}
-
-                                                <div className="flex justify-end gap-3 mt-4">
-                                                    <button
-                                                        className="btn btn-ghost"
-                                                        onClick={() => setShowSmartFormModal(false)}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        className="btn btn-primary"
-                                                        onClick={() => {
-                                                            // Add new goal to Goals folder
-                                                            setFolders((currentFolders) =>
-                                                                currentFolders.map((folder) =>
-                                                                    folder.name === "Goals"
-                                                                        ? { ...folder, files: [...folder.files, newSmartGoal] }
-                                                                        : folder
-                                                                )
-                                                            );
-
-                                                            // Also update the openFolder object if it's currently open
-                                                            setOpenFolder((prev) =>
-                                                                prev.name === "Goals"
-                                                                    ? { ...prev, files: [...prev.files, newSmartGoal] }
-                                                                    : prev
-                                                            );
-
-                                                            setShowSmartFormModal(false);
-                                                            setOpenFile(newSmartGoal); // Optionally open the newly created goal
-                                                        }}
-                                                    >
-                                                        Save Goal
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Filling out reflection text in modal for Reflections folder */}
-                                    {showSmartFormModal && openFolder.name == "Reflections" && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                                            <div className="bg-white w-[600px] p-6 rounded-xl shadow-lg">
-                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
-                                                    Fill out reflection for {newReflection.fileName}
-                                                </h2>
-
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-
-                                                <h4 className="text-black text-sm font-extralight italic">
-                                                    Example prompts: How are you feeling about your career this week? Are you happy with the direction you’re heading in? What challenges are you facing right now? How will you overcome this challenge? How clear are you about your next steps?
-                                                </h4>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-
-                                                <div className="mb-3">
-
-                                                    <label className="block font-semibold text-purple-700 capitalize">Reflection</label>
-                                                    <input
-                                                        type="text"
-                                                        className="input input-bordered w-full"
-                                                        placeholder={""}
-                                                        value={newReflection.text}
-                                                        onChange={(e) =>
-                                                            setNewReflection((prev) => ({
-                                                                ...prev,
-                                                                text: e.target.value
-                                                            }))
-                                                        }
-                                                    />
-                                                </div>
-
-
-                                                <div className="flex justify-end gap-3 mt-4">
-                                                    <button
-                                                        className="btn btn-ghost"
-                                                        onClick={() => setShowSmartFormModal(false)}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        className="btn btn-primary"
-                                                        onClick={() => {
-                                                            // Add new goal to Goals folder
-                                                            setFolders((currentFolders) =>
-                                                                currentFolders.map((folder) =>
-                                                                    folder.name === "Reflections"
-                                                                        ? { ...folder, files: [...folder.files, newReflection] }
-                                                                        : folder
-                                                                )
-                                                            );
-
-                                                            // Also update the openFolder object if it's currently open
-                                                            setOpenFolder((prev) =>
-                                                                prev.name === "Reflections"
-                                                                    ? { ...prev, files: [...prev.files, newReflection] }
-                                                                    : prev
-                                                            );
-
-                                                            setShowSmartFormModal(false);
-                                                            setOpenFile(newReflection); // Optionally open the newly created goal
-                                                        }}
-                                                    >
-                                                        Save Reflection
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
 
                                 </div>
 
-                                {/* actual file content in Goals folder + typing area */}
+                                {/* File content in Goals folder + typing area */}
                                 {openFolder.name == "Goals" && (
 
                                     < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
@@ -571,7 +425,7 @@ const JournalRefined = () => {
                                         ) : (
                                             // Show default list of goals
                                             <ul className="space-y-3">
-                                                {openFolder.files.map((file, index) => (
+                                                {openFolder.items.map((file, index) => (
                                                     <li
                                                         key={index}
                                                         className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
@@ -592,38 +446,93 @@ const JournalRefined = () => {
                                     </div>
                                 )}
 
+                                {/* Creating a new file and adding it to the reflections folder */}
+                                {addFile && openFolder.name == "Reflections" && (
+                                    <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+                                        <div className="bg-white w-[100%] h-[90%] p-6 rounded-xl shadow-lg flex flex-col gap-3 overflow-y-scroll">
+                                            {messages.map((msg, i) => (
+                                                <div
+                                                    key={i}
+                                                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
+                                                        }`}
+                                                >
+                                                    <div
+                                                        className={`px-4 py-2 rounded-2xl max-w-[75%] ${msg.sender === "user"
+                                                            ? "bg-purple-100 text-purple-800 self-end"
+                                                            : "bg-purple-200 text-purple-900"
+                                                            }`}
+                                                    >
+                                                        {msg.text}
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            {isTyping && (
+                                                <div className="flex items-center gap-1 text-purple-400">
+                                                    <span className="animate-bounce">•</span>
+                                                    <span className="animate-bounce delay-100">•</span>
+                                                    <span className="animate-bounce delay-100">•</span>
+                                                </div>
+                                            )}
+
+                                            {!isTyping && currentIndex < reflectionQuestions.length && (
+                                                <div className="flex mt-3">
+                                                    <input
+                                                        type="text"
+                                                        value={input}
+                                                        onChange={(e) => setInput(e.target.value)}
+                                                        placeholder="Type your answer..."
+                                                        className="flex-1 border rounded-full px-4 py-2 text-sm border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                                    />
+                                                    <button
+                                                        onClick={handleSend}
+                                                        className="ml-2 bg-purple-500 text-white rounded-full px-4 py-2 text-sm hover:bg-purple-600"
+                                                    >
+                                                        Send
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                )}
+
 
                                 {/* actual file content of Reflections folder + typing area */}
-                                {openFolder.name == "Reflections" && (
+                                {addFile == false && openFolder.name == "Reflections" && (
 
                                     < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+
                                         {/* Check if a file is selected */}
                                         {openFile ? (
+
                                             // Show selected file content
-                                            <div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
+                                            < div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
+                                                {console.log("Open file: ", openFile)}
+                                                {console.log("typeof openFile", typeof openFile)}
+                                                {console.log("openFile === object", openFile === "object")}
                                                 <div className="flex justify-center">
                                                     <div className="flex items-between">
                                                         <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
-                                                            {typeof openFile === "object" ? openFile.fileName : openFile}
+                                                            {openFile.title}
                                                         </h1>
 
                                                     </div>
                                                 </div>
 
-                                                {/* Displaying the SMART Goals if they exist */}
 
-                                                {/* If SMART goals exist */}
+                                                {/* If reflections exist */}
                                                 {typeof openFile === "object" && openFile.smart ? (
                                                     <div className="space-y-3 mt-8">
                                                         <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Specific</h4>
-                                                            <p className="text-gray-700">{openFile.text}</p>
+                                                            <h4 className="font-semibold text-purple-700">{openFile.title}</h4>
+                                                            <p className="text-gray-700">{openFile.about}</p>
                                                         </div>
 
                                                     </div>
                                                 ) : (
                                                     <p className="text-purple-700">
-                                                        {typeof openFile === "object" ? openFile.text || "No content available." : "No file selected."}
+
                                                     </p>
                                                 )}
                                                 <div className=" mt-auto flex justify-center items-center p-2">
@@ -639,7 +548,7 @@ const JournalRefined = () => {
                                         ) : (
                                             // Show default overview of reflections
                                             <ul className="space-y-3">
-                                                {openFolder.files.map((file, index) => (
+                                                {openFolder.items.map((file, index) => (
                                                     <li
                                                         key={index}
                                                         className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"

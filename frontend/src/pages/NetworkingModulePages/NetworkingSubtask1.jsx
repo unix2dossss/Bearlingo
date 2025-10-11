@@ -4,14 +4,22 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import Bear from "../../assets/Bear.svg";
 import api from "../../lib/axios";
+import { useUserStore } from "../../store/user";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
 import Headline from "../../components/NetworkingModuleComponents/NetworkingSubtask1/HeadLine";
 
 
-export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
+const COLORS = {
+  primary: "#4f9cf9",
+  primaryHover: "#3d86ea",
+  textMuted: "#767687",
+};
+
+export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComplete }) {
   const [currentSpeechIndex, setCurrentSpeechIndex] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);
 
@@ -23,6 +31,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
   const [userHasProfile, setUserHasProfile] = useState(false);
   const [savedProfile, setSavedProfile] = useState("");
   const [nextButtonValid, _] = useState(true);
+  const { completeTask } = useUserStore();
+  const [isSaving, setIsSaving] = useState(false);
+
 
   const speechForSubtask1 = [
     "Hi there! 👋",
@@ -81,6 +92,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
         setUserHasProfile(true);
         console.log("profileExists.data.linkedInProfile", profileExists.data.linkedInProfile);
         toast.success("Profile retrieved!");
+        onTaskComplete?.();   // mark completed in parent
       } else {
         setUserHasProfile(false);
       }
@@ -183,6 +195,30 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       setUserHasProfile(true);
 
       toast.success("Profile saved!");
+      onTaskComplete?.();      // parent sets completed.subtask1 = true
+      onBack?.(false, true);   // hasChanges=false, force=true (close without popup)
+
+      // Get subtaskId by module name, level number and subtask sequence number
+      let subtaskId;
+      try {
+        subtaskId = await getSubtaskBySequenceNumber("Networking Hub", 1, 1);
+      } catch (err) {
+        console.error("Failed to get subtask ID", err);
+        toast.error("Could not find subtask");
+        return;
+      }
+
+      try {
+        const done = await completeTask(subtaskId);
+        if (done?.data?.message === "Well Done! You completed the subtask") {
+          toast.success("Task 1 completed!");
+          onTaskComplete?.();    // mark completed
+          onBack?.(false, true);
+        }
+      } catch (err) {
+        console.error("Failed to complete task", err);
+        toast.error("Could not mark task complete");
+      }
 
     } catch (error) {
       console.log("Error in saving profile to database: ", error);
@@ -204,6 +240,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack }) {
       return [...prev, skill];
     });
   };
+
 
 
 

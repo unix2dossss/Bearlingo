@@ -104,7 +104,7 @@ export const logoutUser = (req, res) => {
       httpOnly: true,
       expires: new Date(0), // Set the cookie to expire immediately
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
+      sameSite: process.env.NODE_ENV !== "development" ? "none" : "strict"
     });
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
@@ -118,7 +118,7 @@ export const googleCallback = (req, res) => {
   try {
     const token = generateToken(res, req.user._id);
     // Successful authentication, redirect home page
-    res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}`);
+    res.redirect(`${process.env.CLIENT_URL}/auth-success`);
   } catch (error) {
     console.error("Google authentication error:", error);
     res.redirect(`${process.env.CLIENT_URL}/login?error=google_failed`);

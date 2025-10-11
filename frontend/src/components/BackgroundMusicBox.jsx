@@ -22,6 +22,13 @@ const moduleColors = {
     bgAlt: "bg-amber-600 hover:bg-amber-500",
     text: "text-yellow-300",
     select: "bg-amber-500"
+  },
+  Journal: {
+    border: "border-blue-500",
+    bgMain: "bg-blue-500 hover:bg-blue-400",
+    bgAlt: "bg-blue-600 hover:bg-blue-500",
+    text: "text-blue-300",
+    select: "bg-blue-500"
   }
 };
 
@@ -137,7 +144,7 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
               hover:scale-105 active:scale-95`}
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
-        zIndex: 10000,
+        zIndex: 40,
         userSelect: "none"
       }}
     >

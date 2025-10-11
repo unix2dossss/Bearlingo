@@ -121,9 +121,9 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
   };
 
   return (
-  <div className="flex flex-col h-full">
+  <div className="flex flex-col h-full ">
     {/* Sticky Close Button */}
-    <div className="sticky top-0 z-50 flex justify-end bg-white p-2">
+    <div className="sticky top-0 z-50 flex justify-end bg-white p-2 rounded-full">
       <button
         onClick={handleLocalClose}
         className="p-2 text-gray-400 hover:text-gray-600 text-xl"

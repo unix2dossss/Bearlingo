@@ -77,22 +77,26 @@ console.log(`Inserted ${levels.length} levels`);
 // Three subtasks for Level 1 of CV Builder
 const cvBuilderLevel1Subtasks = [
   {
-    title: "Personal Information Form",
-    description: "Create a form to collect personal details.",
+    title: "Personal & Education Details",
+    description:
+      "Start your CV by adding your personal and education details.\nYou can upload an existing PDF CV or fill the form to build one from scratch.",
     sequenceNumber: 1,
     level: levels[0]._id,
     xpReward: 20
   },
   {
     title: "Skills & Experience Checklist",
-    description: "Create a checklist for skills and experiences.",
+    description:
+      "Show off your skills, projects, experience, and achievements.\nIf you uploaded a CV in Task 1, you can skip this step.",
     sequenceNumber: 2,
     level: levels[0]._id,
     xpReward: 20
   },
   {
-    title: "CV Preview & Download",
-    description: "Implement CV preview and pdf download functionality.",
+    title: "Preview, download, and AI analyze",
+    description:
+      "Preview or download your CV, then let AI analyze it!\nGet instant feedback on strengths, weaknesses, and an overall score to see how your CV stands out.",
+
     sequenceNumber: 3,
     level: levels[0]._id,
     xpReward: 20
@@ -102,22 +106,22 @@ const cvBuilderLevel1Subtasks = [
 // Three subtasks for Level 1 of Interview Skills
 const interviewSkillsLevel1Subtasks = [
   {
-    title: "Common Interview Questions List",
-    description: "Create a list of common interview questions.",
+    title: "Common Interview Questions",
+    description: "Practice answering common interview questions.\nLearn how to introduce yourself, highlight strengths, and tackle tricky questions with confidence.",
     sequenceNumber: 1,
     level: levels[1]._id,
     xpReward: 20
   },
   {
     title: "Company Research Guide",
-    description: "Provide a guide on how to research companies.",
+    description: "Research companies before interviews.\nFill in the company name, industry, key products, main competitors, and prepare questions to ask the interviewer. Impress employers and stand out!",
     sequenceNumber: 2,
     level: levels[1]._id,
     xpReward: 20
   },
   {
-    title: "Mock Interview Scheduling",
-    description: "Implement a scheduling system for mock interviews.",
+    title: "Reflection & Improvement",
+    description: "Reflect on your interview practice.\nRecord what went well, what was difficult, and plan improvements to get better each time.",
     sequenceNumber: 3,
     level: levels[1]._id,
     xpReward: 20
@@ -126,8 +130,8 @@ const interviewSkillsLevel1Subtasks = [
 
 // Three subtasks for Level 1 of Networking Hub
 const networkingHubLevel1Subtasks = [
-    {
-    title: "Profile Creation",
+  {
+    title: "LinkedIn Profile Creation",
     description: "Create a LinkedIn profile with professional details.",
     sequenceNumber: 1,
     level: levels[2]._id,
@@ -183,7 +187,6 @@ for (const module of modules) {
   module.levels = levelIds;
   await module.save();
 }
-
 
 console.log("Database seeded successfully!");
 
