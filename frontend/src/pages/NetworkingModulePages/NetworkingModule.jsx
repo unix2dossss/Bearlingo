@@ -335,7 +335,7 @@ const NetworkingModule = () => {
                             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
 
                             <div className="flex"> 
-                                <div className="mt-4">
+                                <div className="mt-16 z-40">
                                     <SideNavbar />
                                 </div>
 

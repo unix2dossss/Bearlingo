@@ -174,8 +174,13 @@ const CVModule = () => {
         }
       });
     } else {
+      // When still locked
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
-      gsap.to(windowLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+      gsap.to(windowLockedRef.current, {
+      opacity: 0.7, 
+      duration: 0.6,
+      ease: "power2.out"
+    });
     }
   }, [task1Complete]);
 
@@ -207,14 +212,14 @@ const CVModule = () => {
             rotation: 0,
             y: 0,
             duration: 1.5,
-            ease: "elastic.out(1, 0.5)"
+            ease: "bounce.out"
           });
         }
       });
     } else {
       gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
       gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -240,7 +245,11 @@ const CVModule = () => {
       });
     } else {
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
-      gsap.to(deskLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+      gsap.to(deskLockedRef.current, {
+        opacity: 0.7,
+        duration: 0.6,
+        ease: "power2.out"
+      });
     }
   }, [task3Complete]);
 
@@ -432,8 +441,7 @@ const CVModule = () => {
                     ref={drawersLockedRef}
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
-                    style={{ opacity: 0.4 }}
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none "
                   />
                   <img
                     ref={drawersUnlockedRef}
@@ -446,7 +454,6 @@ const CVModule = () => {
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
                     className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
-                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={bookcaseUnlockedRef}
@@ -512,7 +519,7 @@ const CVModule = () => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-90%]">
+      <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold text-sm sm:text-base shadow-md">
                   {bearMessage}
                   <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
                 </div>

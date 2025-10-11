@@ -172,7 +172,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
       gsap.to(deskLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -210,7 +210,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(sofaUnlockedRef.current, { opacity: 0 });
       gsap.to(sofaLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -248,7 +248,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(wallUnlockedRef.current, { opacity: 0 });
       gsap.to(wallLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -359,13 +359,13 @@ const InterviewModule = () => {
                     ref={deskLockedRef}
                     src={DeskLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                   <img
                     ref={deskUnlockedRef}
                     src={Desk}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                 </div>
 
@@ -375,13 +375,13 @@ const InterviewModule = () => {
                     ref={sofaLockedRef}
                     src={SofaLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                   <img
                     ref={sofaUnlockedRef}
                     src={Sofa}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                 </div>
               </div>
