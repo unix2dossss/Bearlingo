@@ -29,7 +29,7 @@ export default function SubtaskInfoPopup({ subtask, taskNumber }) {
   return (
     <div
       ref={popupRef}
-      className="absolute -top-72 left-1/2 -translate-x-1/2 w-80 max-w-xs z-50 pointer-events-auto animate-fade-in"
+      className="absolute -top-96 left-1/2 -translate-x-1/2 w-80 max-w-sm z-50 pointer-events-auto animate-fade-in"
     >
       {/* half Rectangle behind the plant */}
       <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-full h-48 rounded-[2.5rem] bg-sky-100 border-8 border-blue-400" />
