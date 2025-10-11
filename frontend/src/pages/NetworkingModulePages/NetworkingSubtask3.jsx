@@ -9,11 +9,14 @@ import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import AddReflection from "../../components/NetworkingModuleComponents/NetworkingSubtask3/AddReflection.jsx";
 import PastReflections from "../../components/NetworkingModuleComponents/NetworkingSubtask3/PastReflections.jsx";
 
-export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
+export default function NetworkingSubtask3({ userInfo = {}, onBack, onTaskComplete }) {
   const [userReflections, setUserReflections] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
   const [activeTab, setActiveTab] = useState("new"); // "new" | "past"
   const { completeTask } = useUserStore();
+  const [canLeave, setCanLeave] = useState(false);  
+  const [dirty, setDirty] = useState(false);
+  const [savedSinceLastEdit, setSavedSinceLastEdit] = useState(false);
 
   // --- data fetchers ---
   const getReflections = async () => {
@@ -49,6 +52,8 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
     // update local list
     setUserReflections((prev) => [newReflection, ...prev]);
     setActiveTab("past");
+    setDirty(false);
+    setSavedSinceLastEdit(true);
 
     // try to mark subtask complete
     try {
@@ -56,6 +61,8 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       const done = await completeTask(subtaskId);
       if (done?.data?.message === "Well Done! You completed the subtask") {
         toast.success("Task completed!");
+        onTaskComplete?.();      // parent sets completed.subtask3 = true
+        setCanLeave(true);    // hasChanges=false, force=true (close without popup)
       }
     } catch (err) {
       console.error("Failed to complete task", err);
@@ -63,11 +70,21 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       toast.error("Could not mark task complete");
     }
   };
+  
 
   return (
     <div className="pt-16 bg-[#4f9cf9] relative min-h-screen flex flex-col min-w-0 gap-4 p-4">
       {/* Back */}
-      <button className="btn btn-ghost absolute top-20 left-6 z-10" onClick={onBack}>
+     <button
+   className="btn btn-ghost absolute top-20 left-6 z-10"
+   onClick={() => {
+     // If user has saved after their last edit, leave without confirm.
+     // If user is mid-edit (dirty) and hasn't saved, show confirm.
+     const force = savedSinceLastEdit && !dirty;
+     const hasChanges = dirty && !force;
+     onBack?.(hasChanges, force);
+   }}
+ >
         <ArrowLeftIcon className="size-5" />
         Back to subtasks
       </button>
@@ -98,11 +115,19 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       {/* Content */}
       <div className="mt-24">
         {activeTab === "new" ? (
-          <AddReflection
-            userEvents={userEvents}     // [{ eventId, status, _id, ... }]
+            <AddReflection
+            userEvents={userEvents}
             bearSrc={Bear}
-            onSaved={handleSavedReflection}
-          />
+            onSaved={(newReflection) => {
+                handleSavedReflection(newReflection);
+                setDirty(false);
+                setSavedSinceLastEdit(true); // mark safe to leave
+            }}
+            onDirtyChange={(isDirty) => {
+                setDirty(isDirty);
+                if (isDirty) setSavedSinceLastEdit(false); // typing again re-enables confirm
+            }}
+            />
         ) : (
           <PastReflections userReflections={userReflections} />
         )}
