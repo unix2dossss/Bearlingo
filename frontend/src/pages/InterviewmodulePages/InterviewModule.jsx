@@ -13,9 +13,16 @@ import SofaLocked from "../../assets/ISofaB.svg";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
-import { isSubtaskCompleted } from "../../utils/moduleHelpers";
 import Bear from "../../assets/Bear.svg";
+import {
+  getModuleByName,
+  getLevelByNumber,
+  getSubtasksByLevel,
+  isSubtaskCompleted
+} from "../../utils/moduleHelpers";
 
+import { Info } from "lucide-react";
+import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -24,7 +31,7 @@ import InterviewSubtask3 from "./InterviewSubtask3";
 
 /* THEME (blue) */
 const COLORS = {
-  primary: "#4f9cf9" ,
+  primary: "#4f9cf9",
   primaryHover: "#3d86ea",
   textMuted: "#767687"
 };
@@ -255,28 +262,28 @@ const InterviewModule = () => {
   }, [task3Complete]);
 
   // Elevator doors
-    const leftDoor = useRef(null);
-    const rightDoor = useRef(null);
-  
-    // Animate elevator opening when CVModule loads
-    useEffect(() => {
-      gsap.set(leftDoor.current, { x: "0%" });
-      gsap.set(rightDoor.current, { x: "0%" });
-  
-      gsap.to(leftDoor.current, {
-        x: "-100%",
-        duration: 1.5,
-        ease: "power2.inOut",
-        delay: 0.3
-      });
-  
-      gsap.to(rightDoor.current, {
-        x: "100%",
-        duration: 1.5,
-        ease: "power2.inOut",
-        delay: 0.3
-      });
-    }, []);
+  const leftDoor = useRef(null);
+  const rightDoor = useRef(null);
+
+  // Animate elevator opening when CVModule loads
+  useEffect(() => {
+    gsap.set(leftDoor.current, { x: "0%" });
+    gsap.set(rightDoor.current, { x: "0%" });
+
+    gsap.to(leftDoor.current, {
+      x: "-100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+
+    gsap.to(rightDoor.current, {
+      x: "100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+  }, []);
 
   // 🧠 Bear logic
   const [bearMessage, setBearMessage] = useState("Ready to ace that interview?");
@@ -303,7 +310,24 @@ const InterviewModule = () => {
       { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
     );
   }, [bearMessage]);
-  
+
+  // Related to subtaskIntro popup
+  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+
+  const handleMouseEnter = async (taskNumber) => {
+    try {
+      const module = await getModuleByName("Interview");
+      const level = getLevelByNumber(module, 1);
+      const subtasks = await getSubtasksByLevel(level);
+      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
+      setHoveredSubtask(subtask); // set the hovered subtask info
+    } catch (err) {
+      console.error("Failed to fetch subtask info:", err);
+    }
+  };
+
+  const handleMouseLeave = () => setHoveredSubtask(null);
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
@@ -390,24 +414,48 @@ const InterviewModule = () => {
           {/* Bottom Button Container */}
           <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
             <div className="flex space-x-6">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask1")}
-              >
-                Task 1
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask2")}
-              >
-                Task 2
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask3")}
-              >
-                Task 3
-              </button>
+              <div className="flex space-x-6 relative">
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask1")}
+                >
+                  Task 1
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(1)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask2")}
+                >
+                  Task 2
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(2)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => handleSubtaskClick("subtask3")}
+                >
+                  Task 3
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(3)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                {/* Subtask Info Popup */}
+                {hoveredSubtask && (
+                  <SubtaskInfoPopup
+                    subtask={hoveredSubtask}
+                    taskNumber={hoveredSubtask.sequenceNumber}
+                  />
+                )}
+              </div>
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">

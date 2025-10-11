@@ -4,7 +4,7 @@ import api from "../../../lib/axios";
 import events from "../../../../../backend/src/utils/networkingEvents";
 import { Star as StarIcon } from "lucide-react";
 
-// Same questions list
+// Questions list
 const questions = [
   "I connected with someone new at this event and it was useful",
   "I learned something valuable at this event",
@@ -28,15 +28,20 @@ const Stars = ({ value = 0, size = 16 }) => (
 
 export default function AddReflection({
   userEvents = [],   // [{ eventId, status, _id, ... }]
-  bearSrc,           // not used here anymore; safe to remove if you like
-  onSaved,           // (newReflection) => void
+  bearSrc,           // not used anymore
+  onSaved,           // callback(newReflection)
+  onDirtyChange,     // callback(isDirty: boolean)
 }) {
   const [title, setTitle] = useState("");
   const [answers, setAnswers] = useState(Array(questions.length).fill(0));
-  const [eventSelected, setEventSelected] = useState(null); // user-event record you'll post
-  const [eventClicked, setEventClicked] = useState(null);   // catalog event for display
-  const bearRefs = useRef([]);   // left in case you re-add the bear later
-  const scaleRefs = useRef([]);  // left in case you re-add the bear later
+  const [eventSelected, setEventSelected] = useState(null);
+  const [eventClicked, setEventClicked] = useState(null);
+
+  const bearRefs = useRef([]);
+  const scaleRefs = useRef([]);
+
+  // Helper to mark the form as dirty (user has started editing)
+  const markDirty = () => onDirtyChange?.(true);
 
   // Join attended user events with catalog details
   const attended = useMemo(() => {
@@ -50,10 +55,10 @@ export default function AddReflection({
   // Inline Likert (no external deps)
   const InlineLikert = ({ name, value, onChangeValue }) => {
     const options = [
-      { label: "Strongly Agree",    value: 5 },
-      { label: "Agree",             value: 4 },
-      { label: "Neutral",           value: 3 },
-      { label: "Disagree",          value: 2 },
+      { label: "Strongly Agree", value: 5 },
+      { label: "Agree", value: 4 },
+      { label: "Neutral", value: 3 },
+      { label: "Disagree", value: 2 },
       { label: "Strongly Disagree", value: 1 },
     ];
     return (
@@ -65,7 +70,10 @@ export default function AddReflection({
               name={name}
               value={opt.value}
               checked={value === opt.value}
-              onChange={() => onChangeValue?.(opt.value)}
+              onChange={() => {
+                onChangeValue?.(opt.value);
+                markDirty();
+              }}
               className="radio radio-sm"
             />
             <span>{opt.label}</span>
@@ -75,28 +83,36 @@ export default function AddReflection({
     );
   };
 
+  // --- Save reflection ---
   const saveReflection = async () => {
     try {
       const responses = questions.map((q, index) => ({
         question: q,
-        answer: answers[index], // 1..5
+        answer: answers[index],
       }));
 
       const payload = {
         title,
         responses,
-        event: eventSelected?._id, // same as your original
+        event: eventSelected?._id,
       };
 
-      const res = await api.post("/users/me/networking/reflections", payload, { withCredentials: true });
-      onSaved?.(res.data?.reflection);
+      const res = await api.post("/users/me/networking/reflections", payload, {
+        withCredentials: true,
+      });
 
-      // reset
-      setAnswers(Array(questions.length).fill(0));
-      setEventSelected(null);
-      setEventClicked(null);
-      setTitle("");
-      toast.success("Reflection saved!");
+      const saved = res?.data?.reflection;
+      if (saved) {
+        toast.success("Reflection saved!");
+        onSaved?.(saved);
+        onDirtyChange?.(false); // ✅ Clean after save
+
+        // Reset form
+        setAnswers(Array(questions.length).fill(0));
+        setEventSelected(null);
+        setEventClicked(null);
+        setTitle("");
+      }
     } catch (error) {
       console.error("Error saving reflection:", error);
       toast.error("Error in saving reflection!");
@@ -111,7 +127,9 @@ export default function AddReflection({
           <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Create a new reflection</h3>
-              <p className="text-sm text-slate-500">Choose an attended event and give it a title.</p>
+              <p className="text-sm text-slate-500">
+                Choose an attended event and give it a title.
+              </p>
             </div>
           </header>
 
@@ -124,7 +142,10 @@ export default function AddReflection({
               <input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  markDirty();
+                }}
                 placeholder="e.g., Tech Careers Night — great conversations!"
                 className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-800 outline-none transition focus:border-slate-400 focus:bg-white"
               />
@@ -132,7 +153,9 @@ export default function AddReflection({
 
             {/* Event selector */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-800">Attended events</label>
+              <label className="mb-2 block text-sm font-medium text-slate-800">
+                Attended events
+              </label>
 
               <div className="grid max-h-72 grid-cols-1 gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
                 {attended.map(({ ue, evt }) => {
@@ -143,6 +166,7 @@ export default function AddReflection({
                       onClick={() => {
                         setEventSelected(ue);
                         setEventClicked(evt);
+                        markDirty();
                       }}
                       className={[
                         "text-left rounded-lg border p-3 transition",
@@ -173,7 +197,9 @@ export default function AddReflection({
           <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Reflection questions</h3>
-              <p className="text-sm text-slate-500">Select one option for each statement.</p>
+              <p className="text-sm text-slate-500">
+                Select one option for each statement.
+              </p>
             </div>
 
             {/* Progress */}
@@ -192,13 +218,14 @@ export default function AddReflection({
                 <InlineLikert
                   name={`q-${index}`}
                   value={answers[index] || 0}
-                  onChangeValue={(next) =>
+                  onChangeValue={(next) => {
                     setAnswers((prev) => {
                       const copy = [...prev];
-                      copy[index] = next; // 1..5
+                      copy[index] = next;
                       return copy;
-                    })
-                  }
+                    });
+                    markDirty();
+                  }}
                 />
 
                 <div className="mt-1 text-xs text-slate-600">
@@ -211,7 +238,10 @@ export default function AddReflection({
             <div className="mt-2 flex items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={() => setAnswers(Array(questions.length).fill(0))}
+                onClick={() => {
+                  setAnswers(Array(questions.length).fill(0));
+                  markDirty();
+                }}
                 className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
                 Reset
@@ -220,10 +250,16 @@ export default function AddReflection({
               <button
                 type="button"
                 onClick={saveReflection}
-                disabled={!title.trim() || !eventSelected?._id || answers.some((a) => a === 0)}
+                disabled={
+                  !title.trim() ||
+                  !eventSelected?._id ||
+                  answers.some((a) => a === 0)
+                }
                 className={[
                   "rounded-md px-5 py-2 text-sm font-medium",
-                  !title.trim() || !eventSelected?._id || answers.some((a) => a === 0)
+                  !title.trim() ||
+                  !eventSelected?._id ||
+                  answers.some((a) => a === 0)
                     ? "cursor-not-allowed border border-slate-200 bg-slate-200 text-slate-500"
                     : "bg-slate-900 text-white hover:bg-slate-800",
                 ].join(" ")}
