@@ -8,6 +8,7 @@ import BlueFolder from "../assets/folder-blue.svg";
 import AddFolderImage from '../assets/add-folder-icon.svg';
 import SideNavbar from '../components/SideNavbar';
 import api from "../lib/axios";
+import BackgroundMusicBox from '../components/BackgroundMusicBox';
 
 
 const JournalRefined = () => {
@@ -173,6 +174,8 @@ const JournalRefined = () => {
         <>
             <div className="bg-blue-200 min-h-screen border border-black">
                 <TopNavbar />
+
+                <BackgroundMusicBox moduleName="Journal" />
 
                 <div className="flex">
                     <div className="">
