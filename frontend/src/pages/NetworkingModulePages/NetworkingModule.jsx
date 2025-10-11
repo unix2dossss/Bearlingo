@@ -258,8 +258,7 @@ const NetworkingModule = () => {
 
 
     // Elevator doors
-    const leftDoor = useRef(null);
-    const rightDoor = useRef(null);
+    
 
     // Animate elevator opening when CVModule loads
     useEffect(() => {
