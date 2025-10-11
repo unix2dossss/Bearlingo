@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
+import { getModuleByName, getLevelByNumber, getSubtasksByLevel } from "../../utils/moduleHelpers";
+import { Info } from "lucide-react";
+import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Subtasks
 import NetworkingSubtask1 from "./NetworkingSubtask1";
@@ -28,7 +31,7 @@ const COLORS = {
   primary: "#3d86ea",
   primaryHover: "#4f9cf9",
   doorLeft: "#9ca3af",
-  doorRight: "#6b7280",
+  doorRight: "#6b7280"
 };
 
 const NetworkingModule = () => {
@@ -79,7 +82,7 @@ const NetworkingModule = () => {
     "Which university are you attending?",
     "Select top four skills that apply — both technical and soft skills.",
     "What is your career goal?",
-    "Congratulations! You have finished your LinkedIn profile! Nice job 🔥",
+    "Congratulations! You have finished your LinkedIn profile! Nice job 🔥"
   ];
 
   // Load events when entering subtask 2
@@ -113,7 +116,7 @@ const NetworkingModule = () => {
     if (!showSubtask) {
       const tl = gsap.timeline({
         defaults: { duration: 0.8, ease: "power3.out" },
-        onComplete: () => setAnimationDone(true),
+        onComplete: () => setAnimationDone(true)
       });
       tl.fromTo(
         ".bear",
@@ -143,91 +146,107 @@ const NetworkingModule = () => {
           setElevatorOpen(false);
           if (leftDoor.current) leftDoor.current.style.pointerEvents = "none";
           if (rightDoor.current) rightDoor.current.style.pointerEvents = "none";
-        },
+        }
       });
       tl.to(leftDoor.current, { x: "-100%" }).to(rightDoor.current, { x: "100%" }, "<");
     }
   }, [showSubtask, elevatorOpen]);
 
   // --- flags per subtask
-const [dirty, setDirty] = useState({ subtask1: false, subtask2: false, subtask3: false });
-const [completed, setCompleted] = useState({ subtask1: false, subtask2: false, subtask3: false });
+  const [dirty, setDirty] = useState({ subtask1: false, subtask2: false, subtask3: false });
+  const [completed, setCompleted] = useState({ subtask1: false, subtask2: false, subtask3: false });
 
-const markDirty = (key, val = true) => setDirty(d => ({ ...d, [key]: val }));
-const markComplete = (key, val = true) => setCompleted(c => ({ ...c, [key]: val }));
+  const markDirty = (key, val = true) => setDirty((d) => ({ ...d, [key]: val }));
+  const markComplete = (key, val = true) => setCompleted((c) => ({ ...c, [key]: val }));
 
-// open a subtask → reset only that subtask's flags
-const handleSubtaskClick = (task) => {
-   setShowConfirmLeave(false);
-   setIsSubmitted(false);
-   markDirty(task, false);      // reset dirty
-   setSelectedSubtask(task);
-   setShowSubtask(true);
- };
+  // open a subtask → reset only that subtask's flags
+  const handleSubtaskClick = (task) => {
+    setShowConfirmLeave(false);
+    setIsSubmitted(false);
+    markDirty(task, false); // reset dirty
+    setSelectedSubtask(task);
+    setShowSubtask(true);
+  };
 
-const closeView = () => {
-  setShowConfirmLeave(false);
-  setShowSubtask(false);
-  setSelectedSubtask(null);
-};
+  const closeView = () => {
+    setShowConfirmLeave(false);
+    setShowSubtask(false);
+    setSelectedSubtask(null);
+  };
 
-const handleClose = (hasChanges = false, force = false) => {
-  const key = selectedSubtask;
-  const isDone = key ? completed[key] : false;
-  const isDirty = key ? (dirty[key] || hasChanges) : hasChanges;
+  const handleClose = (hasChanges = false, force = false) => {
+    const key = selectedSubtask;
+    const isDone = key ? completed[key] : false;
+    const isDirty = key ? dirty[key] || hasChanges : hasChanges;
 
-  if (force || isDone) {
-    // ✅ finished tasks always close without confirm
-    return closeView();
-  }
-  if (isDirty) {
-    // show confirm only if not finished and there are unsaved edits
-    return setShowConfirmLeave(true);
-  }
-  closeView();
-};
+    if (force || isDone) {
+      // ✅ finished tasks always close without confirm
+      return closeView();
+    }
+    if (isDirty) {
+      // show confirm only if not finished and there are unsaved edits
+      return setShowConfirmLeave(true);
+    }
+    closeView();
+  };
 
-const confirmLeave = () => {
-  setShowConfirmLeave(false);
-  closeView();
-};
+  const confirmLeave = () => {
+    setShowConfirmLeave(false);
+    closeView();
+  };
 
-// --- render selected subtask with the correct callbacks
-const renderSubtask = () => {
-  switch (selectedSubtask) {
-    case "subtask1":
-      return (
-        <NetworkingSubtask1
-          userInfo={userInfo}
-          onTaskComplete={() => markComplete("subtask1")}     // finished = reached end / saved
-          onBack={(hasChanges, force) => handleClose(hasChanges, force)}
-        />
-      );
-    case "subtask2":
-    return (
-        <NetworkingSubtask2
-        userInfo={userInfo}
-        allEvents={allEvents}
-        userEvents={userEvents}
-        onDirtyChange={(v) => markDirty("subtask2", v)}
-        onTaskComplete={() => markComplete("subtask2")}
-        onBack={() => handleClose(false, true)}   // <- force close, no confirm
-        />
-    );
-    case "subtask3":
-      return (
-        <NetworkingSubtask3
-          userInfo={userInfo}
-          onDirtyChange={(v) => markDirty("subtask3", v)}
-          onTaskComplete={() => markComplete("subtask3")}
-          onBack={(hasChanges, force) => handleClose(hasChanges, force)}
-        />
-      );
-    default:
-      return null;
-  }
-};
+  // --- render selected subtask with the correct callbacks
+  const renderSubtask = () => {
+    switch (selectedSubtask) {
+      case "subtask1":
+        return (
+          <NetworkingSubtask1
+            userInfo={userInfo}
+            onTaskComplete={() => markComplete("subtask1")} // finished = reached end / saved
+            onBack={(hasChanges, force) => handleClose(hasChanges, force)}
+          />
+        );
+      case "subtask2":
+        return (
+          <NetworkingSubtask2
+            userInfo={userInfo}
+            allEvents={allEvents}
+            userEvents={userEvents}
+            onDirtyChange={(v) => markDirty("subtask2", v)}
+            onTaskComplete={() => markComplete("subtask2")}
+            onBack={() => handleClose(false, true)} // <- force close, no confirm
+          />
+        );
+      case "subtask3":
+        return (
+          <NetworkingSubtask3
+            userInfo={userInfo}
+            onDirtyChange={(v) => markDirty("subtask3", v)}
+            onTaskComplete={() => markComplete("subtask3")}
+            onBack={(hasChanges, force) => handleClose(hasChanges, force)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
+  // Related to subtaskIntro popup
+  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+
+  const handleMouseEnter = async (taskNumber) => {
+    try {
+      const module = await getModuleByName("Networking");
+      const level = getLevelByNumber(module, 1);
+      const subtasks = await getSubtasksByLevel(level);
+      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
+      setHoveredSubtask(subtask); // set the hovered subtask info
+    } catch (err) {
+      console.error("Failed to fetch subtask info:", err);
+    }
+  };
+
+  const handleMouseLeave = () => setHoveredSubtask(null);
 
   return (
     <div
@@ -237,113 +256,141 @@ const renderSubtask = () => {
         "--primary": COLORS.primary,
         "--primary-hover": COLORS.primaryHover,
         "--door-left": COLORS.doorLeft,
-        "--door-right": COLORS.doorRight,
+        "--door-right": COLORS.doorRight
       }}
     >
-    {/* Elevator Doors (hub only) */}
-    <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-[var(--door-left)] z-50" />
-    <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-[var(--door-right)] z-50" />
+      {/* Elevator Doors (hub only) */}
+      <div
+        ref={leftDoor}
+        className="absolute top-0 left-0 w-1/2 h-full bg-[var(--door-left)] z-50"
+      />
+      <div
+        ref={rightDoor}
+        className="absolute top-0 right-0 w-1/2 h-full bg-[var(--door-right)] z-50"
+      />
 
-    <div className="flex-1 relative bg-cover bg-center bg-[#fff9c7]">
-      {/* Top Navbar (always visible) */}
-      <div className="relative z-[100]">
-        <TopNavbar />
-      </div>
-
-      {/* ================= HUB SCENE (hidden when subtask is open) ================= */}
-      {!showSubtask && (
-        <div>
-          {/* Music control */}
-          <BackgroundMusicBox moduleName="NetworkingModule" />
-
-          {/* Floor (decorative) */}
-          <img
-            src={Floor}
-            alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto"
-          />
-
-          <div className="flex">
-            {/* Side Nav */}
-            <div className="z-40">
-              <SideNavbar />
-            </div>
-
-            {/* Scene (decorative) */}
-            <div className="relative w-full">
-              <div className="relative w-full flex justify-center">
-                <img
-                  src={Cafe}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                />
-              </div>
-              <div className="relative w-full flex justify-center">
-                <img
-                  src={Sign}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                />
-              </div>
-              <div className="relative">
-                <img
-                  src={Table}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Button Container (same logic, now triggers full-page swap) */}
-          <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
-            <div className="flex space-x-6">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask1")}
-              >
-                Task 1
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask2")}
-              >
-                Task 2
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask3")}
-              >
-                Task 3
-              </button>
-
-        
-              </div>
-            </div>
-          </div>
-      )}
-
-      {/* ================= FULL-PAGE SUBTASK (fills screen) ================= */}
-      {showSubtask && (
-        <div className="flex-1 relative bg-cover bg-center min-h-screen" style={{ backgroundColor: COLORS.bg }}>
-          {/* Optional: include SideNavbar / music here too if desired */}
-          <div className="relative">{renderSubtask()}</div>
+      <div className="flex-1 relative bg-cover bg-center bg-[#fff9c7]">
+        {/* Top Navbar (always visible) */}
+        <div className="relative z-[100]">
+          <TopNavbar />
         </div>
-      )}
 
-      {/* Confirmation Modal (works for both hub and subtask views) */}
-      {showConfirmLeave && (
-        <ConfirmLeaveDialog
-          isOpen={showConfirmLeave}
-          title="Your changes will be lost!"
-          message="Please finish the task to save your progress."
-          onConfirm={confirmLeave}
-          onCancel={() => setShowConfirmLeave(false)}
-        />
-      )}
-    </div>
+        {/* ================= HUB SCENE (hidden when subtask is open) ================= */}
+        {!showSubtask && (
+          <div>
+            {/* Music control */}
+            <BackgroundMusicBox moduleName="NetworkingModule" />
+
+            {/* Floor (decorative) */}
+            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+
+            <div className="flex">
+              {/* Side Nav */}
+              <div className="z-40">
+                <SideNavbar />
+              </div>
+
+              {/* Scene (decorative) */}
+              <div className="relative w-full">
+                <div className="relative w-full flex justify-center">
+                  <img
+                    src={Cafe}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
+                  />
+                </div>
+                <div className="relative w-full flex justify-center">
+                  <img
+                    src={Sign}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
+                  />
+                </div>
+                <div className="relative">
+                  <img
+                    src={Table}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Button Container (same logic, now triggers full-page swap) */}
+            <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
+              <div className="flex space-x-6">
+                <div className="flex space-x-6 relative">
+                  <button
+                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                    onClick={() => handleSubtaskClick("subtask1")}
+                  >
+                    Task 1
+                    <Info
+                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                      onMouseEnter={() => handleMouseEnter(1)}
+                      onMouseLeave={handleMouseLeave}
+                    />
+                  </button>
+                  <button
+                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                    onClick={() => handleSubtaskClick("subtask2")}
+                  >
+                    Task 2
+                    <Info
+                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                      onMouseEnter={() => handleMouseEnter(2)}
+                      onMouseLeave={handleMouseLeave}
+                    />
+                  </button>
+                  <button
+                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                    onClick={() => handleSubtaskClick("subtask3")}
+                  >
+                    Task 3
+                    <Info
+                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                      onMouseEnter={() => handleMouseEnter(3)}
+                      onMouseLeave={handleMouseLeave}
+                    />
+                  </button>
+                  {/* Subtask Info Popup */}
+                  {hoveredSubtask && (
+                    <SubtaskInfoPopup
+                      subtask={hoveredSubtask}
+                      taskNumber={hoveredSubtask.sequenceNumber}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= FULL-PAGE SUBTASK (fills screen) ================= */}
+        {showSubtask && (
+          <div
+            className="flex-1 relative bg-cover bg-center min-h-screen"
+            style={{ backgroundColor: COLORS.bg }}
+          >
+            {/* Optional: include SideNavbar / music here too if desired */}
+            <div className="relative">{renderSubtask()}</div>
+          </div>
+        )}
+
+        {/* Confirmation Modal (works for both hub and subtask views) */}
+        {showConfirmLeave && (
+          <ConfirmLeaveDialog
+            isOpen={showConfirmLeave}
+            title="Your changes will be lost!"
+            message="Please finish the task to save your progress."
+            onConfirm={confirmLeave}
+            onCancel={() => setShowConfirmLeave(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

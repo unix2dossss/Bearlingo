@@ -160,7 +160,6 @@ export default function CVSubtask2({
         setIsLoaded(true);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Warn before browser close if dirty
