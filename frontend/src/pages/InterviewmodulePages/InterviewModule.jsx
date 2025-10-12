@@ -312,26 +312,26 @@ const InterviewModule = () => {
   }, [bearMessage]);
 
   //Bear moving up and down
-    useEffect(() => {
-      gsap.fromTo(
-        bearRef.current,
-        { y: 200 },
-        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
-      );
-      gsap.fromTo(
-        ".speech-bubble",
-        { opacity: 0, scale: 0.5 },
-        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
-      );
-      gsap.to(bearRef.current, {
-        y: -15,
-        duration: 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 2
-      });
-    }, []);
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: 200 },
+      { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+    );
+    gsap.fromTo(
+      ".speech-bubble",
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+    );
+    gsap.to(bearRef.current, {
+      y: -15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 2
+    });
+  }, []);
 
   // Related to subtaskIntro popup
   const [hoveredSubtask, setHoveredSubtask] = useState(null);
@@ -350,12 +350,27 @@ const InterviewModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
   // Sound Effects
-  // Button Click 
+  // Button Click
   const playClickSound = () => {
-  const audio = new Audio("/sounds/mouse-click-290204.mp3");
-  audio.currentTime = 0; // rewind to start for rapid clicks
-  audio.play();
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
   };
 
   return (
@@ -477,7 +492,7 @@ const InterviewModule = () => {
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                   onClick={() => {
                     playClickSound();
-                    handleSubtaskClick("subtask3")
+                    handleSubtaskClick("subtask3");
                   }}
                 >
                   Task 3

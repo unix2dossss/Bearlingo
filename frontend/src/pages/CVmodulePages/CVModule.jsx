@@ -197,10 +197,10 @@ const CVModule = () => {
       // When still locked
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
       gsap.to(windowLockedRef.current, {
-      opacity: 0.8, 
-      duration: 0.6,
-      ease: "power2.out"
-    });
+        opacity: 0.8,
+        duration: 0.6,
+        ease: "power2.out"
+      });
     }
   }, [task1Complete]);
 
@@ -453,13 +453,28 @@ const CVModule = () => {
       );
     }
   }, [showCongratsPage]);
+  
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
 
   // Sound Effects
-  // Button Click 
+  // Button Click
   const playClickSound = () => {
-  const audio = new Audio("/sounds/mouse-click-290204.mp3");
-  audio.currentTime = 0; // rewind to start for rapid clicks
-  audio.play();
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
   };
 
   return (
@@ -587,7 +602,7 @@ const CVModule = () => {
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                     : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
-                  onClick={() =>  {
+                  onClick={() => {
                     playClickSound();
                     handleSubtaskClick("subtask2");
                   }}
@@ -609,7 +624,7 @@ const CVModule = () => {
                 }`}
                   onClick={() => {
                     playClickSound();
-                    handleSubtaskClick("subtask3")
+                    handleSubtaskClick("subtask3");
                   }}
                 >
                   Task 3
@@ -627,9 +642,9 @@ const CVModule = () => {
                   />
                 )}
               </div>
-       
+
               {/* Bear + Speech Bubble */}
-             <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+              <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
                 {/* Speech bubble */}
                 <div
                   key="bear-speech"
