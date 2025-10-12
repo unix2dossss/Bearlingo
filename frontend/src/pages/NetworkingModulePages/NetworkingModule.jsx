@@ -126,273 +126,279 @@ const NetworkingModule = () => {
     }
   }, [showSubtask]);
 
-  useEffect(() => {
-    if (!animationDone || showSubtask) return;
-    gsap.fromTo(
-      ".bear-speech",
-      { opacity: 0, y: 50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.7)" }
-    );
-  }, [currentSpeechIndex, animationDone, showSubtask]);
-
-  // Elevator opening (hub only)
-  useEffect(() => {
-    if (!showSubtask && elevatorOpen) {
-      gsap.set(leftDoor.current, { x: "0%" });
-      gsap.set(rightDoor.current, { x: "0%" });
-      const tl = gsap.timeline({
-        defaults: { duration: 1.5, ease: "power2.inOut", delay: 0.3 },
-        onComplete: () => {
-          setElevatorOpen(false);
-          if (leftDoor.current) leftDoor.current.style.pointerEvents = "none";
-          if (rightDoor.current) rightDoor.current.style.pointerEvents = "none";
+    useEffect(() => {
+        if (animationDone) {
+            gsap.fromTo(
+                ".bear-speech",
+                { opacity: 0, y: 50, scale: 0.8 },
+                { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.7)" }
+            );
         }
-      });
-      tl.to(leftDoor.current, { x: "-100%" }).to(rightDoor.current, { x: "100%" }, "<");
-    }
-  }, [showSubtask, elevatorOpen]);
+    }, [currentSpeechIndex, animationDone]);
 
-  // --- flags per subtask
-  const [dirty, setDirty] = useState({ subtask1: false, subtask2: false, subtask3: false });
-  const [completed, setCompleted] = useState({ subtask1: false, subtask2: false, subtask3: false });
+    const handleSubtaskClick = (task) => {
+        setSelectedSubtask(task);
+        if (task == false) {
+            setShowSubtask(false);
+        }
+        else {
+            setShowSubtask(true);
+        }
+    };
 
-  const markDirty = (key, val = true) => setDirty((d) => ({ ...d, [key]: val }));
-  const markComplete = (key, val = true) => setCompleted((c) => ({ ...c, [key]: val }));
 
-  // open a subtask → reset only that subtask's flags
-  const handleSubtaskClick = (task) => {
-    setShowConfirmLeave(false);
-    setIsSubmitted(false);
-    markDirty(task, false); // reset dirty
-    setSelectedSubtask(task);
-    setShowSubtask(true);
-  };
+    const handleNext = () => {
+        if (currentSpeechIndex < speechForSubtask1.length - 1) {
+            setCurrentSpeechIndex(currentSpeechIndex + 1);
+        }
+    };
 
-  const closeView = () => {
-    setShowConfirmLeave(false);
-    setShowSubtask(false);
-    setSelectedSubtask(null);
-  };
 
-  const handleClose = (hasChanges = false, force = false) => {
-    const key = selectedSubtask;
-    const isDone = key ? completed[key] : false;
-    const isDirty = key ? dirty[key] || hasChanges : hasChanges;
-
-    if (force || isDone) {
-      // ✅ finished tasks always close without confirm
-      return closeView();
-    }
-    if (isDirty) {
-      // show confirm only if not finished and there are unsaved edits
-      return setShowConfirmLeave(true);
-    }
-    closeView();
-  };
-
-  const confirmLeave = () => {
-    setShowConfirmLeave(false);
-    closeView();
-  };
-
-  // --- render selected subtask with the correct callbacks
-  const renderSubtask = () => {
-    switch (selectedSubtask) {
-      case "subtask1":
-        return (
-          <NetworkingSubtask1
-            userInfo={userInfo}
-            onTaskComplete={() => markComplete("subtask1")} // finished = reached end / saved
-            onBack={(hasChanges, force) => handleClose(hasChanges, force)}
-          />
+    const handleSkillChange = (e) => {
+        const value = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value
         );
-      case "subtask2":
-        return (
-          <NetworkingSubtask2
-            userInfo={userInfo}
-            allEvents={allEvents}
-            userEvents={userEvents}
-            onDirtyChange={(v) => markDirty("subtask2", v)}
-            onTaskComplete={() => markComplete("subtask2")}
-            onBack={() => handleClose(false, true)} // <- force close, no confirm
-          />
-        );
-      case "subtask3":
-        return (
-          <NetworkingSubtask3
-            userInfo={userInfo}
-            onDirtyChange={(v) => markDirty("subtask3", v)}
-            onTaskComplete={() => markComplete("subtask3")}
-            onBack={(hasChanges, force) => handleClose(hasChanges, force)}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+        setSelectedSkills(value);
+    };
 
-  // Related to subtaskIntro popup
-  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+    // Safely extract attendingEventIds for easier use, ? ensures that if userEvents[0] is null the program won't crash
+    const attendingEventIds = userEvents[0]?.attendingEventIds || [];
 
-  const handleMouseEnter = async (taskNumber) => {
-    try {
-      const module = await getModuleByName("Networking");
-      const level = getLevelByNumber(module, 1);
-      const subtasks = await getSubtasksByLevel(level);
-      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
-      setHoveredSubtask(subtask); // set the hovered subtask info
-    } catch (err) {
-      console.error("Failed to fetch subtask info:", err);
-    }
-  };
+    // Helper function to get the status of a specific event
+    const getEventStatus = (eventId) => {
+        return attendingEventIds.find(ev => ev.eventId === eventId)?.status || null;
+    };
 
-  const handleMouseLeave = () => setHoveredSubtask(null);
+    const handleAttendance = async (eventId, buttonState) => {
+        if (buttonState == 'going') {
+            try {
+                const res = await api.put("/users/me/networking/events", {
+                    attendingEventIds: [{
+                        eventId: eventId,
+                        status: "attended"
+                    }]
+                },
+                    {
+                        withCredentials: true,
+                    });
 
-  return (
-    <div
-      className="flex flex-col min-h-screen relative overflow-hidden"
-      style={{
-        "--bg": COLORS.bg,
-        "--primary": COLORS.primary,
-        "--primary-hover": COLORS.primaryHover,
-        "--door-left": COLORS.doorLeft,
-        "--door-right": COLORS.doorRight
-      }}
-    >
-      {/* Elevator Doors (hub only) */}
-      <div
-        ref={leftDoor}
-        className="absolute top-0 left-0 w-1/2 h-full bg-[var(--door-left)] z-50"
-      />
-      <div
-        ref={rightDoor}
-        className="absolute top-0 right-0 w-1/2 h-full bg-[var(--door-right)] z-50"
-      />
+                // Update frontend state immediately by checking its previous / cuurent state hence (prev - the current userEvents state at the moment this update runs)
+                setUserEvents((prev) => {
+                    // If the user has no events then create a new Event object
+                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "attended" }] }];
+                    // Creates a shallow copy of the first object in prev.
+                    const updated = { ...prev[0] };
+                    // Searches in attendingEventIds array to see if this event already exists in the state. Returns index of -1 if teh event does not already exist
+                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+                    if (idx !== -1) {
+                        updated.attendingEventIds[idx].status = "attended";
+                    } else {
+                        updated.attendingEventIds.push({ eventId, status: "attended" });
+                    }
+                    // Returns a new array with the updated object which updates userEvents state and  triggers a re-render of the component
+                    return [updated];
+                });
 
-      <div className="flex-1 relative bg-cover bg-center bg-[#fff9c7]">
-        {/* Top Navbar (always visible) */}
-        <div className="relative z-[100]">
-          <TopNavbar />
-        </div>
+            } catch (error) {
+                console.log("Error in updating events: ", events);
+                toast.error("Events were not updated");
+            }
+        }
+        else if (buttonState == 'default') {
+            try {
+                const res = await api.put("/users/me/networking/events", {
+                    attendingEventIds: [{
+                        eventId: eventId,
+                        status: "going"
+                    }]
+                },
+                    {
+                        withCredentials: true,
+                    });
 
-        {/* ================= HUB SCENE (hidden when subtask is open) ================= */}
-        {!showSubtask && (
-          <div>
-            {/* Music control */}
-            <BackgroundMusicBox moduleName="NetworkingModule" />
+                setUserEvents((prev) => {
 
-            {/* Floor (decorative) */}
-            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "going" }] }];
+                    const updated = { ...prev[0] };
+                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+                    if (idx !== -1) {
+                        updated.attendingEventIds[idx].status = "going";
+                    } else {
+                        updated.attendingEventIds.push({ eventId, status: "going" });
+                    }
+                    return [updated];
+                });
 
-            <div className="flex">
-              {/* Side Nav */}
-              <div className="z-40">
-                <SideNavbar />
-              </div>
+            } catch (error) {
+                console.log("Error in updating events: ", events);
+                toast.error("Events were not updated");
+            }
+        };
 
-              {/* Scene (decorative) */}
-              <div className="relative w-full">
-                <div className="relative w-full flex justify-center">
-                  <img
-                    src={Cafe}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute top-[13vh] left-40 w-[45vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                  />
+        useEffect(() => {
+            if (currentSpeechIndex === 8) {
+                submitLinkedInProfile();
+            }
+        }, [currentSpeechIndex]);
+
+
+
+
+        const submitLinkedInProfile = async () => {
+            try {
+
+            } catch (error) {
+                toast.error("Could not submit linked-inprofile")
+            }
+
+        }
+
+    };
+    
+
+    // Animate elevator opening when CVModule loads
+    useEffect(() => {
+        if (!showSubtask && elevatorOpen) {
+            gsap.set(leftDoor.current, { x: "0%" });
+            gsap.set(rightDoor.current, { x: "0%" });
+
+            gsap.to(leftDoor.current, {
+                x: "-100%",
+                duration: 1.5,
+                ease: "power2.inOut",
+                delay: 0.3
+            });
+
+            gsap.to(rightDoor.current, {
+                x: "100%",
+                duration: 1.5,
+                ease: "power2.inOut",
+                delay: 0.3
+            });
+
+            setElevatorOpen(false);
+        }
+    }, [showSubtask]);
+
+    // Sound Effects
+    // Button Click 
+    const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+    };
+
+
+    return (
+        <>
+            <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
+
+                {/* Elevator Doors Overlay */}
+
+                {/* Top Navbar */}
+                <div className="fixed top-0 inset-x-0 z-[100]">
+                    <TopNavbar />
                 </div>
-                <div className="relative w-full flex justify-center">
-                  <img
-                    src={Sign}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                  />
-                </div>
-                <div className="relative">
-                  <img
-                    src={Table}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute top-[43vh] right-[12vw] w-[28vw] max-w-[800px] h-auto z-30 pointer-events-none select-none"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Bottom Button Container (same logic, now triggers full-page swap) */}
-            <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
-              <div className="flex space-x-6">
-                <div className="flex space-x-6 relative">
-                  <button
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                    onClick={() => handleSubtaskClick("subtask1")}
-                  >
-                    Task 1
-                    <Info
-                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
-                      onMouseEnter={() => handleMouseEnter(1)}
-                      onMouseLeave={handleMouseLeave}
-                    />
-                  </button>
-                  <button
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                    onClick={() => handleSubtaskClick("subtask2")}
-                  >
-                    Task 2
-                    <Info
-                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
-                      onMouseEnter={() => handleMouseEnter(2)}
-                      onMouseLeave={handleMouseLeave}
-                    />
-                  </button>
-                  <button
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                    onClick={() => handleSubtaskClick("subtask3")}
-                  >
-                    Task 3
-                    <Info
-                      className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
-                      onMouseEnter={() => handleMouseEnter(3)}
-                      onMouseLeave={handleMouseLeave}
-                    />
-                  </button>
-                  {/* Subtask Info Popup */}
-                  {hoveredSubtask && (
-                    <SubtaskInfoPopup
-                      subtask={hoveredSubtask}
-                      taskNumber={hoveredSubtask.sequenceNumber}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+                {/* Floating music control */}
+                {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
+                    <BackgroundMusicBox moduleName="NetworkingModule" />
+                </div> */}
+                <BackgroundMusicBox moduleName="NetworkingModule" />
 
-        {/* ================= FULL-PAGE SUBTASK (fills screen) ================= */}
-        {showSubtask && (
-          <div
-            className="flex-1 relative bg-cover bg-center min-h-screen"
-            style={{ backgroundColor: COLORS.bg }}
-          >
-            {/* Optional: include SideNavbar / music here too if desired */}
-            <div className="relative">{renderSubtask()}</div>
-          </div>
-        )}
 
-        {/* Confirmation Modal (works for both hub and subtask views) */}
-        {showConfirmLeave && (
-          <ConfirmLeaveDialog
-            isOpen={showConfirmLeave}
-            title="Your changes will be lost!"
-            message="Please finish the task to save your progress."
-            onConfirm={confirmLeave}
-            onCancel={() => setShowConfirmLeave(false)}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
+
+
+                {!showSubtask && (
+                    <div>
+
+                        {/* Elevator Doors Overlay */}
+                        <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+                        <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+
+                        {/* Background */}
+                        <div className="flex"> 
+                            <div className="mt-20 z-40">
+                                <SideNavbar />
+                            </div>
+
+                            <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14"> 
+                                
+                                <img
+                                    src={Cafe}
+                                    alt="Unlocked Networking Cafe"
+                                    className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
+                                />
+                                
+                                <img
+                                    src={Sign}
+                                    alt="Unlocked Networking Sign"
+                                    className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
+                                
+
+                                <img
+                                    src={Table}
+                                    alt="Unlocked Networking Table"
+                                    className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
+                                />
+
+                                <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+                                    <div className="flex space-x-6">
+
+                                        <button
+                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
+                                        >
+                                            Task 1
+                                        </button>
+                                        <button
+                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true); }}
+                                        >
+                                            Task 2
+                                        </button>
+                                        <button
+                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true); }}
+                                        >
+                                            Task 3
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Yellow Floor */}
+                        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+                    </div>
+                    
+                )}
+
+                {showSubtask && selectedSubtask === "subtask1" && (
+                    <NetworkingSubtask1
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
+                )}
+
+                {showSubtask && selectedSubtask === "subtask2" && (
+                    <NetworkingSubtask2
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
+                )}
+
+                {showSubtask && selectedSubtask === "subtask3" && (
+                    <NetworkingSubtask3
+                        userInfo={userInfo}
+                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
+                    />
+                )}
+
+
+            </div >
+        </>
+    )
+}
 
 export default NetworkingModule;

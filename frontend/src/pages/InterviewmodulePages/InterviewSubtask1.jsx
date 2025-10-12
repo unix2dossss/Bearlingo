@@ -12,6 +12,12 @@ const COLORS = {
 
 const cx = (...xs) => xs.filter(Boolean).join(" ");
 
+// Sound Effect
+const playFlipSound = () => {
+  const flipSound = new Audio("/sounds/flipcard-91468.mp3");
+  flipSound.play().catch(err => console.log("Sound blocked:", err));
+};
+
 /* Reusable button (compact, small) */
 function ActionButton({
   children,
@@ -120,6 +126,11 @@ export default function InterviewSubtask1({ setIsSubmitted, onClose, onTaskCompl
   const progressPercentRaw = subtaskAlreadyCompleted ? 100 : ((index + 1) / total) * 100;
   const progressPercent = Math.min(100, Math.max(0, progressPercentRaw));
 
+  const handleFlip = () => {
+      playFlipSound();
+      setFlipped((f) => !f);
+    };
+
   return (
     <div className="relative flex flex-col h-full p-4">
       {/* Close button */}
@@ -158,7 +169,7 @@ export default function InterviewSubtask1({ setIsSubmitted, onClose, onTaskCompl
           question={questions[index].q}
           answer={questions[index].a}
           flipped={flipped}
-          onFlip={() => setFlipped((f) => !f)}
+          onFlip={handleFlip}
           questionNumber={index + 1}
         />
       </div>

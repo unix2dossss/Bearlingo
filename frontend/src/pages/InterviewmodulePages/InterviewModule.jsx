@@ -178,7 +178,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
       gsap.to(deskLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -216,7 +216,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(sofaUnlockedRef.current, { opacity: 0 });
       gsap.to(sofaLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -254,7 +254,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(wallUnlockedRef.current, { opacity: 0 });
       gsap.to(wallLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -311,6 +311,28 @@ const InterviewModule = () => {
     );
   }, [bearMessage]);
 
+  //Bear moving up and down
+    useEffect(() => {
+      gsap.fromTo(
+        bearRef.current,
+        { y: 200 },
+        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+      );
+      gsap.fromTo(
+        ".speech-bubble",
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+      );
+      gsap.to(bearRef.current, {
+        y: -15,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2
+      });
+    }, []);
+
   // Related to subtaskIntro popup
   const [hoveredSubtask, setHoveredSubtask] = useState(null);
 
@@ -327,6 +349,14 @@ const InterviewModule = () => {
   };
 
   const handleMouseLeave = () => setHoveredSubtask(null);
+
+  // Sound Effects
+  // Button Click 
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
@@ -382,13 +412,13 @@ const InterviewModule = () => {
                     ref={deskLockedRef}
                     src={DeskLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                   <img
                     ref={deskUnlockedRef}
                     src={Desk}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                 </div>
 
@@ -398,13 +428,13 @@ const InterviewModule = () => {
                     ref={sofaLockedRef}
                     src={SofaLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                   <img
                     ref={sofaUnlockedRef}
                     src={Sofa}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                 </div>
               </div>
@@ -417,7 +447,10 @@ const InterviewModule = () => {
               <div className="flex space-x-6 relative">
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask1")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask1");
+                  }}
                 >
                   Task 1
                   <Info
@@ -428,7 +461,10 @@ const InterviewModule = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask2")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask2");
+                  }}
                 >
                   Task 2
                   <Info
@@ -439,7 +475,10 @@ const InterviewModule = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask3")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask3")
+                  }}
                 >
                   Task 3
                   <Info
@@ -458,10 +497,15 @@ const InterviewModule = () => {
               </div>
 
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-60%]">
-                  {bearMessage}
-                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+              <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                {/* Speech bubble */}
+                <div
+                  key="bear-speech"
+                  className="chat chat-end absolute -top-10 -left-48 opacity-100 bear-speech"
+                >
+                  <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold shadow-md text-sm sm:text-sm md:text-sm">
+                    {bearMessage}
+                  </div>
                 </div>
 
                 <img
