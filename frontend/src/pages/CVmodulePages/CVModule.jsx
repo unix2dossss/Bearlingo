@@ -261,6 +261,7 @@ const CVModule = () => {
     }
   }, [task3Complete]);
 
+  //Bear moving up and down
   useEffect(() => {
     gsap.fromTo(
       bearRef.current,
@@ -565,12 +566,17 @@ const CVModule = () => {
                   />
                 )}
               </div>
-
+       
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-      <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold text-sm sm:text-base shadow-md">
-                  {bearMessage}
-                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+             <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                {/* Speech bubble */}
+                <div
+                  key="bear-speech"
+                  className="chat chat-end absolute -top-10 -left-32 opacity-100 bear-speech"
+                >
+                  <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold shadow-md text-sm sm:text-sm md:text-sm">
+                    {bearMessage}
+                  </div>
                 </div>
 
                 <img

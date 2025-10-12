@@ -311,6 +311,28 @@ const InterviewModule = () => {
     );
   }, [bearMessage]);
 
+  //Bear moving up and down
+    useEffect(() => {
+      gsap.fromTo(
+        bearRef.current,
+        { y: 200 },
+        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+      );
+      gsap.fromTo(
+        ".speech-bubble",
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+      );
+      gsap.to(bearRef.current, {
+        y: -15,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2
+      });
+    }, []);
+
   // Related to subtaskIntro popup
   const [hoveredSubtask, setHoveredSubtask] = useState(null);
 
@@ -458,10 +480,15 @@ const InterviewModule = () => {
               </div>
 
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-60%]">
-                  {bearMessage}
-                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+              <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                {/* Speech bubble */}
+                <div
+                  key="bear-speech"
+                  className="chat chat-end absolute -top-10 -left-48 opacity-100 bear-speech"
+                >
+                  <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold shadow-md text-sm sm:text-sm md:text-sm">
+                    {bearMessage}
+                  </div>
                 </div>
 
                 <img
