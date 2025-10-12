@@ -315,7 +315,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                     currentSpeechIndex < speechForSubtask1.length - 1 && (
                       <button
                         className={`px-6 py-2 rounded-lg shadow-lg text-white
-              ${nextButtonValid ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'}`}
+              ${nextButtonValid ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
                         onClick={handleNext}
                         disabled={!nextButtonValid}
                       >

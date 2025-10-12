@@ -36,6 +36,9 @@ import Bear from "../../assets/Bear.svg";
 // Sound
 import winSound from "/sounds/winner-game-sound-404167.mp3";
 
+// Level Passed Pop up
+import CongratsPage from "./CVLevelPass";
+
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
@@ -162,11 +165,14 @@ const CVModule = () => {
   const deskUnlockedRef = useRef(null);
   const bearRef = useRef(null);
 
+  // Track victory sound 
+  const prevTask1 = useRef(false);
+  const prevTask2 = useRef(false);
+  const prevTask3 = useRef(false);
+
+
   useEffect(() => {
     if (task1Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(windowLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -200,9 +206,6 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task2Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(drawersLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -245,9 +248,6 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task3Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(deskLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -426,6 +426,33 @@ const CVModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  const [showCongratsPage, setShowCongratsPage] = useState(false);
+  const popupRef = useRef(null);
+
+  // Show popup once with delay
+  useEffect(() => {
+    if (task1Complete && task2Complete && task3Complete) {
+      const hasSeenCongrats = localStorage.getItem("seenCongratsPage");
+      if (!hasSeenCongrats) {
+        const timeout = setTimeout(() => {
+          setShowCongratsPage(true);
+          localStorage.setItem("seenCongratsPage", "true");
+        }, 1000); // 1 second delay
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [task1Complete, task2Complete, task3Complete]);
+
+  // Animate popup when it appears
+  useEffect(() => {
+    if (showCongratsPage && popupRef.current) {
+      gsap.fromTo(
+        popupRef.current,
+        { scale: 0.5, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
+      );
+    }
+  }, [showCongratsPage]);
 
   // Sound Effects
   // Button Click 
@@ -440,6 +467,11 @@ const CVModule = () => {
       {/* Elevator Doors Overlay */}
       <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
       <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+
+      {/* Show the CongratsPage overlay */}
+      {showCongratsPage && (
+        <CongratsPage onClose={() => setShowCongratsPage(false)} />
+      )}
 
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
@@ -471,14 +503,13 @@ const CVModule = () => {
                     ref={deskLockedRef}
                     src={DeskLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-                    style={{ opacity: 0.4 }}
+                    className="absolute top-[34vh] w-[30vw] max-w-[600px] h-auto z-30"
                   />
                   <img
                     ref={deskUnlockedRef}
                     src={Desk}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[34vh] w-[30vw] max-w-[600px] h-auto z-30"
                   />
                 </div>
 
@@ -488,25 +519,25 @@ const CVModule = () => {
                     ref={drawersLockedRef}
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none "
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-20 pointer-events-none "
                   />
                   <img
                     ref={drawersUnlockedRef}
                     src={Drawers}
                     alt="Unlocked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-20 pointer-events-none"
                   />
                   <img
                     ref={bookcaseLockedRef}
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
-                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-20 transition-opacity duration-500"
                   />
                   <img
                     ref={bookcaseUnlockedRef}
                     src={Bookcase}
                     alt="Unlocked CV Bookcase"
-                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-20"
                   />
                 </div>
 

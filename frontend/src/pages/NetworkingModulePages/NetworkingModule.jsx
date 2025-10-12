@@ -328,19 +328,19 @@ const NetworkingModule = () => {
                                 <img
                                     src={Cafe}
                                     alt="Unlocked Networking Cafe"
-                                    className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
+                                    className="absolute top-[18vh] left-[0vw] w-[49vw] max-w-[800px] h-auto"
                                 />
                                 
                                 <img
                                     src={Sign}
                                     alt="Unlocked Networking Sign"
-                                    className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
+                                    className="absolute top-[10vh] right-[14vw] w-[20vw] max-w-[800px] h-auto" />
                                 
 
                                 <img
                                     src={Table}
                                     alt="Unlocked Networking Table"
-                                    className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
+                                    className="absolute top-[45vh] right-[8vw] w-[34vw] max-w-[800px] h-auto"
                                 />
 
                                 <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">

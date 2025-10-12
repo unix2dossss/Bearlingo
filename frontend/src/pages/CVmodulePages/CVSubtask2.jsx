@@ -345,6 +345,12 @@ export default function CVSubtask2({
     onClose(hasChanges);
   };
 
+  // Sound Effect
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
   /* ─────────────────────────────
    * UI
    * ───────────────────────────── */
@@ -430,7 +436,13 @@ export default function CVSubtask2({
           </ActionButton>
 
           {step < 3 ? (
-            <ActionButton onClick={handleNext} disabled={!isStepValid()}>
+            <ActionButton onClick={() => {
+                    if (!isStepValid()) return; // prevent sound if disabled
+                    // Play click sound
+                    playClickSound();
+                    handleNext();
+                  }}
+                   disabled={!isStepValid()}>
               Save &amp; Continue
             </ActionButton>
           ) : (
