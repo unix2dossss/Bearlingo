@@ -350,6 +350,14 @@ const InterviewModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  // Sound Effects
+  // Button Click 
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
@@ -439,7 +447,10 @@ const InterviewModule = () => {
               <div className="flex space-x-6 relative">
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask1")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask1");
+                  }}
                 >
                   Task 1
                   <Info
@@ -450,7 +461,10 @@ const InterviewModule = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask2")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask2");
+                  }}
                 >
                   Task 2
                   <Info
@@ -461,7 +475,10 @@ const InterviewModule = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask3")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask3")
+                  }}
                 >
                   Task 3
                   <Info

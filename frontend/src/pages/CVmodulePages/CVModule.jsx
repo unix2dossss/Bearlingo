@@ -33,6 +33,9 @@ import Bookcase from "../../assets/CVBook.svg";
 import BookcaseLocked from "../../assets/CVBookB.svg";
 import Bear from "../../assets/Bear.svg";
 
+// Sound
+import winSound from "/sounds/winner-game-sound-404167.mp3";
+
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
 
@@ -161,6 +164,9 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task1Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(windowLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -185,7 +191,7 @@ const CVModule = () => {
       // When still locked
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
       gsap.to(windowLockedRef.current, {
-      opacity: 0.7, 
+      opacity: 0.8, 
       duration: 0.6,
       ease: "power2.out"
     });
@@ -194,6 +200,9 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task2Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(drawersLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -227,7 +236,7 @@ const CVModule = () => {
     } else {
       gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
       gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-        opacity: 0.7,
+        opacity: 0.8,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -236,6 +245,9 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task3Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(deskLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -254,7 +266,7 @@ const CVModule = () => {
     } else {
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
       gsap.to(deskLockedRef.current, {
-        opacity: 0.7,
+        opacity: 0.8,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -414,6 +426,15 @@ const CVModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+
+  // Sound Effects
+  // Button Click 
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
@@ -515,7 +536,10 @@ const CVModule = () => {
               <div className="flex space-x-6 relative">
                 <button
                   className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                  onClick={() => handleSubtaskClick("subtask1")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask1");
+                  }}
                 >
                   Task 1
                   <Info
@@ -532,7 +556,10 @@ const CVModule = () => {
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                     : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
-                  onClick={() => handleSubtaskClick("subtask2")}
+                  onClick={() =>  {
+                    playClickSound();
+                    handleSubtaskClick("subtask2");
+                  }}
                 >
                   Task 2
                   <Info
@@ -549,7 +576,10 @@ const CVModule = () => {
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                     : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
-                  onClick={() => handleSubtaskClick("subtask3")}
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask3")
+                  }}
                 >
                   Task 3
                   <Info

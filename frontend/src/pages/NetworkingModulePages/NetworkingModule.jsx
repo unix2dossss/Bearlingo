@@ -281,6 +281,15 @@ const NetworkingModule = () => {
         }
     }, [showSubtask]);
 
+    // Sound Effects
+    // Button Click 
+    const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+    };
+
+
     return (
         <>
             <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
@@ -315,16 +324,18 @@ const NetworkingModule = () => {
                             </div>
 
                             <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14"> 
+                                
                                 <img
                                     src={Cafe}
                                     alt="Unlocked Networking Cafe"
                                     className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
                                 />
-
+                                
                                 <img
                                     src={Sign}
                                     alt="Unlocked Networking Sign"
                                     className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
+                                
 
                                 <img
                                     src={Table}
@@ -337,19 +348,19 @@ const NetworkingModule = () => {
 
                                         <button
                                             className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
                                         >
                                             Task 1
                                         </button>
                                         <button
                                             className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true); }}
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true); }}
                                         >
                                             Task 2
                                         </button>
                                         <button
                                             className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true); }}
+                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true); }}
                                         >
                                             Task 3
                                         </button>
