@@ -291,6 +291,21 @@ const NetworkingModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
