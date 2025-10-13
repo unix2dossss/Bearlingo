@@ -516,7 +516,7 @@ const JournalRefined = () => {
                                                     </div>
                                                 }
 
-                                                {currentIndex === 4 && !isTyping &&
+                                                {!isTyping && currentIndex === 4 && (
                                                     <div className="flex gap-4 justify-center mt-6">
                                                         {emojiOptions.map((emoji, index) => (
                                                             <button
@@ -542,7 +542,6 @@ const JournalRefined = () => {
                                                                         ...prev,
                                                                         { sender: "user", text: selectedEmoji }
                                                                     ]);
-
                                                                 }
                                                                 handleSend();
                                                             }}
@@ -553,7 +552,7 @@ const JournalRefined = () => {
                                                         </button>
 
                                                     </div>
-                                                }
+                                                )}
 
                                                 {currentIndex === 7 && !isTyping && (
                                                     <div className="flex flex-col justify-center items-center gap-10 w-full mt-20">
