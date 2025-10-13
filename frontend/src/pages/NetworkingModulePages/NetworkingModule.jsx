@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import { getModuleByName, getLevelByNumber, getSubtasksByLevel } from "../../utils/moduleHelpers";
-import { Info } from "lucide-react";
+import { Info, Music } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Subtasks
@@ -27,7 +27,7 @@ import Table from "../../assets/NTable.svg";
 import Bear from "../../assets/Bear.svg";
 
 const COLORS = {
-  bg: "#fff9c7",
+  bg: "#fcf782",
   primary: "#3d86ea",
   primaryHover: "#4f9cf9",
   doorLeft: "#9ca3af",
@@ -306,6 +306,9 @@ const NetworkingModule = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [hoveredSubtask]);
 
+  // BackgroundMusicBox visibility state
+  const [showMusicBox, setShowMusicBox] = useState(false);
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
@@ -317,10 +320,17 @@ const NetworkingModule = () => {
         </div>
 
         {/* Floating music control */}
-        {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-                    <BackgroundMusicBox moduleName="NetworkingModule" />
-                </div> */}
-        <BackgroundMusicBox moduleName="NetworkingModule" />
+        {/* Music Toggle Button */}
+        <button
+          onClick={() => setShowMusicBox(!showMusicBox)}
+          className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
+          aria-label="Toggle music player"
+        >
+          <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+        </button>
+
+        {/* Conditionally show music box */}
+        {showMusicBox && <BackgroundMusicBox moduleName="NetworkingModule" />}
 
         {!showSubtask && (
           <div>
