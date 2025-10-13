@@ -21,7 +21,7 @@ import {
   isSubtaskCompleted
 } from "../../utils/moduleHelpers";
 
-import { Info } from "lucide-react";
+import { Info, Music } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Import Interview subtasks
@@ -365,6 +365,9 @@ const InterviewModule = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [hoveredSubtask]);
 
+  // BackgroundMusicBox visibility state
+  const [showMusicBox, setShowMusicBox] = useState(false);
+
   // Sound Effects
   // Button Click
   const playClickSound = () => {
@@ -389,10 +392,17 @@ const InterviewModule = () => {
         <div>
           <div>
             {/* Floating music control */}
-            {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-              <BackgroundMusicBox moduleName="InterviewModule" />
-            </div> */}
-            <BackgroundMusicBox moduleName="InterviewModule" />
+            {/* Music Toggle Button */}
+            <button
+              onClick={() => setShowMusicBox(!showMusicBox)}
+              className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
+              aria-label="Toggle music player"
+            >
+              <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+            </button>
+
+            {/* Conditionally show music box */}
+            {showMusicBox && <BackgroundMusicBox moduleName="InterviewModule" />}
 
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
@@ -475,7 +485,13 @@ const InterviewModule = () => {
                   />
                 </button>
                 <button
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  disabled={!task1Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                    ${
+                      task1Complete
+                        ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    }`}
                   onClick={() => {
                     playClickSound();
                     handleSubtaskClick("subtask2");
@@ -489,7 +505,13 @@ const InterviewModule = () => {
                   />
                 </button>
                 <button
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  disabled={!task2Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition
+                    ${
+                      task2Complete
+                        ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    }`}
                   onClick={() => {
                     playClickSound();
                     handleSubtaskClick("subtask3");

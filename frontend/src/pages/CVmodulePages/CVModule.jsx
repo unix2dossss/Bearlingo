@@ -1,7 +1,7 @@
 // src/pages/CVModule/CVModule.jsx
 import { React, useState, useEffect, useRef } from "react";
 import TopNavbar from "../../components/TopNavbar";
-import { Home, FileText, Users, Trophy, Book, Settings } from "lucide-react";
+import { Home, FileText, Users, Trophy, Book, Settings, Music } from "lucide-react";
 import CVSubtask1 from "./CVSubtask1";
 import CVSubtask2 from "./CVSubtask2";
 import CVSubtask3 from "./CVSubtask3";
@@ -480,6 +480,9 @@ useEffect(() => {
   }
 }, [showCongratsPage]);
   
+  // BackgroundMusicBox visibility state
+  const [showMusicBox, setShowMusicBox] = useState(false);
+
   // Sound Effects
   // Button Click
   const playClickSound = () => {
@@ -543,10 +546,17 @@ useEffect(() => {
         <div>
           <div>
             {/* Floating music control */}
-            {/* <div className="fixed top-20 right-6 z-40 pointer-events-auto">
-              <BackgroundMusicBox />
-            </div> */}
-            <BackgroundMusicBox />
+            {/* Music Toggle Button */}
+            <button
+              onClick={() => setShowMusicBox(!showMusicBox)}
+              className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
+              aria-label="Toggle music player"
+            >
+              <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+            </button>
+
+            {/* Conditionally show music box */}
+            {showMusicBox && <BackgroundMusicBox />}
 
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
@@ -662,7 +672,7 @@ useEffect(() => {
                 </button>
                 <button
                   disabled={!task2Complete}
-                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition
                 ${
                   task2Complete
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"

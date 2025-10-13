@@ -1,7 +1,7 @@
 import React from 'react';
 import TopNavbar from '../components/TopNavbar';
 import MonitorImage from '../assets/journal-monitor.svg';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import YellowFolder from "../assets/folder-yellow.svg";
 import PinkFolder from "../assets/folder-pink.svg";
 import BlueFolder from "../assets/folder-blue.svg";
@@ -9,21 +9,42 @@ import AddFolderImage from '../assets/add-folder-icon.svg';
 import SideNavbar from '../components/SideNavbar';
 import api from "../lib/axios";
 import BackgroundMusicBox from '../components/BackgroundMusicBox';
+import Logo from "../assets/Logo1.svg";
+import toast from "react-hot-toast";
+import { useUserStore } from "../store/user";
+import { useNavigate } from "react-router-dom";
 
 
 const JournalRefined = () => {
     const [reflections, setReflections] = useState([]);
     const [goals, setGoals] = useState([]);
     const [notes, setNotes] = useState([]);
-    const [newFileName, setNewFileName] = useState("");
     const [openFolder, setOpenFolder] = useState(false);
-    const [showAddFileModal, setShowAddFileModal] = useState(false);
     const [openFile, setOpenFile] = useState(false);
     const [addFile, setAddFile] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTyping, setIsTyping] = useState(false);
+    const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
+    const [isTyping, setIsTyping] = useState(true);
+    const emojiOptions = ["😞", "😐", "🙂", "😊", "🤩"];
+    const [userInfo, setUserInfo] = useState(null);
+    const navigate = useNavigate();
+    const user = useUserStore((state) => state.user);
+
+    // Auth
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) await useUserStore.getState().fetchUser();
+            const currentUser = useUserStore.getState().user;
+            if (!currentUser) {
+                navigate("/login");
+            } else {
+                setUserInfo(currentUser);
+            }
+        };
+        fetchUserData();
+    }, [navigate, user]);
 
     const reflectionQuestions = [
         "Let's create a reflection together!",
@@ -33,9 +54,49 @@ const JournalRefined = () => {
         "Nice! How did that make you feel? Choose an emoji to express it.",
         "What was the positive takeaway or silver lining from this experience?",
         "What could you do differently or improve next time?",
-        "How would you rate this event or experience?",
-        "Great work! 👍 Give this reflection a thumbs up if you’re ready to save it."
+        "How would you rate this event or experience (1-10)?",
+        "Great work! 👍 Press the save button if you’re ready to save it."
     ];
+
+
+
+    const goalQuestions = [
+
+        {
+            question: "What would you like to title this goal entry?",
+            example: "For example: 'Learn web development basics'."
+        },
+        {
+            question: "What is your goal? (Write 1–2 lines about a goal you want to achieve. Remember to make it SMART.)",
+            example: "For example: 'I want to run 5km without stopping by the end of next month.'"
+        },
+        {
+            question: "Is your goal Specific? Please type Y / N",
+            example: "For example: 'Yes — it focuses on running 5km, not just general exercise.'"
+        },
+        {
+            question: "Is your goal Measurable?  Please type Y / N",
+            example: "For example: 'Yes — I can track progress by the distance I can run each week.'"
+        },
+        {
+            question: "Is your goal Achievable?  Please type Y / N",
+            example: "For example: 'Yes — I can train three times per week to gradually build endurance.'"
+        },
+        {
+            question: "Is your goal Realistic?  Please type Y / N",
+            example: "For example: 'Yes — I already run 2km comfortably, so 5km is realistic with practice.'"
+        },
+        {
+            question: "Is your goal Timely?  Please type Y / N",
+            example: "For example: 'Yes — I’ve set a clear deadline of one month to achieve this.'"
+        },
+
+        {
+            question: "Nice job 🤩! Press the following button to save your goal!",
+            example: null
+        }
+    ];
+
 
     // These are for setting a new goal (i.e making a POST request)
     const [goalTitle, setGoalTitle] = useState("");
@@ -46,7 +107,7 @@ const JournalRefined = () => {
     const [reflectionTitle, setReflectionTitle] = useState("");
     const [about, setAbout] = useState("");
     const [feeling, setFeeling] = useState({
-        emoji: 0,   // or null / default emoji rating
+        emoji: 5,   // or null / default emoji rating
         text: ""    // empty optional explanation
     });
     const [whatWentWell, setWhatWentWell] = useState("");
@@ -72,6 +133,28 @@ const JournalRefined = () => {
             { id: 3, name: "Notes", image: BlueFolder, items: notes },
         ]);
     }, [reflections, goals, notes]);
+
+    const handleUpdateGoal = {}
+
+    // Initialize state from openFile when it changes
+    useEffect(() => {
+        if (openFile && openFolder?.name === "Reflections") {
+            setReflectionTitle(openFile.title || "");
+            setAbout(openFile.about || "");
+            setWhatWentWell(openFile.whatWentWell || "");
+            setImprovement(openFile.improvement || "");
+            setFeeling(openFile.feeling || { emoji: 5 });
+            setRating(openFile.rating || 0);
+        }
+
+        if (openFile && openFolder?.name === "Goals") {
+            console.log("goalTitle: ", goalTitle);
+            setGoalTitle(goalTitle.title || "");
+            setGoal(openFile.goal || "");
+            setGoalIsCompleted(openFile.goalIsCompleted || "")
+        }
+
+    }, [openFile, openFolder]);
 
 
     const getAllJournals = async () => {
@@ -102,14 +185,19 @@ const JournalRefined = () => {
     // Save goal to backend
     const saveGoal = async () => {
         try {
+            console.log("goal: ", goal);
             const goalSaved = await api.post("/users/journal/goals",
                 {
                     title: goalTitle,
                     goal: goal,
-                    isCompleted: goalIsCompleted
+                    isCompleted: false,
                 },
                 { withCredentials: true });
-            setGoals(prevGoals => [...prevGoals, goalSaved.data])
+            setGoals(prevGoals => [...prevGoals, goalSaved.data]);
+            setMessages([]);
+            setCurrentIndex(0);
+            toast.success("Goal saved!");
+
 
 
         } catch (error) {
@@ -121,6 +209,7 @@ const JournalRefined = () => {
 
     // Save reflection to backend
     const saveReflection = async () => {
+        console.log("Saving reflection:", { reflectionTitle, about, feeling, whatWentWell, improvement, rating });
         try {
             const reflectionSaved = await api.post("/users/journal/reflections",
                 {
@@ -133,6 +222,9 @@ const JournalRefined = () => {
                 },
                 { withCredentials: true });
             setReflections(prev => [...prev, reflectionSaved.data]);
+            setMessages([]);
+            setCurrentIndex(0);
+            toast.success("Reflection saved!");
 
         } catch (error) {
             console.error("Error in saving reflection", error);
@@ -166,33 +258,134 @@ const JournalRefined = () => {
         getAllJournals();
     }, []);
 
+    const messagesEndRef = useRef(null);
 
-
+    // Scroll to bottom whenever messages change
     useEffect(() => {
-        if (currentIndex < reflectionQuestions.length) {
-            setIsTyping(true);
-            const timer = setTimeout(() => {
-                setMessages((prev) => [
-                    ...prev,
-                    { sender: "bear", text: reflectionQuestions[currentIndex] }
-                ]);
-                setIsTyping(false);
-            }, 1000); // typing delay
-            return () => clearTimeout(timer);
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
+
+    // For temporarily saving data to the messages array
+    useEffect(() => {
+        let timer;
+        let questions = [];
+
+        if (openFolder.name === "Reflections") {
+            questions = reflectionQuestions;
+        } else if (openFolder.name === "Goals") {
+            questions = goalQuestions;
         }
-    }, [currentIndex]);
+
+        if (questions.length > 0 && currentIndex < questions.length) {
+            setIsTyping(true);
+
+            timer = setTimeout(() => {
+                setMessages((prev) => {
+                    const currentQ = questions[currentIndex];
+
+
+                    // Handle both reflection (string) and goal (object) questions
+                    const newMessage =
+                        typeof currentQ === "string"
+                            ? { sender: "bear", text: currentQ }
+                            : {
+                                sender: "bear",
+                                question: currentQ.question,
+                                example: currentQ.example,
+                            };
+
+                    return [...prev, newMessage];
+                });
+                setIsTyping(false);
+            }, 1000);
+        }
+
+        return () => clearTimeout(timer);
+    }, [currentIndex, openFolder.name]);
+
+
 
     const handleSend = () => {
-        if (input.trim() === "") return;
+        if (currentIndex == 4 || currentIndex == 7) {
+            setCurrentIndex((prev) => prev + 1);
+            return;
+
+        }
+        if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
+
         setMessages((prev) => [...prev, { sender: "user", text: input }]);
         setInput("");
         setCurrentIndex((prev) => prev + 1);
         if (currentIndex == reflectionQuestions.length - 1) {
             setInput("");
-            setMessages("");
+            setMessages([]);
+        }
+        if (currentIndex == 2) {
+            setReflectionTitle(input);
+        }
+        if (currentIndex == 3) {
+            setAbout(input);
+        }
+        if (currentIndex == 4) {
+            setFeeling({ ...feeling, emoji: e.target.value });
+        }
+        if (currentIndex == 5) {
+            setWhatWentWell(input);
+        }
+        if (currentIndex == 6) {
+            setImprovement(input);
+        }
+        if (currentIndex == 7) {
+            setRating(input);
         }
     };
 
+
+    const handleGoalSend = () => {
+        if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
+        setMessages((prev) => [
+            ...prev,
+            { sender: "user", text: input },
+        ]);
+        if ([2, 3, 4, 5, 6].includes(currentIndex) && (!(input == "Y" || input == "N"))) {
+            setInput("");
+            setIsTyping(true);
+
+            timer = setTimeout(() => {
+                setMessages((prev) => [
+                    ...prev,
+                    { sender: "bear", text: "Please type Y or N!" },
+                ]);
+                setIsTyping(false);
+            }, 1000);
+            return;
+        }
+        if ([2, 3, 4, 5, 6].includes(currentIndex) && (input == "N")) {
+            setInput("");
+            setIsTyping(true);
+
+            timer = setTimeout(() => {
+                setMessages((prev) => [
+                    ...prev,
+                    { sender: "bear", text: "Please rewrite your goal to adhere to the SMART principles!" },
+                ]);
+                // Reset to the goal-writing step (index 1)
+                setCurrentIndex(1);
+
+            }, 1000);
+            return;
+        }
+
+        if (currentIndex == 0) {
+            setGoalTitle(input);
+        }
+        if (currentIndex == 1) {
+            setGoal(input);
+        }
+        setInput("");
+        setCurrentIndex((prev) => prev + 1);
+    }
 
 
 
@@ -254,8 +447,12 @@ const JournalRefined = () => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => {
-                                            setOpenFolder(null),
-                                                setOpenFile(null)
+                                            setOpenFolder(false);
+                                            setOpenFile(null);
+                                            setAddFile(false);
+                                            setMessages([]);
+                                            setInput("")
+
                                         }}
                                         className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
                                         aria-label="Close"
@@ -277,11 +474,14 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    {console.log("openFolder.items: ", openFolder.items)}
                                     {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
-                                            onClick={() => setOpenFile(file)}
+                                            onClick={() => {
+                                                setOpenFile(file);
+                                                setAddFile(false);
+                                            }
+                                            }
                                             className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
                                             {file.title}
@@ -290,206 +490,218 @@ const JournalRefined = () => {
                                     <button
                                         className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
                                         onClick={() => {
-                                            setShowAddFileModal(true);
                                             setAddFile(true);
+
                                         }
                                         }
                                     >
                                         + Add New File
                                     </button>
 
-                                    {/* Creating a new file and adding it to the goals folder */}
-                                    {showAddFileModal && openFolder.name == "Goals" && (
-
-                                        < div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                                            <div className="bg-white w-[400px] p-6 rounded-xl shadow-lg">
-                                                <h2 className="text-lg font-bold mb-4 text-purple-600">
-                                                    Add A New Entry To {openFolder.name}
-                                                </h2>
-
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter name of entry"
-                                                    value={newFileName}
-                                                    onChange={(e) => setNewFileName(e.target.value)}
-                                                    className="input input-bordered w-full mb-4"
-                                                />
-
-                                                <div className="flex justify-end gap-3">
-                                                    <button
-                                                        className="btn btn-ghost"
-                                                        onClick={() => {
-                                                            setNewFileName("");
-                                                            setShowAddFileModal(false);
-                                                        }}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        className="btn btn-primary"
-                                                        onClick={() => {
-                                                            if (newFileName.trim()) {
-                                                                // Initialize the new goal
-                                                                setNewSmartGoal({
-                                                                    fileName: newFileName,
-                                                                    smart: {
-                                                                        specific: "",
-                                                                        measurable: "",
-                                                                        achievable: "",
-                                                                        relevant: "",
-                                                                        timebound: "",
-                                                                    },
-                                                                });
-
-                                                                setShowAddFileModal(false);
-                                                                setShowSmartFormModal(true);
-                                                                setNewFileName("");
-                                                            }
-
-
-                                                        }}
-                                                    >
-                                                        Next
-                                                    </button>
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
 
 
                                 </div>
 
-                                {/* File content in Goals folder + typing area */}
-                                {openFolder.name == "Goals" && (
-
-                                    < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
-                                        {/* Check if a file is selected */}
-                                        {openFile ? (
-                                            // Show selected file content
-                                            <div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
-                                                <div className="flex justify-center">
-                                                    <div className="flex items-between">
-                                                        <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
-                                                            {typeof openFile === "object" ? openFile.fileName : openFile}
-                                                        </h1>
-
-                                                    </div>
-                                                </div>
-                                                <p className="text-purple-700">
-                                                    {typeof openFile === "object" ? openFile.text : "No content available."}
-                                                </p>
-
-                                                {/* Displaying the SMART Goals if they exist */}
-
-                                                {/* If SMART goals exist */}
-                                                {typeof openFile === "object" && openFile.smart ? (
-                                                    <div className="space-y-3 mt-8">
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Specific</h4>
-                                                            <p className="text-gray-700">{openFile.smart?.specific}</p>
-                                                        </div>
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Measurable</h4>
-                                                            <p className="text-gray-700">{openFile.smart?.measurable}</p>
-                                                        </div>
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Achievable</h4>
-                                                            <p className="text-gray-700">{openFile.smart?.achievable}</p>
-                                                        </div>
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Relevant</h4>
-                                                            <p className="text-gray-700">{openFile.smart?.relevant}</p>
-                                                        </div>
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">Time Bound</h4>
-                                                            <p className="text-gray-700">{openFile.smart?.timebound}</p>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-purple-700">
-                                                        {typeof openFile === "object" ? openFile.text || "No content available." : "No file selected."}
-                                                    </p>
-                                                )}
-                                                <div className=" mt-auto flex justify-center items-center p-2">
-
-                                                    <button
-                                                        className="mt-4 btn btn-ghost w-40 border border-purple-500"
-                                                        onClick={() => { setOpenFile(null); setOpenFile(null); }}
-                                                    >
-                                                        Back to Goals Overview
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            // Show default list of goals
-                                            <ul className="space-y-3">
-                                                {openFolder.items.map((file, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
-
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            className="w-5 h-5 accent-purple-600"
-                                                            readOnly
-                                                        />
-                                                        <span className="text-purple-800 font-medium">
-                                                            {typeof file === "object" ? file.fileName : file}
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
+                                {openFolder && !openFile && !addFile && (
+                                    <div className="flex flex-col justify-center items-center bg-purple-50 text-purple-400 w-[100%] text-2xl">
+                                        <div> <img src={Logo} className="h-32 w-52"></img></div>
+                                        <div>Click a file to get started...</div>
                                     </div>
                                 )}
+
 
                                 {/* Creating a new file and adding it to the reflections folder */}
                                 {addFile && openFolder.name == "Reflections" && (
                                     <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
-                                        <div className="bg-white w-[100%] h-[90%] p-6 rounded-xl shadow-lg flex flex-col gap-3 overflow-y-scroll">
-                                            {messages.map((msg, i) => (
-                                                <div
-                                                    key={i}
-                                                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
-                                                        }`}
-                                                >
+
+                                        <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
+                                            <div className="h-[95%] overflow-y-auto pb-20 ">
+
+                                                {messages.map((msg, i) => (
                                                     <div
-                                                        className={`px-4 py-2 rounded-2xl max-w-[75%] ${msg.sender === "user"
-                                                            ? "bg-purple-100 text-purple-800 self-end"
-                                                            : "bg-purple-200 text-purple-900"
+                                                        key={i}
+                                                        className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
                                                             }`}
                                                     >
-                                                        {msg.text}
+                                                        <div
+                                                            className={`px-4 py-2 rounded-2xl max-w-[75%] mt-2 border border-purple-600 ${msg.sender === "user"
+                                                                ? "bg-purple-100 text-purple-800 self-end"
+                                                                : "bg-purple-200 text-purple-900"
+                                                                }`}
+                                                        >
+                                                            {msg.text}
+                                                        </div>
+                                                        {currentIndex == 0 ? setCurrentIndex(1) : null}
                                                     </div>
-                                                </div>
-                                            ))}
 
-                                            {isTyping && (
-                                                <div className="flex items-center gap-1 text-purple-400">
-                                                    <span className="animate-bounce">•</span>
-                                                    <span className="animate-bounce delay-100">•</span>
-                                                    <span className="animate-bounce delay-100">•</span>
-                                                </div>
-                                            )}
 
-                                            {!isTyping && currentIndex < reflectionQuestions.length && (
-                                                <div className="flex mt-3">
-                                                    <input
-                                                        type="text"
-                                                        value={input}
-                                                        onChange={(e) => setInput(e.target.value)}
-                                                        placeholder="Type your answer..."
-                                                        className="flex-1 border rounded-full px-4 py-2 text-sm border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                                                    />
-                                                    <button
-                                                        onClick={handleSend}
-                                                        className="ml-2 bg-purple-500 text-white rounded-full px-4 py-2 text-sm hover:bg-purple-600"
-                                                    >
-                                                        Send
-                                                    </button>
+                                                ))}
+                                                {isTyping &&
+                                                    <div className=" flex items-center justify-start gap-1 text-purple-400">
+                                                        <span className="animate-bounce">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                    </div>
+                                                }
+
+                                                {!isTyping && currentIndex === 4 && (
+                                                    <div className="flex gap-4 justify-center mt-6">
+                                                        {emojiOptions.map((emoji, index) => (
+                                                            <button
+                                                                key={index}
+                                                                onClick={() => {
+                                                                    setFeeling({ ...feeling, emoji: index + 1 })
+                                                                }}
+                                                                disabled={currentIndex > 4}
+                                                                className={` text-3xl flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300
+                                                            ${feeling.emoji === index + 1
+                                                                        ? "border-purple-500 bg-purple-100 scale-110 shadow-[0_0_20px_rgba(128,90,255,0.6)] animate-pulse"
+                                                                        : "border-gray-300 bg-white hover:border-purple-400 hover:bg-purple-50 hover:scale-105"
+                                                                    }`}
+                                                            >
+                                                                {emoji}
+                                                            </button>
+                                                        ))}
+                                                        <button
+                                                            onClick={() => {
+                                                                {
+                                                                    const selectedEmoji = emojiOptions[feeling.emoji - 1];
+                                                                    setMessages((prev) => [
+                                                                        ...prev,
+                                                                        { sender: "user", text: selectedEmoji }
+                                                                    ]);
+                                                                }
+                                                                handleSend();
+                                                            }}
+                                                            className="flex items-center gap-2 bg-purple-600 text-white px-5 py-3 rounded-full font-semibold shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-500 active:scale-95 focus:outline-none"
+                                                        >
+                                                            Next
+                                                            <span className="transition-transform duration-300 group-hover:translate-x-1">➜</span>
+                                                        </button>
+
+                                                    </div>
+                                                )}
+
+                                                {currentIndex === 7 && !isTyping && (
+                                                    <div className="flex flex-col justify-center items-center gap-10 w-full mt-20">
+                                                        {/* Rating Line */}
+                                                        <div className="relative flex flex-col items-center w-full max-w-2xl gap-6">
+                                                            <div className="relative flex items-center justify-between w-full">
+                                                                <div className="absolute left-0 right-0 h-[3px] bg-purple-300 z-0" />
+                                                                {[...Array(10)].map((_, index) => {
+                                                                    const value = index + 1;
+                                                                    const isSelected = rating === value;
+                                                                    return (
+                                                                        <div key={value} className="relative z-10">
+                                                                            <button
+                                                                                onClick={() => setRating(value)}
+                                                                                className={`
+                  w-6 h-6 rounded-full flex items-center justify-center 
+                  transition-all duration-300
+                  ${isSelected
+                                                                                        ? "bg-yellow-400 scale-125 shadow-[0_0_15px_rgba(250,204,21,0.6)]"
+                                                                                        : "bg-purple-300 hover:bg-purple-400 hover:scale-110"}
+                `}
+                                                                            >
+                                                                                {isSelected && (
+                                                                                    <span className="absolute text-yellow-400 text-xl -top-7 animate-bounce">⭐</span>
+                                                                                )}
+                                                                            </button>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+
+                                                            {/* Labels */}
+                                                            <div className="flex justify-between w-full text-purple-400 font-medium mt-2">
+                                                                <span>1</span>
+                                                                <span>10</span>
+                                                            </div>
+
+                                                            {/* Note Paragraph */}
+                                                            <p className="text-center text-purple-600 text-sm max-w-lg leading-relaxed bg-purple-50 rounded-xl p-4 border border-purple-200 shadow-sm">
+                                                                Note: <span className="font-semibold">1 = Very negative</span> (no value, no learning, no enjoyment, no impact);
+                                                                <br />
+                                                                <span className="font-semibold">10 = Very positive</span> (high value, strong learning, enjoyable, impactful)
+                                                            </p>
+
+
+                                                            {/* Next Button */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (rating) {
+                                                                        setMessages((prev) => [
+                                                                            ...prev,
+                                                                            { sender: "user", text: rating }
+                                                                        ]);
+                                                                        setCurrentIndex((prev) => prev + 1);
+                                                                    }
+                                                                }}
+                                                                className={`
+          flex items-center gap-2 px-6 py-3 rounded-full font-semibold 
+          transition-all duration-300 
+          ${rating
+                                                                        ? "bg-purple-600 text-white hover:bg-purple-500 hover:scale-105 shadow-md"
+                                                                        : "bg-purple-200 text-purple-400 cursor-not-allowed"}
+        `}
+                                                            >
+                                                                Next
+                                                                <span className="transition-transform duration-300 group-hover:translate-x-1">➜</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {currentIndex == reflectionQuestions.length - 1 && !isTyping && (
+                                                    <div className="flex justify-center">
+                                                        <button
+                                                            className="
+                                                                bg-gradient-to-r from-purple-600 to-purple-500 
+                                                                text-white font-semibold px-6 py-2 rounded-full 
+                                                                shadow-md transition-all duration-300 
+                                                                hover:scale-105 hover:shadow-xl hover:from-purple-500 hover:to-purple-400
+                                                                active:scale-95 focus:outline-none mt-7 mb-4"
+                                                            onClick={() => {
+                                                                saveReflection();
+                                                                setAddFile(false);
+                                                            }}
+                                                        >
+                                                            💾 Save
+                                                        </button>
+
+                                                    </div>
+
+                                                )}
+                                                {/* 👇 Empty div to scroll into view */}
+                                                <div ref={messagesEndRef} />
+                                            </div>
+
+
+                                            {addFile && currentIndex != 0 && (
+                                                <div className="flex mt-1 flex-col">
+
+                                                    <div className="w-[100%] flex gap-0.5">
+                                                        <input
+                                                            type="text"
+                                                            value={input}
+                                                            onChange={(e) => setInput(e.target.value)}
+                                                            placeholder="Type your answer..."
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" && !e.shiftKey && !isTyping && currentIndex != 4 && currentIndex != 7 && currentIndex != reflectionQuestions.length - 1) {
+                                                                    e.preventDefault(); // stop newline
+                                                                    handleSend();       // same handler as button
+                                                                }
+                                                            }}
+                                                            className="w-[90%] flex-1 border rounded-full px-4 py-2 text-sm border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                                        />
+                                                        <button
+                                                            disabled={isTyping || currentIndex == reflectionQuestions.length - 1 || currentIndex == 4 || currentIndex == 7}
+                                                            onClick={handleSend}
+                                                            className="ml-2 bg-purple-500 text-white rounded-full px-4 py-2 text-sm hover:bg-purple-600"
+                                                        >
+                                                            Send
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -498,76 +710,331 @@ const JournalRefined = () => {
                                 )}
 
 
-                                {/* actual file content of Reflections folder + typing area */}
-                                {addFile == false && openFolder.name == "Reflections" && (
+                                {/* Actual file content of Reflections folder + editable area */}
+                                {openFile && addFile === false && openFolder.name === "Reflections" && (
+                                    <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
+                                        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
 
-                                    < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+                                            {/* Header */}
+                                            <div className="text-center mb-8">
+                                                <input
+                                                    type="text"
+                                                    value={reflectionTitle}
+                                                    onChange={(e) => setReflectionTitle(e.target.value)}
+                                                    className="text-2xl font-bold text-purple-700 tracking-wide text-center w-full bg-transparent border-b-2 border-purple-300 focus:outline-none focus:border-purple-500"
+                                                />
+                                                <textarea
+                                                    value={about}
+                                                    onChange={(e) => setAbout(e.target.value)}
+                                                    className="text-purple-400 text-sm mt-1 w-full bg-transparent resize-none text-center focus:outline-none"
+                                                />
+                                            </div>
 
-                                        {/* Check if a file is selected */}
-                                        {openFile ? (
+                                            {/* Feelings Section */}
+                                            <h3 className="font-semibold text-purple-700 mb-4 text-lg">
+                                                How did this event/experience make me feel?
+                                            </h3>
+                                            <div className="flex justify-center gap-6 mb-10">
+                                                {emojiOptions.map((emoji, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => setFeeling(prev => ({ ...prev, emoji: index + 1 }))}
+                                                        className={`text-3xl flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300
+                                                                ${feeling.emoji === index + 1
+                                                                ? "border-purple-500 bg-purple-100 scale-110 shadow-[0_0_25px_rgba(168,85,247,0.4)] animate-bounce"
+                                                                : "border-purple-200 hover:border-purple-300 hover:bg-purple-50"
+                                                            }`}
+                                                    >
+                                                        {emoji}
+                                                    </button>
+                                                ))}
+                                            </div>
 
-                                            // Show selected file content
-                                            < div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
-                                                {console.log("Open file: ", openFile)}
-                                                {console.log("typeof openFile", typeof openFile)}
-                                                {console.log("openFile === object", openFile === "object")}
-                                                <div className="flex justify-center">
-                                                    <div className="flex items-between">
-                                                        <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
-                                                            {openFile.title}
-                                                        </h1>
-
-                                                    </div>
+                                            {/* Reflection Answers */}
+                                            <div className="space-y-8">
+                                                <div>
+                                                    <h3 className="font-semibold text-purple-700 mb-3 text-lg">What went well?</h3>
+                                                    <textarea
+                                                        value={whatWentWell}
+                                                        onChange={(e) => setWhatWentWell(e.target.value)}
+                                                        placeholder="Write what went well..."
+                                                        className="w-full bg-purple-50 border border-purple-200 rounded-xl p-4 shadow-sm resize-none focus:outline-none focus:border-purple-400"
+                                                        rows={4}
+                                                    />
                                                 </div>
 
-
-                                                {/* If reflections exist */}
-                                                {typeof openFile === "object" && openFile.smart ? (
-                                                    <div className="space-y-3 mt-8">
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">{openFile.title}</h4>
-                                                            <p className="text-gray-700">{openFile.about}</p>
-                                                        </div>
-
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-purple-700">
-
-                                                    </p>
-                                                )}
-                                                <div className=" mt-auto flex justify-center items-center p-2">
-
-                                                    <button
-                                                        className="mt-4 btn btn-ghost w-40 border border-purple-500"
-                                                        onClick={() => { setOpenFile(null); setOpenFile(null); }}
-                                                    >
-                                                        Back to Reflections Overview
-                                                    </button>
+                                                <div>
+                                                    <h3 className="font-semibold text-purple-700 mb-3 text-lg">
+                                                        What could I do to improve my experience next time?
+                                                    </h3>
+                                                    <textarea
+                                                        value={improvement}
+                                                        onChange={(e) => setImprovement(e.target.value)}
+                                                        placeholder="Write improvements..."
+                                                        className="w-full bg-purple-50 border border-purple-200 rounded-xl p-4 shadow-sm resize-none focus:outline-none focus:border-purple-400"
+                                                        rows={4}
+                                                    />
                                                 </div>
                                             </div>
-                                        ) : (
-                                            // Show default overview of reflections
-                                            <ul className="space-y-3">
-                                                {openFolder.items.map((file, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
 
-                                                    >
+                                            {/* Rating */}
+                                            <div className="mt-10">
+                                                <h3 className="font-semibold text-purple-700 mb-14 text-lg text-center">
+                                                    Rate the event/experience overall
+                                                </h3>
+                                                <div className="relative flex justify-between">
+                                                    {[...Array(10)].map((_, index) => {
+                                                        const value = index + 1;
+                                                        return (
+                                                            <div key={value} className="relative flex flex-col items-center">
+                                                                <button
+                                                                    onClick={() => setRating(value)}
+                                                                    className={`
+                                                                            w-6 h-6 rounded-full flex items-center justify-center 
+                                                                            transition-all duration-300
+                                                                            ${rating === value
+                                                                            ? "bg-yellow-400 scale-125 shadow-[0_0_15px_rgba(250,204,21,0.6)]"
+                                                                            : "bg-purple-300 hover:bg-purple-400 hover:scale-110"
+                                                                        }
+                                                                `}
+                                                                >
+                                                                    {rating === value && (
+                                                                        <span className="absolute -top-8 text-yellow-400 text-lg animate-bounce">
+                                                                            ⭐
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
 
-                                                        <span className="text-purple-800 font-medium">
-                                                            {typeof file === "object" ? file.fileName : file}
-                                                            <p className="text-purple-500 font-light text-sm italic">{file.text}</p>
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
+                                                <p className="text-center text-sm text-purple-400 max-w-lg mx-auto mt-8">
+                                                    <span className="font-medium">Note:</span> 1 = Very negative; 10 = Very positive
+                                                </p>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="mt-10 flex justify-center gap-4">
+                                                <button
+                                                    onClick={() => setOpenFile(null)}
+                                                    className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    ← Back
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleUpdateGoal({
+                                                        ...openFile,
+                                                        title,
+                                                        about,
+                                                        whatWentWell,
+                                                        improvement,
+                                                        feeling,
+                                                        rating
+                                                    })}
+                                                    className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
+
+
+                                {/* Actual file contents of Goals + editable area */}
+                                {openFile && !addFile && openFolder?.name === "Goals" && (
+                                    <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
+                                        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
+
+                                            {/* Goal Title at Top */}
+                                            <h1 className="text-3xl font-bold text-purple-700 mb-8 text-center">
+                                                {openFile.title || "Untitled Goal"}
+                                            </h1>
+                                            <input
+                                                type="text"
+                                                value={goalTitle}
+                                                onChange={(e) => setGoalTitle(e.target.value)}
+                                                placeholder="Edit goal title..."
+                                                className="w-full mb-6 p-3 rounded-xl border border-purple-200 focus:outline-none focus:border-purple-400 bg-purple-50 text-lg font-semibold text-center"
+                                            />
+
+                                            {/* Goal Description */}
+                                            <div className="flex flex-col mb-6">
+                                                <label className="text-purple-700 font-semibold mb-2">Goal:</label>
+                                                <textarea
+                                                    value={goal}
+                                                    onChange={(e) => setGoal(e.target.value)}
+                                                    placeholder="Describe your goal..."
+                                                    rows={4}
+                                                    className="w-full p-3 rounded-xl border border-purple-200 focus:outline-none focus:border-purple-400 bg-purple-50 resize-none"
+                                                />
+                                            </div>
+
+                                            {/* Completion */}
+                                            <div className="flex items-center gap-3 mb-10">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={goalIsCompleted}
+                                                    onChange={(e) => setGoalIsCompleted(e.target.checked)}
+                                                    className="w-6 h-6 accent-purple-500"
+                                                />
+                                                <label className="text-purple-700 font-medium">Completed</label>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex justify-center gap-4">
+                                                <button
+                                                    onClick={() => setOpenFile(null)}
+                                                    className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    ← Back
+                                                </button>
+
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const updated = {
+                                                                ...openFile,
+                                                                title: goalTitle,
+                                                                goal,
+                                                                goalIsCompleted
+                                                            };
+                                                            await api.put(`/users/journal/goals/${openFile._id}`, updated, { withCredentials: true });
+                                                            setGoals(prev => prev.map(g => g._id === updated._id ? updated : g));
+                                                            toast.success("Goal updated!");
+                                                            setOpenFile(null);
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                            toast.error("Error updating goal");
+                                                        }
+                                                    }}
+                                                    className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+
+
+
+                                {/* Creating a new file and adding it to the goals folder */}
+                                {addFile && openFolder.name == "Goals" && (
+                                    <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+                                        <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
+                                            <div className="h-[95%] overflow-y-auto pb-20 ">
+
+                                                {messages.map((msg, i) => (
+
+                                                    <div
+                                                        key={i}
+                                                        className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                                                    >
+                                                        <div
+                                                            className={`px-4 py-2 rounded-2xl max-w-[75%] mt-2 border border-purple-600
+                                                                    ${msg.sender === "user"
+                                                                    ? "bg-purple-100 text-purple-800 self-end"
+                                                                    : "bg-purple-200 text-purple-900"
+                                                                }`}
+                                                        >
+                                                            {/* User message */}
+                                                            {msg.sender === "user" && msg.text && (
+                                                                <p>{msg.text}</p>
+                                                            )}
+
+                                                            {/* 🐻 Bear message */}
+                                                            {msg.sender === "bear" && msg.example && (
+                                                                <div>
+                                                                    <p className="font-semibold text-purple-900"> {msg.question}</p>
+                                                                    {msg.example && (
+                                                                        <p className="text-sm italic text-purple-700 mt-1 .text-sm.text-purple-700.opacity-80.pl-3.border-l-2.border-purple-400">
+                                                                            {msg.example}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* Ladt bear message or error message for not typing Y / N */}
+                                                            {msg.sender === "bear" && !msg.example && (
+                                                                <div> {msg.question || msg.text} </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                ))}
+
+                                                {isTyping && (
+                                                    <div className="flex items-center justify-start gap-1 text-purple-400 mb-2">
+                                                        <span className="animate-bounce">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                        <span className="animate-bounce delay-200">•</span>
+                                                    </div>
+                                                )}
+
+                                                {currentIndex == goalQuestions.length - 1 && !isTyping && (
+                                                    <div className="flex justify-center">
+                                                        <button
+                                                            className="
+                                                                bg-gradient-to-r from-purple-600 to-purple-500 
+                                                                text-white font-semibold px-6 py-2 rounded-full 
+                                                                shadow-md transition-all duration-300 
+                                                                hover:scale-105 hover:shadow-xl hover:from-purple-500 hover:to-purple-400
+                                                                active:scale-95 focus:outline-none mt-7 mb-4"
+                                                            onClick={() => {
+                                                                saveGoal();
+                                                                setAddFile(false);
+                                                            }}
+                                                        >
+                                                            💾 Save
+                                                        </button>
+
+                                                    </div>
+
+                                                )}
+                                                {/* 👇 Empty div to scroll into view */}
+                                                <div ref={messagesEndRef} />
+                                            </div>
+                                            {addFile && (
+                                                <div className="flex mt-1 flex-col">
+
+                                                    <div className="w-[100%] flex gap-0.5">
+                                                        <input
+                                                            type="text"
+                                                            value={input}
+                                                            onChange={(e) => setInput(e.target.value)}
+                                                            placeholder="Type your answer..."
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" && !e.shiftKey && currentIndex != goalQuestions.length - 1) {
+                                                                    e.preventDefault(); // stop newline
+                                                                    handleGoalSend();       // same handler as button
+                                                                }
+                                                            }}
+                                                            className="w-[90%] flex-1 border rounded-full px-4 py-2 text-sm border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                                        />
+                                                        <button
+                                                            disabled={isTyping || currentIndex == goalQuestions.length - 1}
+                                                            onClick={handleGoalSend}
+                                                            className="ml-2 bg-purple-500 text-white rounded-full px-4 py-2 text-sm hover:bg-purple-600"
+                                                        >
+                                                            Send
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+                                )}
+
                             </div>
                         </div>
-                    </div>
+                    </div >
                 )}
             </div >
         </>
