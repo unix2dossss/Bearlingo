@@ -431,10 +431,10 @@ const CVModule = () => {
   const [showCongratsPage, setShowCongratsPage] = useState(false);
   const popupRef = useRef(null);
 
-  // ✅ Create a user-specific key for localStorage
+  // Create a user-specific key for localStorage
   const confettiKey = `hasPlayedConfetti_${user?.id || user?.email || "guest"}`;
 
-  // ✅ Show confetti only once per user
+  // Show confetti only once per user
   useEffect(() => {
     const hasPlayedConfetti = localStorage.getItem(confettiKey);
 
@@ -444,14 +444,14 @@ const CVModule = () => {
     }
   }, [task1Complete, task2Complete, task3Complete, confettiKey]);
 
-  // ✅ After Lottie finishes, show popup
+  // After Lottie finishes, show popup
   const handleLottieComplete = () => {
     console.log("🎉 Lottie finished, showing popup!");
   setShowLottie(false);
   setShowCongratsPage(true);
 };
 
-// ✅ Timeout fallback (in case onComplete doesn’t fire)
+// Timeout fallback (in case onComplete doesn’t fire)
 useEffect(() => {
   if (showLottie) {
     const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
@@ -459,7 +459,7 @@ useEffect(() => {
   }
 }, [showLottie]);
 
-// ✅ Animate popup
+// Animate popup
 useEffect(() => {
   if (showCongratsPage && popupRef.current) {
     const popup = popupRef.current.querySelector("#popup-card");
