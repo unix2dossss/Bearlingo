@@ -64,6 +64,11 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
       // create new
       await api.post("/users/me/interview/company-research", form, { withCredentials: true });
       toast.success("Company research added successfully!");
+
+      // 2️⃣ Play the sound effect
+      const audio = new Audio("/sounds/ui-pop-sound-316482.mp3");
+      audio.play().catch(err => console.log("Sound blocked:", err));
+      
       setShowForm(false);
       setIsSubmitted(true);
       setEditing(null);
@@ -119,6 +124,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
     onTaskComplete?.();
     onClose(hasChanges, false);
   };
+
 
   return (
   <div className="flex flex-col h-full ">

@@ -13,9 +13,16 @@ import SofaLocked from "../../assets/ISofaB.svg";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
-import { isSubtaskCompleted } from "../../utils/moduleHelpers";
 import Bear from "../../assets/Bear.svg";
+import {
+  getModuleByName,
+  getLevelByNumber,
+  getSubtasksByLevel,
+  isSubtaskCompleted
+} from "../../utils/moduleHelpers";
 
+import { Info } from "lucide-react";
+import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
@@ -24,7 +31,7 @@ import InterviewSubtask3 from "./InterviewSubtask3";
 
 /* THEME (blue) */
 const COLORS = {
-  primary: "#4f9cf9" ,
+  primary: "#4f9cf9",
   primaryHover: "#3d86ea",
   textMuted: "#767687"
 };
@@ -171,7 +178,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
       gsap.to(deskLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -209,7 +216,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(sofaUnlockedRef.current, { opacity: 0 });
       gsap.to(sofaLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -247,7 +254,7 @@ const InterviewModule = () => {
       // Fade in locked desk
       gsap.set(wallUnlockedRef.current, { opacity: 0 });
       gsap.to(wallLockedRef.current, {
-        opacity: 1,
+        opacity: 0.7,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -255,28 +262,28 @@ const InterviewModule = () => {
   }, [task3Complete]);
 
   // Elevator doors
-    const leftDoor = useRef(null);
-    const rightDoor = useRef(null);
-  
-    // Animate elevator opening when CVModule loads
-    useEffect(() => {
-      gsap.set(leftDoor.current, { x: "0%" });
-      gsap.set(rightDoor.current, { x: "0%" });
-  
-      gsap.to(leftDoor.current, {
-        x: "-100%",
-        duration: 1.5,
-        ease: "power2.inOut",
-        delay: 0.3
-      });
-  
-      gsap.to(rightDoor.current, {
-        x: "100%",
-        duration: 1.5,
-        ease: "power2.inOut",
-        delay: 0.3
-      });
-    }, []);
+  const leftDoor = useRef(null);
+  const rightDoor = useRef(null);
+
+  // Animate elevator opening when CVModule loads
+  useEffect(() => {
+    gsap.set(leftDoor.current, { x: "0%" });
+    gsap.set(rightDoor.current, { x: "0%" });
+
+    gsap.to(leftDoor.current, {
+      x: "-100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+
+    gsap.to(rightDoor.current, {
+      x: "100%",
+      duration: 1.5,
+      ease: "power2.inOut",
+      delay: 0.3
+    });
+  }, []);
 
   // 🧠 Bear logic
   const [bearMessage, setBearMessage] = useState("Ready to ace that interview?");
@@ -303,7 +310,69 @@ const InterviewModule = () => {
       { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
     );
   }, [bearMessage]);
-  
+
+  //Bear moving up and down
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: 200 },
+      { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+    );
+    gsap.fromTo(
+      ".speech-bubble",
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+    );
+    gsap.to(bearRef.current, {
+      y: -15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 2
+    });
+  }, []);
+
+  // Related to subtaskIntro popup
+  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+
+  const handleMouseEnter = async (taskNumber) => {
+    try {
+      const module = await getModuleByName("Interview");
+      const level = getLevelByNumber(module, 1);
+      const subtasks = await getSubtasksByLevel(level);
+      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
+      setHoveredSubtask(subtask); // set the hovered subtask info
+    } catch (err) {
+      console.error("Failed to fetch subtask info:", err);
+    }
+  };
+
+  const handleMouseLeave = () => setHoveredSubtask(null);
+
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
+  // Sound Effects
+  // Button Click
+  const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+  };
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
@@ -358,13 +427,13 @@ const InterviewModule = () => {
                     ref={deskLockedRef}
                     src={DeskLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                   <img
                     ref={deskUnlockedRef}
                     src={Desk}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[35vh] left-40 w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[35vh] left-28 w-[30vw] max-w-[400px] h-auto z-30"
                   />
                 </div>
 
@@ -374,13 +443,13 @@ const InterviewModule = () => {
                     ref={sofaLockedRef}
                     src={SofaLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                   <img
                     ref={sofaUnlockedRef}
                     src={Sofa}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[43vh] right-40 w-[40vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[40vh] right-20 w-[40vw] max-w-[600px] h-auto z-30"
                   />
                 </div>
               </div>
@@ -390,30 +459,68 @@ const InterviewModule = () => {
           {/* Bottom Button Container */}
           <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
             <div className="flex space-x-6">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask1")}
-              >
-                Task 1
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask2")}
-              >
-                Task 2
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask3")}
-              >
-                Task 3
-              </button>
+              <div className="flex space-x-6 relative">
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask1");
+                  }}
+                >
+                  Task 1
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(1)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask2");
+                  }}
+                >
+                  Task 2
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(2)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask3");
+                  }}
+                >
+                  Task 3
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(3)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                {/* Subtask Info Popup */}
+                {hoveredSubtask && (
+                  <SubtaskInfoPopup
+                    subtask={hoveredSubtask}
+                    taskNumber={hoveredSubtask.sequenceNumber}
+                  />
+                )}
+              </div>
 
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-60%]">
-                  {bearMessage}
-                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+              <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                {/* Speech bubble */}
+                <div
+                  key="bear-speech"
+                  className="chat chat-end absolute -top-10 -left-48 opacity-100 bear-speech"
+                >
+                  <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold shadow-md text-sm sm:text-sm md:text-sm">
+                    {bearMessage}
+                  </div>
                 </div>
 
                 <img

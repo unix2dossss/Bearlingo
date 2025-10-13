@@ -1,15 +1,15 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { Clock, MapPin, Star } from "lucide-react";
 
 // (optional) keep your type styles if you like
 const TYPE_STYLES = {
-  webinar:    { bg: "#e0f2fe", text: "#075985", accent: "#38bdf8" },
-  seminar:    { bg: "#ede9fe", text: "#5b21b6", accent: "#8b5cf6" },
-  workshop:   { bg: "#dcfce7", text: "#166534", accent: "#22c55e" },
-  meetup:     { bg: "#fee2e2", text: "#7f1d1d", accent: "#ef4444" },
-  hackathon:  { bg: "#fef9c3", text: "#854d0e", accent: "#f59e0b" },
+  webinar: { bg: "#e0f2fe", text: "#075985", accent: "#38bdf8" },
+  seminar: { bg: "#ede9fe", text: "#5b21b6", accent: "#8b5cf6" },
+  workshop: { bg: "#dcfce7", text: "#166534", accent: "#22c55e" },
+  meetup: { bg: "#fee2e2", text: "#7f1d1d", accent: "#ef4444" },
+  hackathon: { bg: "#fef9c3", text: "#854d0e", accent: "#f59e0b" },
   conference: { bg: "#fae8ff", text: "#6b21a8", accent: "#d946ef" },
-  default:    { bg: "#f1f5f9", text: "#334155", accent: "#94a3b8" },
+  default: { bg: "#f1f5f9", text: "#334155", accent: "#94a3b8" },
 };
 
 const EventCard = ({
@@ -35,13 +35,15 @@ const EventCard = ({
     isAttended
       ? "Attended ✅"
       : isGoing
-      ? "Locked In 🫡 (tap to mark attended)"
-      : "Going to Attend";
+        ? "Locked In 🫡 (tap to mark attended)"
+        : "Going to Attend";
 
   const handleClick = () => {
+    console.log("Clicked attendance for event:", eventId, "status:", status);
     if (!onAttendanceClick || isAttended) return;
     onAttendanceClick(eventId, status);
   };
+
 
   return (
     <article

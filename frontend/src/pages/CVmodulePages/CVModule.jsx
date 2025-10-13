@@ -11,7 +11,15 @@ import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
-import { isSubtaskCompleted } from "../../utils/moduleHelpers";
+import {
+  getModuleByName,
+  getLevelByNumber,
+  getSubtasksByLevel,
+  isSubtaskCompleted
+} from "../../utils/moduleHelpers";
+
+import { Info } from "lucide-react";
+import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -24,6 +32,9 @@ import DeskLocked from "../../assets/CVDeskB.svg";
 import Bookcase from "../../assets/CVBook.svg";
 import BookcaseLocked from "../../assets/CVBookB.svg";
 import Bear from "../../assets/Bear.svg";
+
+// Sound
+import winSound from "/sounds/winner-game-sound-404167.mp3";
 
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
@@ -153,6 +164,9 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task1Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(windowLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -174,13 +188,21 @@ const CVModule = () => {
         }
       });
     } else {
+      // When still locked
       gsap.set(windowUnlockedRef.current, { opacity: 0 });
-      gsap.to(windowLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+      gsap.to(windowLockedRef.current, {
+        opacity: 0.8,
+        duration: 0.6,
+        ease: "power2.out"
+      });
     }
   }, [task1Complete]);
 
   useEffect(() => {
     if (task2Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(drawersLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -207,14 +229,14 @@ const CVModule = () => {
             rotation: 0,
             y: 0,
             duration: 1.5,
-            ease: "elastic.out(1, 0.5)"
+            ease: "bounce.out"
           });
         }
       });
     } else {
       gsap.set([drawersUnlockedRef.current, bookcaseUnlockedRef.current], { opacity: 0 });
       gsap.to([drawersLockedRef.current, bookcaseLockedRef.current], {
-        opacity: 1,
+        opacity: 0.8,
         duration: 0.6,
         ease: "power2.out"
       });
@@ -223,6 +245,9 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task3Complete) {
+      // 🔊 Play victory sound when unlocked
+      const audio = new Audio(winSound);
+      audio.play();
       gsap.to(deskLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -240,10 +265,15 @@ const CVModule = () => {
       });
     } else {
       gsap.set(deskUnlockedRef.current, { opacity: 0 });
-      gsap.to(deskLockedRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+      gsap.to(deskLockedRef.current, {
+        opacity: 0.8,
+        duration: 0.6,
+        ease: "power2.out"
+      });
     }
   }, [task3Complete]);
 
+  //Bear moving up and down
   useEffect(() => {
     gsap.fromTo(
       bearRef.current,
@@ -379,6 +409,46 @@ const CVModule = () => {
     // setShowLandingIntro(true);
   };
 
+  // Related to subtaskIntro popup
+  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+
+  const handleMouseEnter = async (taskNumber) => {
+    try {
+      const module = await getModuleByName("CV Builder");
+      const level = getLevelByNumber(module, 1);
+      const subtasks = await getSubtasksByLevel(level);
+      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
+      setHoveredSubtask(subtask); // set the hovered subtask info
+    } catch (err) {
+      console.error("Failed to fetch subtask info:", err);
+    }
+  };
+
+  const handleMouseLeave = () => setHoveredSubtask(null);
+
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
+  // Sound Effects
+  // Button Click
+  const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+  };
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
       {/* Elevator Doors Overlay */}
@@ -432,8 +502,7 @@ const CVModule = () => {
                     ref={drawersLockedRef}
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none"
-                    style={{ opacity: 0.4 }}
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none "
                   />
                   <img
                     ref={drawersUnlockedRef}
@@ -446,7 +515,6 @@ const CVModule = () => {
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
                     className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
-                    style={{ opacity: 0.4 }}
                   />
                   <img
                     ref={bookcaseUnlockedRef}
@@ -479,42 +547,80 @@ const CVModule = () => {
           {/* Bottom Button Container */}
           <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-40">
             <div className="flex space-x-6">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                onClick={() => handleSubtaskClick("subtask1")}
-              >
-                Task 1
-              </button>
-              <button
-                disabled={!task1Complete}
-                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+              <div className="flex space-x-6 relative">
+                <button
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask1");
+                  }}
+                >
+                  Task 1
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(1)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  disabled={!task1Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
                 ${
                   task1Complete
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                     : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
-                onClick={() => handleSubtaskClick("subtask2")}
-              >
-                Task 2
-              </button>
-              <button
-                disabled={!task2Complete}
-                className={`font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask2");
+                  }}
+                >
+                  Task 2
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(2)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                <button
+                  disabled={!task2Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
                 ${
                   task2Complete
                     ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                     : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
-                onClick={() => handleSubtaskClick("subtask3")}
-              >
-                Task 3
-              </button>
+                  onClick={() => {
+                    playClickSound();
+                    handleSubtaskClick("subtask3");
+                  }}
+                >
+                  Task 3
+                  <Info
+                    className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                    onMouseEnter={() => handleMouseEnter(3)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                </button>
+                {/* Subtask Info Popup */}
+                {hoveredSubtask && (
+                  <SubtaskInfoPopup
+                    subtask={hoveredSubtask}
+                    taskNumber={hoveredSubtask.sequenceNumber}
+                  />
+                )}
+              </div>
 
               {/* Bear + Speech Bubble */}
-              <div className="absolute -bottom-[28vh] right-16 flex flex-col items-end z-40">
-                <div className="speech-bubble relative bg-[#031331] text-[#C5CBD3] font-semibold px-4 py-2 rounded-xl shadow-md -mb-6 text-sm sm:text-sm md:text-sm transition-all duration-300 translate-x-[-90%]">
-                  {bearMessage}
-                  <div className="absolute -bottom-2 right-6 w-4 h-4 bg-black rotate-45 shadow-md" />
+              <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                {/* Speech bubble */}
+                <div
+                  key="bear-speech"
+                  className="chat chat-end absolute -top-10 -left-32 opacity-100 bear-speech"
+                >
+                  <div className="chat-bubble bg-[#031331] text-[#C5CBD3] font-semibold shadow-md text-sm sm:text-sm md:text-sm">
+                    {bearMessage}
+                  </div>
                 </div>
 
                 <img

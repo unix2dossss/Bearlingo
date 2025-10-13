@@ -104,7 +104,7 @@ export const logoutUser = (req, res) => {
       httpOnly: true,
       expires: new Date(0), // Set the cookie to expire immediately
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
+      sameSite: process.env.NODE_ENV !== "development" ? "none" : "strict"
     });
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
