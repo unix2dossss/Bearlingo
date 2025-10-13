@@ -346,6 +346,12 @@ const NetworkingModule = () => {
 
               <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
                 <img
+                  src={Table}
+                  alt="Unlocked Networking Table"
+                  className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
+                />
+
+                <img
                   src={Cafe}
                   alt="Unlocked Networking Cafe"
                   className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
@@ -357,17 +363,11 @@ const NetworkingModule = () => {
                   className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto"
                 />
 
-                <img
-                  src={Table}
-                  alt="Unlocked Networking Table"
-                  className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
-                />
-
                 <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
                   <div className="flex space-x-6">
                     <div className="flex space-x-6 relative">
                       <button
-                        className="flex items-center gap-2 bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
                           setSelectedSubtask("subtask1");
                           setShowSubtask(true);
@@ -383,7 +383,7 @@ const NetworkingModule = () => {
                         />
                       </button>
                       <button
-                        className="flex items-center gap-2 bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
                           setSelectedSubtask("subtask2");
                           setShowSubtask(true);
@@ -398,7 +398,7 @@ const NetworkingModule = () => {
                         />
                       </button>
                       <button
-                        className="flex items-center gap-2 bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
                           setSelectedSubtask("subtask3");
                           setShowSubtask(true);
