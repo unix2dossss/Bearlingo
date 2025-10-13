@@ -67,13 +67,7 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
 
       // 2️⃣ Play the sound effect
       const audio = new Audio("/sounds/ui-pop-sound-316482.mp3");
-      audio.play().catch(err => console.log("Sound blocked:", err));
-      
-      setShowForm(false);
-      setIsSubmitted(true);
-      setEditing(null);
-      setFormDraft(null); // clear draft after saving
-      fetchResearches();
+      audio.play().catch((err) => console.log("Sound blocked:", err));
 
       // Get subtaskId by module name, level number and subtask sequence number
       let subtaskId;
@@ -90,7 +84,13 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
         // Check if subtask is completed and display appropriate message
         if (res.data.message === "Well Done! You completed the subtask") {
           toast.success("Task 2 completed!");
+          
+          setShowForm(false);
+          setIsSubmitted(true);
           onTaskComplete?.();
+          setEditing(null);
+          setFormDraft(null); // clear draft after saving
+          fetchResearches();
         }
       } catch (err) {
         console.error("Failed to complete task", err);
@@ -121,56 +121,53 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
         if (Array.isArray(v)) return v.some((q) => q.trim() !== "");
         return v && v.trim() !== "";
       });
-    onTaskComplete?.();
     onClose(hasChanges, false);
   };
 
-
   return (
-  <div className="flex flex-col h-full ">
-    {/* Sticky Close Button */}
-    <div className="sticky top-0 z-50 flex justify-end bg-white p-2 rounded-full">
-      <button
-        onClick={handleLocalClose}
-        className="p-2 text-gray-400 hover:text-gray-600 text-xl"
-        aria-label="Close"
-      >
-        ✖
-      </button>
-    </div>
+    <div className="flex flex-col h-full ">
+      {/* Sticky Close Button */}
+      <div className="sticky top-0 z-50 flex justify-end bg-white p-2 rounded-full">
+        <button
+          onClick={handleLocalClose}
+          className="p-2 text-gray-400 hover:text-gray-600 text-xl"
+          aria-label="Close"
+        >
+          ✖
+        </button>
+      </div>
 
-    {/* Scrollable content */}
-    <div className="flex-1 overflow-y-auto p-4">
-      {!showForm ? (
-        <CompanyResearchList
-          researches={researches}
-          onAddClick={() => {
-            setShowForm(true);
-            setEditing(null);
-          }}
-          onDelete={handleDelete}
-          onEdit={(research) => {
-            setEditing(research);
-            setShowForm(true);
-          }}
-        />
-      ) : (
-        <CompanyResearchForm
-          onSave={handleSave}
-          onCancel={() => {
-            setShowForm(false);
-            setEditing(null);
-            setFormDraft(null);
-          }}
-          initialData={editing}
-          editingId={editing?._id || null}
-          onDraftChange={setFormDraft} // track changes
-        />
-      )}
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto p-4">
+        {!showForm ? (
+          <CompanyResearchList
+            researches={researches}
+            onAddClick={() => {
+              setShowForm(true);
+              setEditing(null);
+            }}
+            onDelete={handleDelete}
+            onEdit={(research) => {
+              setEditing(research);
+              setShowForm(true);
+            }}
+          />
+        ) : (
+          <CompanyResearchForm
+            onSave={handleSave}
+            onCancel={() => {
+              setShowForm(false);
+              setEditing(null);
+              setFormDraft(null);
+            }}
+            initialData={editing}
+            editingId={editing?._id || null}
+            onDraftChange={setFormDraft} // track changes
+          />
+        )}
+      </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default InterviewSubtask2;
