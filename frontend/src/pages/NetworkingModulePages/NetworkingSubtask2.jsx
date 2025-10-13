@@ -12,7 +12,7 @@ const COLORS = {
   border: "#f4e58b",         // borders
   text: "#111827",           // main text
   muted: "#767687",          // subtext
-  bg: "#fffbe6",             // page background (soft yellow)
+  bg: "#fff9c7",             // page background (soft yellow)
   panel: "#fffdf0",          // card/panel background
 };
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
@@ -181,12 +181,12 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
   return (
     <div
-      className="pt-16 relative min-h-screen flex flex-col min-w-0 gap-4 p-4"
+      className="pt-16 bg-[#fff9c7]  min-h-screen flex flex-col min-w-0 gap-4 p-4"
       style={{ backgroundColor: COLORS.bg, color: COLORS.text }}
     >
       {/* Back */}
       <button
-        className="btn btn-ghost absolute top-20 left-6 z-10"
+        className="btn btn-ghost absolute top-5 left-6 z-10"
         onClick={onBack}
         style={{ color: COLORS.text }}
       >

@@ -24,7 +24,7 @@ import Table from "../../assets/NTable.svg";
 import Bear from "../../assets/Bear.svg";
 
 const COLORS = {
-  bg: "#fff9c7",
+  bg: "#fcf782",
   primary: "#3d86ea",
   primaryHover: "#4f9cf9",
   doorLeft: "#9ca3af",

@@ -245,10 +245,10 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
 
 
   return (
-    <div className='pt-16 bg-[#fcf782] relative min-h-screen flex flex-row min-w-0 gap-4 p-4' >
+    <div className="pt-16 bg-[#fff9c7] relative min-h-screen flex min-w-0 gap-4 " >
       {/* Go back */}
       < button
-        className="btn btn-ghost absolute top-20 left-6 z-10"
+        className="btn btn-ghost absolute top-5 left-6 z-10"
         onClick={onBack}
       >
         <ArrowLeftIcon className="size-5" />
@@ -331,7 +331,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
       < div className="flex-1" >
 
         {userHasProfile == true && (
-          <div className="flex flex-col items-center mt-32">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -424,7 +424,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
         {/* Headline pick (index 4) */}
         {
           currentSpeechIndex === 4 && !userHasProfile && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
               {/* Headline component */}
               <Headline
                 value={selectedHeadline}
@@ -551,7 +551,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
         {/* Final preview (index 8) */}
         {
           currentSpeechIndex === 8 && userHasProfile == false && (
-            <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
               <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
                 <div className="card-body space-y-6">
                   <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
