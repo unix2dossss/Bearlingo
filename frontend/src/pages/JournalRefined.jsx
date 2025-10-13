@@ -488,13 +488,6 @@ const JournalRefined = () => {
 
                                         <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
                                             <div className="h-[95%] overflow-y-auto pb-20 ">
-                                                {isTyping && currentIndex == 0 &&
-                                                    <div className=" flex items-center justify-start gap-1 text-purple-400">
-                                                        <span className="animate-bounce">•</span>
-                                                        <span className="animate-bounce delay-100">•</span>
-                                                        <span className="animate-bounce delay-100">•</span>
-                                                    </div>
-                                                }
 
                                                 {messages.map((msg, i) => (
                                                     <div
@@ -523,7 +516,7 @@ const JournalRefined = () => {
                                                     </div>
                                                 }
 
-                                                {currentIndex === 4 &&
+                                                {currentIndex === 4 && !isTyping &&
                                                     <div className="flex gap-4 justify-center mt-6">
                                                         {emojiOptions.map((emoji, index) => (
                                                             <button
@@ -562,7 +555,7 @@ const JournalRefined = () => {
                                                     </div>
                                                 }
 
-                                                {currentIndex === 7 && (
+                                                {currentIndex === 7 && !isTyping && (
                                                     <div className="flex flex-col justify-center items-center gap-10 w-full mt-20">
                                                         {/* Rating Line */}
                                                         <div className="relative flex flex-col items-center w-full max-w-2xl gap-6">
@@ -791,7 +784,7 @@ const JournalRefined = () => {
                                                             {/* 🐻 Bear message */}
                                                             {msg.sender === "bear" && msg.example && (
                                                                 <div>
-                                                                    {currentIndex == 0 ? <p className="font-semibold text-purple-900">Hi {userInfo.username}! {msg.question}</p> : <p className="font-semibold text-purple-900"> {msg.question}</p>}
+                                                                    <p className="font-semibold text-purple-900"> {msg.question}</p>
                                                                     {msg.example && (
                                                                         <p className="text-sm italic text-purple-700 mt-1 .text-sm.text-purple-700.opacity-80.pl-3.border-l-2.border-purple-400">
                                                                             {msg.example}
