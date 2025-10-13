@@ -59,6 +59,7 @@ const JournalRefined = () => {
     ];
 
 
+
     const goalQuestions = [
 
         {
@@ -132,6 +133,28 @@ const JournalRefined = () => {
             { id: 3, name: "Notes", image: BlueFolder, items: notes },
         ]);
     }, [reflections, goals, notes]);
+
+    const handleUpdateGoal = {}
+
+    // Initialize state from openFile when it changes
+    useEffect(() => {
+        if (openFile && openFolder?.name === "Reflections") {
+            setReflectionTitle(openFile.title || "");
+            setAbout(openFile.about || "");
+            setWhatWentWell(openFile.whatWentWell || "");
+            setImprovement(openFile.improvement || "");
+            setFeeling(openFile.feeling || { emoji: 5 });
+            setRating(openFile.rating || 0);
+        }
+
+        if (openFile && openFolder?.name === "Goals") {
+            console.log("goalTitle: ", goalTitle);
+            setGoalTitle(goalTitle.title || "");
+            setGoal(openFile.goal || "");
+            setGoalIsCompleted(openFile.goalIsCompleted || "")
+        }
+
+    }, [openFile, openFolder]);
 
 
     const getAllJournals = async () => {
@@ -454,7 +477,11 @@ const JournalRefined = () => {
                                     {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
-                                            onClick={() => setOpenFile(file)}
+                                            onClick={() => {
+                                                setOpenFile(file);
+                                                setAddFile(false);
+                                            }
+                                            }
                                             className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
                                             {file.title}
@@ -464,6 +491,7 @@ const JournalRefined = () => {
                                         className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
                                         onClick={() => {
                                             setAddFile(true);
+
                                         }
                                         }
                                     >
@@ -682,77 +710,215 @@ const JournalRefined = () => {
                                 )}
 
 
+                                {/* Actual file content of Reflections folder + editable area */}
+                                {openFile && addFile === false && openFolder.name === "Reflections" && (
+                                    <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
+                                        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
 
+                                            {/* Header */}
+                                            <div className="text-center mb-8">
+                                                <input
+                                                    type="text"
+                                                    value={reflectionTitle}
+                                                    onChange={(e) => setReflectionTitle(e.target.value)}
+                                                    className="text-2xl font-bold text-purple-700 tracking-wide text-center w-full bg-transparent border-b-2 border-purple-300 focus:outline-none focus:border-purple-500"
+                                                />
+                                                <textarea
+                                                    value={about}
+                                                    onChange={(e) => setAbout(e.target.value)}
+                                                    className="text-purple-400 text-sm mt-1 w-full bg-transparent resize-none text-center focus:outline-none"
+                                                />
+                                            </div>
 
+                                            {/* Feelings Section */}
+                                            <h3 className="font-semibold text-purple-700 mb-4 text-lg">
+                                                How did this event/experience make me feel?
+                                            </h3>
+                                            <div className="flex justify-center gap-6 mb-10">
+                                                {emojiOptions.map((emoji, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => setFeeling(prev => ({ ...prev, emoji: index + 1 }))}
+                                                        className={`text-3xl flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300
+                                                                ${feeling.emoji === index + 1
+                                                                ? "border-purple-500 bg-purple-100 scale-110 shadow-[0_0_25px_rgba(168,85,247,0.4)] animate-bounce"
+                                                                : "border-purple-200 hover:border-purple-300 hover:bg-purple-50"
+                                                            }`}
+                                                    >
+                                                        {emoji}
+                                                    </button>
+                                                ))}
+                                            </div>
 
-
-                                {/* actual file content of Reflections folder + typing area */}
-                                {openFile && addFile == false && openFolder.name == "Reflections" && (
-
-                                    < div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
-
-                                        {/* Check if a file is selected */}
-                                        {openFile ? (
-
-                                            // Show selected file content
-                                            < div className="p-4 bg-white rounded-lg shadow-sm h-full flex flex-col">
-                                                {console.log("Open file: ", openFile)}
-                                                {console.log("typeof openFile", typeof openFile)}
-                                                {console.log("openFile === object", openFile === "object")}
-                                                <div className="flex justify-center">
-                                                    <div className="flex items-between">
-                                                        <h1 className="text-purple-800 font-semibold mb-2 text-xl mt-2">
-                                                            {openFile.title}
-                                                        </h1>
-
-                                                    </div>
+                                            {/* Reflection Answers */}
+                                            <div className="space-y-8">
+                                                <div>
+                                                    <h3 className="font-semibold text-purple-700 mb-3 text-lg">What went well?</h3>
+                                                    <textarea
+                                                        value={whatWentWell}
+                                                        onChange={(e) => setWhatWentWell(e.target.value)}
+                                                        placeholder="Write what went well..."
+                                                        className="w-full bg-purple-50 border border-purple-200 rounded-xl p-4 shadow-sm resize-none focus:outline-none focus:border-purple-400"
+                                                        rows={4}
+                                                    />
                                                 </div>
 
-
-                                                {/* If reflections exist */}
-                                                {typeof openFile === "object" && openFile.smart ? (
-                                                    <div className="space-y-3 mt-8">
-                                                        <div className="p-4 bg-purple-50 border-l-4 border-purple-400 rounded-md shadow-sm">
-                                                            <h4 className="font-semibold text-purple-700">{openFile.title}</h4>
-                                                            <p className="text-gray-700">{openFile.about}</p>
-                                                        </div>
-
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-purple-700">
-
-                                                    </p>
-                                                )}
-                                                <div className=" mt-auto flex justify-center items-center p-2">
-
-                                                    <button
-                                                        className="mt-4 btn btn-ghost w-40 border border-purple-500"
-                                                        onClick={() => { setOpenFile(null); setOpenFile(null); }}
-                                                    >
-                                                        Back to Reflections Overview
-                                                    </button>
+                                                <div>
+                                                    <h3 className="font-semibold text-purple-700 mb-3 text-lg">
+                                                        What could I do to improve my experience next time?
+                                                    </h3>
+                                                    <textarea
+                                                        value={improvement}
+                                                        onChange={(e) => setImprovement(e.target.value)}
+                                                        placeholder="Write improvements..."
+                                                        className="w-full bg-purple-50 border border-purple-200 rounded-xl p-4 shadow-sm resize-none focus:outline-none focus:border-purple-400"
+                                                        rows={4}
+                                                    />
                                                 </div>
                                             </div>
-                                        ) : (
-                                            // Show default overview of reflections
-                                            <ul className="space-y-3">
-                                                {openFolder.items.map((file, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm hover:bg-purple-100 transition-colors cursor-pointer"
 
-                                                    >
+                                            {/* Rating */}
+                                            <div className="mt-10">
+                                                <h3 className="font-semibold text-purple-700 mb-14 text-lg text-center">
+                                                    Rate the event/experience overall
+                                                </h3>
+                                                <div className="relative flex justify-between">
+                                                    {[...Array(10)].map((_, index) => {
+                                                        const value = index + 1;
+                                                        return (
+                                                            <div key={value} className="relative flex flex-col items-center">
+                                                                <button
+                                                                    onClick={() => setRating(value)}
+                                                                    className={`
+                                                                            w-6 h-6 rounded-full flex items-center justify-center 
+                                                                            transition-all duration-300
+                                                                            ${rating === value
+                                                                            ? "bg-yellow-400 scale-125 shadow-[0_0_15px_rgba(250,204,21,0.6)]"
+                                                                            : "bg-purple-300 hover:bg-purple-400 hover:scale-110"
+                                                                        }
+                                                                `}
+                                                                >
+                                                                    {rating === value && (
+                                                                        <span className="absolute -top-8 text-yellow-400 text-lg animate-bounce">
+                                                                            ⭐
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
 
-                                                        <span className="text-purple-800 font-medium">
-                                                            {typeof file === "object" ? file.fileName : file}
-                                                            <p className="text-purple-500 font-light text-sm italic">{file.text}</p>
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
+                                                <p className="text-center text-sm text-purple-400 max-w-lg mx-auto mt-8">
+                                                    <span className="font-medium">Note:</span> 1 = Very negative; 10 = Very positive
+                                                </p>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="mt-10 flex justify-center gap-4">
+                                                <button
+                                                    onClick={() => setOpenFile(null)}
+                                                    className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    ← Back
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleUpdateGoal({
+                                                        ...openFile,
+                                                        title,
+                                                        about,
+                                                        whatWentWell,
+                                                        improvement,
+                                                        feeling,
+                                                        rating
+                                                    })}
+                                                    className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
+
+
+                                {/* Actual file contents of Goals + editable area */}
+                                {openFile && !addFile && openFolder?.name === "Goals" && (
+                                    <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
+                                        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
+
+                                            {/* Goal Title at Top */}
+                                            <h1 className="text-3xl font-bold text-purple-700 mb-8 text-center">
+                                                {openFile.title || "Untitled Goal"}
+                                            </h1>
+                                            <input
+                                                type="text"
+                                                value={goalTitle}
+                                                onChange={(e) => setGoalTitle(e.target.value)}
+                                                placeholder="Edit goal title..."
+                                                className="w-full mb-6 p-3 rounded-xl border border-purple-200 focus:outline-none focus:border-purple-400 bg-purple-50 text-lg font-semibold text-center"
+                                            />
+
+                                            {/* Goal Description */}
+                                            <div className="flex flex-col mb-6">
+                                                <label className="text-purple-700 font-semibold mb-2">Goal:</label>
+                                                <textarea
+                                                    value={goal}
+                                                    onChange={(e) => setGoal(e.target.value)}
+                                                    placeholder="Describe your goal..."
+                                                    rows={4}
+                                                    className="w-full p-3 rounded-xl border border-purple-200 focus:outline-none focus:border-purple-400 bg-purple-50 resize-none"
+                                                />
+                                            </div>
+
+                                            {/* Completion */}
+                                            <div className="flex items-center gap-3 mb-10">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={goalIsCompleted}
+                                                    onChange={(e) => setGoalIsCompleted(e.target.checked)}
+                                                    className="w-6 h-6 accent-purple-500"
+                                                />
+                                                <label className="text-purple-700 font-medium">Completed</label>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex justify-center gap-4">
+                                                <button
+                                                    onClick={() => setOpenFile(null)}
+                                                    className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    ← Back
+                                                </button>
+
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const updated = {
+                                                                ...openFile,
+                                                                title: goalTitle,
+                                                                goal,
+                                                                goalIsCompleted
+                                                            };
+                                                            await api.put(`/users/journal/goals/${openFile._id}`, updated, { withCredentials: true });
+                                                            setGoals(prev => prev.map(g => g._id === updated._id ? updated : g));
+                                                            toast.success("Goal updated!");
+                                                            setOpenFile(null);
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                            toast.error("Error updating goal");
+                                                        }
+                                                    }}
+                                                    className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
+                                                >
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
 
 
 
