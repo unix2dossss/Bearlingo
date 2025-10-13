@@ -17,14 +17,13 @@ const JournalRefined = () => {
     const [reflections, setReflections] = useState([]);
     const [goals, setGoals] = useState([]);
     const [notes, setNotes] = useState([]);
-    const [newFileName, setNewFileName] = useState("");
     const [openFolder, setOpenFolder] = useState(false);
-    const [showAddFileModal, setShowAddFileModal] = useState(false);
     const [openFile, setOpenFile] = useState(false);
     const [addFile, setAddFile] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
     const [isTyping, setIsTyping] = useState(true);
     const emojiOptions = ["😞", "😐", "🙂", "😊", "🤩"];
 
@@ -42,33 +41,39 @@ const JournalRefined = () => {
 
 
     const goalQuestions = [
+
         {
             question: "What would you like to title this goal entry?",
-            example: "For example: 'Improve my fitness routine' or 'Learn web development basics'."
+            example: "For example: 'Learn web development basics'."
         },
         {
             question: "What is your goal? (Write 1–2 lines about a goal you want to achieve. Remember to make it SMART.)",
             example: "For example: 'I want to run 5km without stopping by the end of next month.'"
         },
         {
-            question: "Is your goal Specific?",
+            question: "Is your goal Specific? Please type Y / N",
             example: "For example: 'Yes — it focuses on running 5km, not just general exercise.'"
         },
         {
-            question: "Is your goal Measurable?",
+            question: "Is your goal Measurable?  Please type Y / N",
             example: "For example: 'Yes — I can track progress by the distance I can run each week.'"
         },
         {
-            question: "Is your goal Achievable?",
+            question: "Is your goal Achievable?  Please type Y / N",
             example: "For example: 'Yes — I can train three times per week to gradually build endurance.'"
         },
         {
-            question: "Is your goal Realistic?",
+            question: "Is your goal Realistic?  Please type Y / N",
             example: "For example: 'Yes — I already run 2km comfortably, so 5km is realistic with practice.'"
         },
         {
-            question: "Is your goal Timely?",
+            question: "Is your goal Timely?  Please type Y / N",
             example: "For example: 'Yes — I’ve set a clear deadline of one month to achieve this.'"
+        },
+
+        {
+            question: "Nice job 🤩! Press the following button to save your goal!",
+            example: null
         }
     ];
 
@@ -138,14 +143,19 @@ const JournalRefined = () => {
     // Save goal to backend
     const saveGoal = async () => {
         try {
+            console.log("goal: ", goal);
             const goalSaved = await api.post("/users/journal/goals",
                 {
                     title: goalTitle,
                     goal: goal,
-                    isCompleted: goalIsCompleted
+                    isCompleted: false,
                 },
                 { withCredentials: true });
-            setGoals(prevGoals => [...prevGoals, goalSaved.data])
+            setGoals(prevGoals => [...prevGoals, goalSaved.data]);
+            setMessages([]);
+            setCurrentIndex(0);
+            toast.success("Goal saved!");
+
 
 
         } catch (error) {
@@ -171,6 +181,7 @@ const JournalRefined = () => {
                 { withCredentials: true });
             setReflections(prev => [...prev, reflectionSaved.data]);
             setMessages([]);
+            setCurrentIndex(0);
             toast.success("Reflection saved!");
 
         } catch (error) {
@@ -213,20 +224,45 @@ const JournalRefined = () => {
     }, [messages]);
 
 
-
+    // For temporarily saving data to the messages array
     useEffect(() => {
-        if (currentIndex < reflectionQuestions.length) {
-            setIsTyping(true);
-            const timer = setTimeout(() => {
-                setMessages((prev) => [
-                    ...prev,
-                    { sender: "bear", text: reflectionQuestions[currentIndex] }
-                ]);
-                setIsTyping(false);
-            }, 1000); // typing delay
-            return () => clearTimeout(timer);
+        let timer;
+        let questions = [];
+
+        if (openFolder.name === "Reflections") {
+            questions = reflectionQuestions;
+        } else if (openFolder.name === "Goals") {
+            questions = goalQuestions;
         }
-    }, [currentIndex]);
+
+        if (questions.length > 0 && currentIndex < questions.length) {
+            setIsTyping(true);
+
+            timer = setTimeout(() => {
+                setMessages((prev) => {
+                    const currentQ = questions[currentIndex];
+
+
+                    // Handle both reflection (string) and goal (object) questions
+                    const newMessage =
+                        typeof currentQ === "string"
+                            ? { sender: "bear", text: currentQ }
+                            : {
+                                sender: "bear",
+                                question: currentQ.question,
+                                example: currentQ.example,
+                            };
+
+                    return [...prev, newMessage];
+                });
+                setIsTyping(false);
+            }, 1000);
+        }
+
+        return () => clearTimeout(timer);
+    }, [currentIndex, openFolder.name]);
+
+
 
     const handleSend = () => {
         if (currentIndex == 4 || currentIndex == 7) {
@@ -241,7 +277,7 @@ const JournalRefined = () => {
         setCurrentIndex((prev) => prev + 1);
         if (currentIndex == reflectionQuestions.length - 1) {
             setInput("");
-            setMessages("");
+            setMessages([]);
         }
         if (currentIndex == 2) {
             setReflectionTitle(input);
@@ -264,7 +300,42 @@ const JournalRefined = () => {
     };
 
 
+    const handleGoalSend = () => {
+        if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
+        setMessages((prev) => [
+            ...prev,
+            { sender: "user", text: input },
+        ]);
+        if ([2, 3, 4, 5, 6].includes(currentIndex) && (!(input == "Y" || input == "N"))) {
+            setMessages((prev) => [
+                ...prev,
+                { sender: "bear", text: "Please type Y or N!" },
+            ]);
 
+            setInput("");
+            return;
+        }
+        if ([2, 3, 4, 5, 6].includes(currentIndex) && (input == "N")) {
+            setMessages((prev) => [
+                ...prev,
+                { sender: "bear", text: "Please rewrite your goal to adhere to the SMART principles!" },
+            ]);
+            setInput("");
+            // Reset to the goal-writing step (index 1)
+            setCurrentIndex(1);
+
+            return;
+        }
+
+        if (currentIndex == 0) {
+            setGoalTitle(input);
+        }
+        if (currentIndex == 1) {
+            setGoal(input);
+        }
+        setInput("");
+        setCurrentIndex((prev) => prev + 1);
+    }
 
 
 
@@ -329,6 +400,8 @@ const JournalRefined = () => {
                                             setOpenFolder(null);
                                             setOpenFile(null);
                                             setAddFile(false);
+                                            setMessages([]);
+                                            setInput("")
 
                                         }}
                                         className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
@@ -351,7 +424,6 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    {console.log("openFolder.items: ", openFolder.items)}
                                     {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
@@ -364,7 +436,6 @@ const JournalRefined = () => {
                                     <button
                                         className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
                                         onClick={() => {
-                                            setShowAddFileModal(true);
                                             setAddFile(true);
                                         }
                                         }
@@ -434,13 +505,11 @@ const JournalRefined = () => {
                                                                     setFeeling({ ...feeling, emoji: index + 1 })
                                                                 }}
                                                                 disabled={currentIndex > 4}
-                                                                className={`
-                                                      text-3xl flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300
-                                                      ${feeling.emoji === index + 1
+                                                                className={` text-3xl flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300
+                                                            ${feeling.emoji === index + 1
                                                                         ? "border-purple-500 bg-purple-100 scale-110 shadow-[0_0_20px_rgba(128,90,255,0.6)] animate-pulse"
                                                                         : "border-gray-300 bg-white hover:border-purple-400 hover:bg-purple-50 hover:scale-105"
-                                                                    }
-                                                    `}
+                                                                    }`}
                                                             >
                                                                 {emoji}
                                                             </button>
@@ -457,11 +526,7 @@ const JournalRefined = () => {
                                                                 }
                                                                 handleSend();
                                                             }}
-                                                            className="
-    flex items-center gap-2 bg-purple-600 text-white px-5 py-3 rounded-full 
-    font-semibold shadow-md transition-all duration-300
-    hover:scale-105 hover:shadow-xl hover:bg-purple-500
-    active:scale-95 focus:outline-none"
+                                                            className="flex items-center gap-2 bg-purple-600 text-white px-5 py-3 rounded-full font-semibold shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-500 active:scale-95 focus:outline-none"
                                                         >
                                                             Next
                                                             <span className="transition-transform duration-300 group-hover:translate-x-1">➜</span>
@@ -674,7 +739,122 @@ const JournalRefined = () => {
 
                                 {/* Creating a new file and adding it to the goals folder */}
                                 {addFile && openFolder.name == "Goals" && (
-                                    <div></div>
+                                    <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
+                                        <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
+                                            <div className="h-[95%] overflow-y-auto pb-20 ">
+                                                {isTyping && currentIndex == 0 &&
+                                                    <div className=" flex items-center justify-start gap-1 text-purple-400">
+                                                        <span className="animate-bounce">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                    </div>
+                                                }
+
+                                                {messages.map((msg, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                                                    >
+                                                        <div
+                                                            className={`px-4 py-2 rounded-2xl max-w-[75%] mt-2 border border-purple-600
+                                                                    ${msg.sender === "user"
+                                                                    ? "bg-purple-100 text-purple-800 self-end"
+                                                                    : "bg-purple-200 text-purple-900"
+                                                                }`}
+                                                        >
+                                                            {/* User message */}
+                                                            {msg.sender === "user" && msg.text && (
+                                                                <p>{msg.text}</p>
+                                                            )}
+
+                                                            {/* 🐻 Bear message */}
+                                                            {msg.sender === "bear" && msg.example && (
+                                                                <div>
+                                                                    <p className="font-semibold text-purple-900">{msg.question}</p>
+                                                                    {msg.example && (
+                                                                        <p className="text-sm italic text-purple-700 mt-1 .text-sm.text-purple-700.opacity-80.pl-3.border-l-2.border-purple-400">
+                                                                            {msg.example}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+
+                                                            {msg.sender === "bear" && !msg.example && (
+                                                                <div> {msg.question || msg.text} </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                {isTyping &&
+                                                    <div className=" flex items-center justify-start gap-1 text-purple-400">
+                                                        <span className="animate-bounce">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                        <span className="animate-bounce delay-100">•</span>
+                                                    </div>
+                                                }
+
+                                                {currentIndex == goalQuestions.length - 1 && (
+                                                    <div className="flex justify-center">
+                                                        <button
+                                                            className="
+                                                                bg-gradient-to-r from-purple-600 to-purple-500 
+                                                                text-white font-semibold px-6 py-2 rounded-full 
+                                                                shadow-md transition-all duration-300 
+                                                                hover:scale-105 hover:shadow-xl hover:from-purple-500 hover:to-purple-400
+                                                                active:scale-95 focus:outline-none mt-7 mb-4"
+                                                            onClick={() => {
+                                                                saveGoal();
+                                                                setAddFile(false);
+                                                            }}
+                                                        >
+                                                            💾 Save
+                                                        </button>
+
+                                                    </div>
+
+                                                )}
+                                                {/* 👇 Empty div to scroll into view */}
+                                                <div ref={messagesEndRef} />
+                                            </div>
+                                            {addFile && (
+                                                <div className="flex mt-1 flex-col">
+
+                                                    <div className="w-[100%] flex gap-0.5">
+                                                        <input
+                                                            type="text"
+                                                            value={input}
+                                                            onChange={(e) => setInput(e.target.value)}
+                                                            placeholder="Type your answer..."
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" && !e.shiftKey && currentIndex != goalQuestions.length - 1) {
+                                                                    e.preventDefault(); // stop newline
+                                                                    handleGoalSend();       // same handler as button
+                                                                }
+                                                            }}
+                                                            className="w-[90%] flex-1 border rounded-full px-4 py-2 text-sm border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                                        />
+                                                        <button
+                                                            disabled={isTyping || currentIndex == goalQuestions.length - 1}
+                                                            onClick={handleGoalSend}
+                                                            className="ml-2 bg-purple-500 text-white rounded-full px-4 py-2 text-sm hover:bg-purple-600"
+                                                        >
+                                                            Send
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+
+
+
+
+
                                 )}
 
                             </div>
