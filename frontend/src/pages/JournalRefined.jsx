@@ -11,6 +11,8 @@ import api from "../lib/axios";
 import BackgroundMusicBox from '../components/BackgroundMusicBox';
 import Logo from "../assets/Logo1.svg";
 import toast from "react-hot-toast";
+import { useUserStore } from "../store/user";
+import { useNavigate } from "react-router-dom";
 
 
 const JournalRefined = () => {
@@ -26,6 +28,23 @@ const JournalRefined = () => {
     const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
     const [isTyping, setIsTyping] = useState(true);
     const emojiOptions = ["😞", "😐", "🙂", "😊", "🤩"];
+    const [userInfo, setUserInfo] = useState(null);
+    const navigate = useNavigate();
+    const user = useUserStore((state) => state.user);
+
+    // Auth
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) await useUserStore.getState().fetchUser();
+            const currentUser = useUserStore.getState().user;
+            if (!currentUser) {
+                navigate("/login");
+            } else {
+                setUserInfo(currentUser);
+            }
+        };
+        fetchUserData();
+    }, [navigate, user]);
 
     const reflectionQuestions = [
         "Let's create a reflection together!",
@@ -321,13 +340,17 @@ const JournalRefined = () => {
         }
         if ([2, 3, 4, 5, 6].includes(currentIndex) && (input == "N")) {
             setInput("");
-            setMessages((prev) => [
-                ...prev,
-                { sender: "bear", text: "Please rewrite your goal to adhere to the SMART principles!" },
-            ]);
-            // Reset to the goal-writing step (index 1)
-            setCurrentIndex(1);
+            setIsTyping(true);
 
+            timer = setTimeout(() => {
+                setMessages((prev) => [
+                    ...prev,
+                    { sender: "bear", text: "Please rewrite your goal to adhere to the SMART principles!" },
+                ]);
+                // Reset to the goal-writing step (index 1)
+                setCurrentIndex(1);
+
+            }, 1000);
             return;
         }
 
@@ -609,7 +632,7 @@ const JournalRefined = () => {
                                                     </div>
                                                 )}
 
-                                                {currentIndex == reflectionQuestions.length - 1 && (
+                                                {currentIndex == reflectionQuestions.length - 1 && !isTyping && (
                                                     <div className="flex justify-center">
                                                         <button
                                                             className="
@@ -768,7 +791,7 @@ const JournalRefined = () => {
                                                             {/* 🐻 Bear message */}
                                                             {msg.sender === "bear" && msg.example && (
                                                                 <div>
-                                                                    <p className="font-semibold text-purple-900">{msg.question}</p>
+                                                                    {currentIndex == 0 ? <p className="font-semibold text-purple-900">Hi {userInfo.username}! {msg.question}</p> : <p className="font-semibold text-purple-900"> {msg.question}</p>}
                                                                     {msg.example && (
                                                                         <p className="text-sm italic text-purple-700 mt-1 .text-sm.text-purple-700.opacity-80.pl-3.border-l-2.border-purple-400">
                                                                             {msg.example}
@@ -794,7 +817,7 @@ const JournalRefined = () => {
                                                     </div>
                                                 )}
 
-                                                {currentIndex == goalQuestions.length - 1 && (
+                                                {currentIndex == goalQuestions.length - 1 && !isTyping && (
                                                     <div className="flex justify-center">
                                                         <button
                                                             className="
