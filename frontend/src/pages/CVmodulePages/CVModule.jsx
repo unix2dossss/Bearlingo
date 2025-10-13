@@ -20,6 +20,7 @@ import {
 
 import { Info } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -426,49 +427,59 @@ const CVModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  const [showLottie, setShowLottie] = useState(false);
   const [showCongratsPage, setShowCongratsPage] = useState(false);
   const popupRef = useRef(null);
 
-  // Show popup once with delay
-  useEffect(() => {
-    if (task1Complete && task2Complete && task3Complete) {
-      const hasSeenCongrats = localStorage.getItem("seenCongratsPage");
-      if (!hasSeenCongrats) {
-        const timeout = setTimeout(() => {
-          setShowCongratsPage(true);
-          localStorage.setItem("seenCongratsPage", "true");
-        }, 1000); // 1 second delay
-        return () => clearTimeout(timeout);
-      }
-    }
-  }, [task1Complete, task2Complete, task3Complete]);
+  // ✅ Create a user-specific key for localStorage
+  const confettiKey = `hasPlayedConfetti_${user?.id || user?.email || "guest"}`;
 
-  // Animate popup when it appears
+  // ✅ Show confetti only once per user
   useEffect(() => {
-    if (showCongratsPage && popupRef.current) {
-      gsap.fromTo(
-        popupRef.current,
-        { scale: 0.5, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
-      );
+    const hasPlayedConfetti = localStorage.getItem(confettiKey);
+
+    if (task1Complete && task2Complete && task3Complete && !hasPlayedConfetti) {
+      setShowLottie(true);
+      localStorage.setItem(confettiKey, "true"); // store per-user flag
     }
-  }, [showCongratsPage]);
+  }, [task1Complete, task2Complete, task3Complete, confettiKey]);
+
+  // ✅ After Lottie finishes, show popup
+  const handleLottieComplete = () => {
+    console.log("🎉 Lottie finished, showing popup!");
+  setShowLottie(false);
+  setShowCongratsPage(true);
+};
+
+// ✅ Timeout fallback (in case onComplete doesn’t fire)
+useEffect(() => {
+  if (showLottie) {
+    const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
+    return () => clearTimeout(timer);
+  }
+}, [showLottie]);
+
+// ✅ Animate popup
+useEffect(() => {
+  if (showCongratsPage && popupRef.current) {
+    const popup = popupRef.current.querySelector("#popup-card");
+
+    // Animate backdrop fade-in
+    gsap.fromTo(
+      popupRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.6, ease: "power2.out" }
+    );
+
+    // Animate popup scale and fade
+    gsap.fromTo(
+      popup,
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
+    );
+  }
+}, [showCongratsPage]);
   
-  // Hide popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      if (hoveredSubtask) setHoveredSubtask(null);
-    };
-
-    // Add event listener only when popup is visible
-    if (hoveredSubtask) {
-      document.addEventListener("click", handleClickOutside);
-    }
-
-    // Cleanup
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [hoveredSubtask]);
-
   // Sound Effects
   // Button Click
   const playClickSound = () => {
@@ -483,9 +494,42 @@ const CVModule = () => {
       <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
       <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
-      {/* Show the CongratsPage overlay */}
+      {/* 🎊 Lottie Confetti */}
+      {showLottie && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-transparent">
+          <DotLottieReact
+            src="https://lottie.host/1099ed2e-a10f-41d3-9eb8-69559ac869bf/PyIymGiJIa.lottie"
+            autoplay
+            loop={false}
+            onComplete={handleLottieComplete}
+            style={{
+                width: "100vw",
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                pointerEvents: "none", // so user can still click underlying buttons
+                zIndex: 9999,
+            }}
+                  />
+        </div>
+      )}
+
+      {/* 🏆 Congrats Popup */}
       {showCongratsPage && (
-        <CongratsPage onClose={() => setShowCongratsPage(false)} />
+        <div
+          ref={popupRef}
+          className="fixed inset-0 z-[10000] flex items-center justify-center 
+                    bg-black/30 backdrop-blur-sm transition-opacity duration-700 ease-out"
+        >
+          <div
+            id="popup-card"
+            className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-[90%] 
+                      transform scale-90 opacity-0 transition-all duration-700 ease-out"
+          >
+            <CongratsPage onClose={() => setShowCongratsPage(false)} />
+          </div>
+        </div>
       )}
 
       {/* Background */}
@@ -494,6 +538,7 @@ const CVModule = () => {
         <div className="relative z-[100]">
           <TopNavbar />
         </div>
+
 
         <div>
           <div>
@@ -574,6 +619,7 @@ const CVModule = () => {
                 </div>
               </div>
             </div>
+            
           </div>
 
           {/* Bottom Button Container */}
@@ -645,6 +691,15 @@ const CVModule = () => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                
+
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear mascot"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+                />
+
                 {/* Speech bubble */}
                 <div
                   key="bear-speech"
@@ -654,17 +709,9 @@ const CVModule = () => {
                     {bearMessage}
                   </div>
                 </div>
-
-                <img
-                  ref={bearRef}
-                  src={Bear}
-                  alt="Bear mascot"
-                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
-                />
               </div>
             </div>
           </div>
-
           {/* ⬇️ NEW: Resume Upload Landing Modal */}
           {showResumeModal && (
             <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50">

@@ -330,7 +330,7 @@ const NetworkingModule = () => {
 
             {/* Background */}
             <div className="flex">
-              <div className="mt-20 z-40">
+              <div className="mt-20 z-10">
                 <SideNavbar />
               </div>
 
