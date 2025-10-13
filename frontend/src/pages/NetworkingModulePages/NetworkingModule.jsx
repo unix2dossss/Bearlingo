@@ -311,7 +311,7 @@ const NetworkingModule = () => {
 
   return (
     <>
-      <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
+      <div className="relative min-h-screen flex flex-col bg-[#fff9c7] overflow-hidden">
         {/* Elevator Doors Overlay */}
 
         {/* Top Navbar */}
