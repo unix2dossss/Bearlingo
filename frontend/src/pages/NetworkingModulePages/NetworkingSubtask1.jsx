@@ -249,7 +249,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
     <div className='pt-16 bg-[#fff9c7] relative min-h-screen flex flex-row min-w-0 gap-4 p-4' >
       {/* Go back */}
       < button
-        className="btn btn-ghost absolute top-5 left-6 z-10"
+        className="btn btn-ghost absolute top-20 left-6 z-10"
         onClick={onBack}
       >
         <ArrowLeftIcon className="size-5" />
