@@ -20,7 +20,7 @@ import {
 
 import { Info } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -166,11 +166,10 @@ const CVModule = () => {
   const deskUnlockedRef = useRef(null);
   const bearRef = useRef(null);
 
-  // Track victory sound 
+  // Track victory sound
   const prevTask1 = useRef(false);
   const prevTask2 = useRef(false);
   const prevTask3 = useRef(false);
-
 
   useEffect(() => {
     if (task1Complete) {
@@ -427,12 +426,27 @@ const CVModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
   const [showLottie, setShowLottie] = useState(false);
   const [showCongratsPage, setShowCongratsPage] = useState(false);
   const popupRef = useRef(null);
 
   // Create a user-specific key for localStorage
-  const moduleName = "cv"; 
+  const moduleName = "cv";
   const confettiKey = `hasPlayedConfetti_${moduleName}_${user?.id || user?.email || "guest"}`;
 
   // Show confetti only once per user
@@ -448,39 +462,39 @@ const CVModule = () => {
   // After Lottie finishes, show popup
   const handleLottieComplete = () => {
     console.log("🎉 Lottie finished, showing popup!");
-  setShowLottie(false);
-  setShowCongratsPage(true);
-};
+    setShowLottie(false);
+    setShowCongratsPage(true);
+  };
 
-// Timeout fallback (in case onComplete doesn’t fire)
-useEffect(() => {
-  if (showLottie) {
-    const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
-    return () => clearTimeout(timer);
-  }
-}, [showLottie]);
+  // Timeout fallback (in case onComplete doesn’t fire)
+  useEffect(() => {
+    if (showLottie) {
+      const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
+      return () => clearTimeout(timer);
+    }
+  }, [showLottie]);
 
-// Animate popup
-useEffect(() => {
-  if (showCongratsPage && popupRef.current) {
-    const popup = popupRef.current.querySelector("#popup-card");
+  // Animate popup
+  useEffect(() => {
+    if (showCongratsPage && popupRef.current) {
+      const popup = popupRef.current.querySelector("#popup-card");
 
-    // Animate backdrop fade-in
-    gsap.fromTo(
-      popupRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.6, ease: "power2.out" }
-    );
+      // Animate backdrop fade-in
+      gsap.fromTo(
+        popupRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out" }
+      );
 
-    // Animate popup scale and fade
-    gsap.fromTo(
-      popup,
-      { scale: 0.8, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
-    );
-  }
-}, [showCongratsPage]);
-  
+      // Animate popup scale and fade
+      gsap.fromTo(
+        popup,
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
+      );
+    }
+  }, [showCongratsPage]);
+
   // BackgroundMusicBox visibility state
   const [showMusicBox, setShowMusicBox] = useState(false);
 
@@ -507,15 +521,15 @@ useEffect(() => {
             loop={false}
             onComplete={handleLottieComplete}
             style={{
-                width: "100vw",
-                height: "100vh",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                pointerEvents: "none", // so user can still click underlying buttons
-                zIndex: 9999,
+              width: "100vw",
+              height: "100vh",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              pointerEvents: "none", // so user can still click underlying buttons
+              zIndex: 9999
             }}
-                  />
+          />
         </div>
       )}
 
@@ -545,7 +559,6 @@ useEffect(() => {
             onToggleMusicBox={() => setShowMusicBox(!showMusicBox)}
           />
         </div>
-
 
         <div>
           <div>
@@ -633,7 +646,6 @@ useEffect(() => {
                 </div>
               </div>
             </div>
-            
           </div>
 
           {/* Bottom Button Container */}
@@ -705,8 +717,6 @@ useEffect(() => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
-                
-
                 <img
                   ref={bearRef}
                   src={Bear}
