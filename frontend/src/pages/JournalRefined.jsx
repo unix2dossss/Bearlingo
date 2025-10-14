@@ -518,7 +518,7 @@ const JournalRefined = () => {
                                                         shadow-lg border border-white w-full"
                                             onClick={() => {
                                                 setIsChatOpen(false);
-                                                setAddFile(true);
+                                                setAddFile(false);
                                                 setOpenFile(true);
                                                 console.log("Open file", openFile);
                                             }}
@@ -534,7 +534,7 @@ const JournalRefined = () => {
                                             className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
                                             onClick={() => {
                                                 setIsChatOpen(true); 
-                                                setAddFile(false);
+                                                setAddFile(true);
                                                 setOpenFile(false);
                                             }}
                                         >
@@ -774,7 +774,7 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Actual file content of Reflections folder + editable area */}
-                                {openFile && addFile === true && openFolder.name === "Reflections" && (
+                                {openFile && addFile === false && openFolder.name === "Reflections" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
