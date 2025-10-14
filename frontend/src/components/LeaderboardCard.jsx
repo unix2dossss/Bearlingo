@@ -1,6 +1,15 @@
-import React from 'react';
+import React from "react";
+import { toast } from "react-hot-toast";
 
-const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, linkedInIcon, starIcon }) => {
+const LeaderboardCard = ({
+  user,
+  index,
+  goldMedal,
+  silverMedal,
+  bronzeMedal,
+  linkedInIcon,
+  starIcon
+}) => {
   const renderPosition = () => {
     if (index === 0) return <img height="35" width="35" src={goldMedal} alt="Gold medal" />;
     if (index === 1) return <img height="35" width="35" src={silverMedal} alt="Silver medal" />;
@@ -8,9 +17,23 @@ const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, lin
     return <div className="text-4xl font-thin opacity-30 tabular-nums ml-3">{index + 1}</div>;
   };
 
+  // Handle LinkedIn profile click
+  const handleLinkedInClick = () => {
+    if (user.linkedIn) {
+      // Ensure the link has a proper protocol (https:// or http://)
+      const link = user.linkedIn.match(/^https?:\/\//) ? user.linkedIn : `https://${user.linkedIn}`;
+
+      window.open(link, "_blank", "noopener,noreferrer");
+    } else {
+      toast.error("LinkedIn profile not available");
+    }
+  };
+
   return (
     // <li className={`flex items-center justify-between p-4 rounded-xl ${index === 0 ? "bg-yellow-100" : index === 1 ? "bg-gray-100" : index === 2 ? "bg-orange-100" : "bg-white"} shadow-md`}>
-    <li className={`flex items-center justify-between px-4 py-2 bg-white rounded-xl shadow-md border-2 border-gray-380`}>
+    <li
+      className={`flex items-center justify-between px-4 py-2 bg-white rounded-xl shadow-md border-2 border-gray-380`}
+    >
       {/* Position / Medal */}
       <div className="flex items-center w-[100px] justify-center">
         {index === 0 && <img height="35" width="35" src={goldMedal} alt="Gold medal" />}
@@ -30,7 +53,13 @@ const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, lin
       {/* LinkedIn Icon */}
       <div>
         <button className="btn btn-ghost btn-square">
-          <img height="35" width="35" src={linkedInIcon} alt="LinkedIn Icon" />
+          <img
+            height="35"
+            width="35"
+            src={linkedInIcon}
+            alt="LinkedIn Icon"
+            onClick={handleLinkedInClick}
+          />
         </button>
       </div>
 
@@ -44,6 +73,3 @@ const LeaderboardCard = ({ user, index, goldMedal, silverMedal, bronzeMedal, lin
 };
 
 export default LeaderboardCard;
-
-
-

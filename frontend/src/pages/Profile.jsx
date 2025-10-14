@@ -19,7 +19,8 @@ const Profile = () => {
     firstName: "",
     lastName: "",
     username: "",
-    email: ""
+    email: "",
+    linkedIn: ""
   });
   const [stats, setStats] = useState([]);
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const Profile = () => {
           {
             label: "CV",
             colorClass: "text-[#B471EC]",
-            borderColor: "border-[#B471EC]", 
+            borderColor: "border-[#B471EC]",
             hoverShadow: "hover:shadow-[0_0_15px_#B471EC]",
             imageSrc: CV
           },
@@ -106,13 +107,13 @@ const Profile = () => {
         }
         // Updated to show streak and XP
         const lastStat = {
-          label: "Profile Stats",          
-          colorClass: "text-[#5CA3FF]",  
+          label: "Profile Stats",
+          colorClass: "text-[#5CA3FF]",
           borderColor: "border-[#5CA3FF]",
           hoverShadow: "hover:shadow-[0_0_15px_#5CA3FF]",
-          isProfileStat: true,           
+          isProfileStat: true,
           streak: user?.streak?.current ?? 0,
-          xp: user?.xp ?? 0,
+          xp: user?.xp ?? 0
         };
         statsData.push(lastStat);
         // console.log("Stats loaded:", statsData);
@@ -129,7 +130,7 @@ const Profile = () => {
               { "--value": targetValue, duration: 1.5, ease: "power2.out" }
             );
           }
-      });
+        });
       } catch (error) {
         console.error("Error fetching stats:", error);
       }
@@ -149,7 +150,8 @@ const Profile = () => {
           firstName: userInfo.firstName,
           lastName: userInfo.lastName,
           username: userInfo.username,
-          email: userInfo.email
+          email: userInfo.email,
+          linkedIn: userInfo.linkedIn
         },
         { withCredentials: true }
       );
@@ -190,8 +192,6 @@ const Profile = () => {
     }
   };
 
-
-  
   return (
     <div className="relative bg-[#D0EAFB] min-h-screen overflow-hidden">
       <TopNavbar />
@@ -203,164 +203,185 @@ const Profile = () => {
 
         <main className="relative flex-1 p-4 md:p-6 max-w-7xl mx-5">
           <div className="relative z-10">
-            
             {/* Big White Box */}
             <div className="bg-white backdrop-blur-sm p-6 md:p-10 rounded-3xl shadow-xl space-y-12">
-
-            {/* Statistics Section */}
-            <section className="mb-8 px-6 sm:px-6 md:px-12">
-              <h1 className="text-2xl font-bold text-gray-800 mb-4">Statistics</h1>
-              <div className="">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                  {stats.map((stat, index) => (
-                    // Each stat card
-                    <div
-                      key={index}
-                      className={`aspect-square bg-white p-4 rounded-2xl shadow-md flex flex-col items-center 
+              {/* Statistics Section */}
+              <section className="mb-8 px-6 sm:px-6 md:px-12">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Statistics</h1>
+                <div className="">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    {stats.map((stat, index) => (
+                      // Each stat card
+                      <div
+                        key={index}
+                        className={`aspect-square bg-white p-4 rounded-2xl shadow-md flex flex-col items-center 
                       justify-center border-4 ${stat.borderColor} ${stat.hoverShadow} hover:scale-105 hover:shadow-lg 
                       transition-transform duration-300 ease-in-out`}
-                    >
-                    {/* Title/Label */}
-                    <p className="mt-1 text-base font-semibold text-gray-700 mb-3">{stat.label}</p>
+                      >
+                        {/* Title/Label */}
+                        <p className="mt-1 text-base font-semibold text-gray-700 mb-3">
+                          {stat.label}
+                        </p>
 
-                      {/* Last Card: Streak + XP */}
-                      {stat.isProfileStat ? (
-                        <div className="flex flex-col items-center justify-center space-y-4 w-full h-full ">
-                          {/* Label */}
-                          
-                          {/* Streak */}
-                          <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
-                            <Flame className="w-10 h-10 text-white mr-3 animate-pulse" />
-                            <span className="text-lg font-semibold text-white ">{user?.streak?.current ?? 0} Streak</span>
-                          </div>
-                          {/* XP */}
-                          <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
-                            <Star className="w-10 h-10 text-white mr-3 animate-pulse" />
-                            <span className="text-lg font-semibold text-white ">{user?.xp ?? 0} XP</span>
-                          </div>
-                        </div>
-                      ) : (
-                    <>
-                      {/*regular stats card */}
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        {/* Image as circle, same size as progress */}
-                        <img
-                          src={stat.imageSrc}
-                          alt={stat.label}
-                          className="w-[160px] h-[160px] rounded-full object-cover z-10 opacity-60 "
-                        />
+                        {/* Last Card: Streak + XP */}
+                        {stat.isProfileStat ? (
+                          <div className="flex flex-col items-center justify-center space-y-4 w-full h-full ">
+                            {/* Label */}
 
-                        {/* Radial progress on top */}
-                        <div
-                          className="absolute inset-0 flex items-center justify-center z-20"
-                          role="progressbar"
-                        >
-                          <div
-                            className={`radial-progress ${stat.colorClass} text-2xl font-bold`}
-                            style={{
-                              "--value": stat.progress,
-                              "--size": "170px",
-                              "--thickness": "6px"
-                            }}
-                            ref={addToRefs}
-                          >
-                            {stat.progress}%
+                            {/* Streak */}
+                            <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
+                              <Flame className="w-10 h-10 text-white mr-3 animate-pulse" />
+                              <span className="text-lg font-semibold text-white ">
+                                {user?.streak?.current ?? 0} Streak
+                              </span>
+                            </div>
+                            {/* XP */}
+                            <div className="flex items-center justify-center bg-[#5CA3FF] border-4 border-[#7cb4fc] rounded-xl px-6 py-2 w-full h-full">
+                              <Star className="w-10 h-10 text-white mr-3 animate-pulse" />
+                              <span className="text-lg font-semibold text-white ">
+                                {user?.xp ?? 0} XP
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        </div>
-                      </>
-                      )}
-                    </div>
-                  ))}
+                        ) : (
+                          <>
+                            {/*regular stats card */}
+                            <div className="relative w-full h-full flex items-center justify-center">
+                              {/* Image as circle, same size as progress */}
+                              <img
+                                src={stat.imageSrc}
+                                alt={stat.label}
+                                className="w-[160px] h-[160px] rounded-full object-cover z-10 opacity-60 "
+                              />
+
+                              {/* Radial progress on top */}
+                              <div
+                                className="absolute inset-0 flex items-center justify-center z-20"
+                                role="progressbar"
+                              >
+                                <div
+                                  className={`radial-progress ${stat.colorClass} text-2xl font-bold`}
+                                  style={{
+                                    "--value": stat.progress,
+                                    "--size": "170px",
+                                    "--thickness": "6px"
+                                  }}
+                                  ref={addToRefs}
+                                >
+                                  {stat.progress}%
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            {/* Account Section */}
-            <section className="mb-8 px-6 sm:px-6 md:px-12">
-              <h1 className="text-2xl font-bold text-gray-800 mb-4">Account</h1>
-              <div className="bg-white backdrop-blur-sm p-4 sm:p-4 md:p-8 rounded-2xl shadow-lg  border-4 border-grey">
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Account Section */}
+              <section className="mb-8 px-6 sm:px-6 md:px-12">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Account</h1>
+                <div className="bg-white backdrop-blur-sm p-4 sm:p-4 md:p-8 rounded-2xl shadow-lg  border-4 border-grey">
+                  <form className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor="firstName"
+                          className="block text-sm font-bold text-gray-700 mb-1"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          value={userInfo.firstName || ""}
+                          onChange={(e) => setUserInfo({ ...userInfo, firstName: e.target.value })}
+                          className="input input-bordered w-full bg-gray-200"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="lastName"
+                          className="block text-sm font-bold text-gray-700 mb-1"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          value={userInfo.lastName || ""}
+                          onChange={(e) => setUserInfo({ ...userInfo, lastName: e.target.value })}
+                          className="input input-bordered w-full bg-gray-200"
+                        />
+                      </div>
+                    </div>
+
                     <div>
                       <label
-                        htmlFor="firstName"
+                        htmlFor="username"
                         className="block text-sm font-bold text-gray-700 mb-1"
                       >
-                        First Name
+                        Username
                       </label>
                       <input
                         type="text"
-                        id="firstName"
-                        value={userInfo.firstName || ""}
-                        onChange={(e) => setUserInfo({ ...userInfo, firstName: e.target.value })}
+                        id="username"
+                        value={userInfo.username}
+                        onChange={(e) => setUserInfo({ ...userInfo, username: e.target.value })}
+                        className="input input-bordered w-full bg-gray-200"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={userInfo.email}
+                        onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
                         className="input input-bordered w-full bg-gray-200"
                       />
                     </div>
                     <div>
                       <label
-                        htmlFor="lastName"
+                        htmlFor="linkedIn"
                         className="block text-sm font-bold text-gray-700 mb-1"
                       >
-                        Last Name
+                        LinkedIn
                       </label>
                       <input
                         type="text"
-                        id="lastName"
-                        value={userInfo.lastName || ""}
-                        onChange={(e) => setUserInfo({ ...userInfo, lastName: e.target.value })}
+                        id="linkedIn"
+                        placeholder="e.g. https://linkedin.com/in/yourprofile"
+                        value={userInfo.linkedIn || ""}
+                        onChange={(e) => setUserInfo({ ...userInfo, linkedIn: e.target.value })}
                         className="input input-bordered w-full bg-gray-200"
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-bold text-gray-700 mb-1"
-                    >
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      id="username"
-                      value={userInfo.username}
-                      onChange={(e) => setUserInfo({ ...userInfo, username: e.target.value })}
-                      className="input input-bordered w-full bg-gray-200"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={userInfo.email}
-                      onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-                      className="input input-bordered w-full bg-gray-200"
-                    />
-                  </div>
-                  <div className="flex gap-4 mt-4">
-                    <button
-                      type="submit"
-                      className="btn btn-primary w-28 text-base"
-                      onClick={handleUpdate}
-                    >
-                      Update
-                    </button>
+                    <div className="flex gap-4 mt-4">
+                      <button
+                        type="submit"
+                        className="btn btn-primary w-28 text-base"
+                        onClick={handleUpdate}
+                      >
+                        Update
+                      </button>
 
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-error text-base"
-                      onClick={handleDeleteAccount}
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </section>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-error text-base"
+                        onClick={handleDeleteAccount}
+                      >
+                        Delete Account
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </section>
             </div>
           </div>
         </main>
