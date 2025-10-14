@@ -32,6 +32,7 @@ const JournalRefined = () => {
     const navigate = useNavigate();
     const user = useUserStore((state) => state.user);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isNewEntry, setIsNewEntry] = useState(false);
 
     // Auth
     useEffect(() => {
@@ -170,6 +171,44 @@ const JournalRefined = () => {
         } catch (error) {
             console.error("Error obtaining journal items", error);
             toast.error("Error obtaining journal items");
+        }
+    };
+
+    // Update goal
+    const updateGoal = async () => {
+        try {
+            const updated = {
+                title: openFile.title,
+                updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
+                goal,
+                goalIsCompleted
+            };
+            const res = await api.put(`/users/journal/goals`, updated, {
+                withCredentials: true
+            });
+            // Use the actual updated entry returned from backend
+            const updatedGoal = res.data.goalEntry;
+
+            // Update local state
+            setGoals((prev) =>
+                prev.map((g) => (g._id === updatedGoal._id ? updatedGoal : g))
+            );
+            // Force-update openFolder immediately
+            if (openFolder?.name === "Goals") {
+                setOpenFolder((prev) => ({
+                    ...prev,
+                    items: prev.items.map((g) =>
+                        g._id === updatedGoal._id ? { ...updatedGoal } : g
+                    ),
+                }));
+            }
+
+            setOpenFile({ ...updatedGoal });
+            toast.success("Goal updated!");
+            setOpenFile(null);
+        } catch (error) {
+            console.error("error: ", error);
+            toast.error("Error updating goal");
         }
     };
 
@@ -520,6 +559,7 @@ const JournalRefined = () => {
                                                 setIsChatOpen(false);
                                                 setAddFile(false);
                                                 setOpenFile(true);
+                                                setIsNewEntry(true);
                                                 console.log("Open file", openFile);
                                             }}
                                         >
@@ -889,7 +929,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={updateReflection}
+                                                    onClick={isNewEntry ? saveReflection : updateReflection}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save
@@ -948,42 +988,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={async () => {
-                                                        try {
-                                                            const updated = {
-                                                                title: openFile.title,
-                                                                updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
-                                                                goal,
-                                                                goalIsCompleted
-                                                            };
-                                                            const res = await api.put(`/users/journal/goals`, updated, {
-                                                                withCredentials: true
-                                                            });
-                                                            // Use the actual updated entry returned from backend
-                                                            const updatedGoal = res.data.goalEntry;
-
-                                                            // Update local state
-                                                            setGoals((prev) =>
-                                                                prev.map((g) => (g._id === updatedGoal._id ? updatedGoal : g))
-                                                            );
-                                                            // Force-update openFolder immediately
-                                                            if (openFolder?.name === "Goals") {
-                                                                setOpenFolder((prev) => ({
-                                                                    ...prev,
-                                                                    items: prev.items.map((g) =>
-                                                                        g._id === updatedGoal._id ? { ...updatedGoal } : g
-                                                                    ),
-                                                                }));
-                                                            }
-
-                                                            setOpenFile({ ...updatedGoal });
-                                                            toast.success("Goal updated!");
-                                                            setOpenFile(null);
-                                                        } catch (error) {
-                                                            console.error("error: ", error);
-                                                            toast.error("Error updating goal");
-                                                        }
-                                                    }}
+                                                    onClick={openFile.goalTitle ? updateGoal : saveGoal}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save
