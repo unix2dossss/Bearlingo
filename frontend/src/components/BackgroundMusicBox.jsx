@@ -34,7 +34,7 @@ const moduleColors = {
 
 const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
   const [muted, setMuted] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState("/sounds/about-wish-138203.mp3");
+  const [currentTrack, setCurrentTrack] = useState("");
   const bgMusicRef = useRef(null);
   const boxRef = useRef(null);
 
@@ -69,7 +69,7 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
   useEffect(() => {
     if (bgMusicRef.current) {
       bgMusicRef.current.volume = 0.3;
-      if (!muted) {
+      if (!muted && currentTrack) {
         bgMusicRef.current.play().catch(() => console.log("Autoplay blocked"));
       } else {
         bgMusicRef.current.pause();
@@ -176,6 +176,8 @@ const BackgroundMusicBox = ({ moduleName = "CVModule" }) => {
         onMouseDown={(e) => e.stopPropagation()} // prevent dragging while interacting
         className={`${colors.select} text-white p-2 rounded-lg shadow-md text-sm w-full cursor-pointer`}
       >
+        <option value="">Pick a music</option>
+
         {tracks.map((track, index) => (
           <option key={index} value={track.file}>
             {track.name}

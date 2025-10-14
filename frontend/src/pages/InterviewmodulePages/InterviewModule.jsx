@@ -21,13 +21,17 @@ import {
   isSubtaskCompleted
 } from "../../utils/moduleHelpers";
 
-import { Info } from "lucide-react";
+import { Info, Music } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Import Interview subtasks
 import InterviewSubtask1 from "./InterviewSubtask1";
 import InterviewSubtask2 from "./interviewSubtask2";
 import InterviewSubtask3 from "./InterviewSubtask3";
+
+// Level Passed Pop up
+import CongratsPage from "./InterviewLevelPass";
 
 /* THEME (blue) */
 const COLORS = {
@@ -312,26 +316,26 @@ const InterviewModule = () => {
   }, [bearMessage]);
 
   //Bear moving up and down
-    useEffect(() => {
-      gsap.fromTo(
-        bearRef.current,
-        { y: 200 },
-        { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
-      );
-      gsap.fromTo(
-        ".speech-bubble",
-        { opacity: 0, scale: 0.5 },
-        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
-      );
-      gsap.to(bearRef.current, {
-        y: -15,
-        duration: 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 2
-      });
-    }, []);
+  useEffect(() => {
+    gsap.fromTo(
+      bearRef.current,
+      { y: 200 },
+      { y: 0, duration: 1.5, ease: "bounce.out", delay: 0.5 }
+    );
+    gsap.fromTo(
+      ".speech-bubble",
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)", delay: 1.2 }
+    );
+    gsap.to(bearRef.current, {
+      y: -15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 2
+    });
+  }, []);
 
   // Related to subtaskIntro popup
   const [hoveredSubtask, setHoveredSubtask] = useState(null);
@@ -350,12 +354,86 @@ const InterviewModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
+    const [showLottie, setShowLottie] = useState(false);
+    const [showCongratsPage, setShowCongratsPage] = useState(false);
+    const popupRef = useRef(null);
+  
+    // Create a user-specific key for localStorage
+    const moduleName = "interview"; 
+    const confettiKey = `hasPlayedConfetti_${moduleName}_${user?.id || user?.email || "guest"}`;
+
+  
+    // Show confetti only once per user
+    useEffect(() => {
+      const hasPlayedConfetti = localStorage.getItem(confettiKey);
+  
+      if (task1Complete && task2Complete && task3Complete && !hasPlayedConfetti) {
+        setShowLottie(true);
+        localStorage.setItem(confettiKey, "true"); // store per-user flag
+      }
+    }, [task1Complete, task2Complete, task3Complete, confettiKey]);
+  
+    // After Lottie finishes, show popup
+    const handleLottieComplete = () => {
+      console.log("🎉 Lottie finished, showing popup!");
+    setShowLottie(false);
+    setShowCongratsPage(true);
+  };
+  
+  // Timeout fallback (in case onComplete doesn’t fire)
+  useEffect(() => {
+    if (showLottie) {
+      const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
+      return () => clearTimeout(timer);
+    }
+  }, [showLottie]);
+  
+  // Animate popup
+  useEffect(() => {
+    if (showCongratsPage && popupRef.current) {
+      const popup = popupRef.current.querySelector("#popup-card");
+  
+      // Animate backdrop fade-in
+      gsap.fromTo(
+        popupRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out" }
+      );
+  
+      // Animate popup scale and fade
+      gsap.fromTo(
+        popup,
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
+      );
+    }
+  }, [showCongratsPage]);
+
+
+  // BackgroundMusicBox visibility state
+  const [showMusicBox, setShowMusicBox] = useState(false);
+
   // Sound Effects
-  // Button Click 
+  // Button Click
   const playClickSound = () => {
-  const audio = new Audio("/sounds/mouse-click-290204.mp3");
-  audio.currentTime = 0; // rewind to start for rapid clicks
-  audio.play();
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
   };
 
   return (
@@ -364,20 +442,68 @@ const InterviewModule = () => {
       <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
       <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
+      {/* 🎊 Lottie Confetti */}
+      {showLottie && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-transparent">
+          <DotLottieReact
+            src="https://lottie.host/1099ed2e-a10f-41d3-9eb8-69559ac869bf/PyIymGiJIa.lottie"
+            autoplay
+            loop={false}
+            onComplete={handleLottieComplete}
+            style={{
+                width: "100vw",
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                pointerEvents: "none", // so user can still click underlying buttons
+                zIndex: 9999,
+            }}
+                  />
+        </div>
+      )}
+
+      {/* 🏆 Congrats Popup */}
+      {showCongratsPage && (
+        <div
+          ref={popupRef}
+          className="fixed inset-0 z-[10000] flex items-center justify-center 
+                    bg-black/30 backdrop-blur-sm transition-opacity duration-700 ease-out"
+        >
+          <div
+            id="popup-card"
+            className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-[90%] 
+                      transform scale-90 opacity-0 transition-all duration-700 ease-out"
+          >
+            <CongratsPage onClose={() => setShowCongratsPage(false)} />
+          </div>
+        </div>
+      )}
+
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#deffbd]">
         {/* Top Navbar */}
         <div className="relative z-[100]">
-          <TopNavbar />
+          <TopNavbar
+            showMusicBox={showMusicBox}
+            onToggleMusicBox={() => setShowMusicBox(!showMusicBox)}
+          />
         </div>
 
         <div>
           <div>
             {/* Floating music control */}
-            {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-              <BackgroundMusicBox moduleName="InterviewModule" />
-            </div> */}
-            <BackgroundMusicBox moduleName="InterviewModule" />
+            {/* Music Toggle Button */}
+            {/* <button
+              onClick={() => setShowMusicBox(!showMusicBox)}
+              className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
+              aria-label="Toggle music player"
+            >
+              <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+            </button> */}
+
+            {/* Conditionally show music box */}
+            {showMusicBox && <BackgroundMusicBox moduleName="InterviewModule" />}
 
             {/* Purple Floor */}
             <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
@@ -460,7 +586,13 @@ const InterviewModule = () => {
                   />
                 </button>
                 <button
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  disabled={!task1Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition 
+                    ${
+                      task1Complete
+                        ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    }`}
                   onClick={() => {
                     playClickSound();
                     handleSubtaskClick("subtask2");
@@ -474,10 +606,16 @@ const InterviewModule = () => {
                   />
                 </button>
                 <button
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                  disabled={!task2Complete}
+                  className={`flex items-center gap-2 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition
+                    ${
+                      task2Complete
+                        ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    }`}
                   onClick={() => {
                     playClickSound();
-                    handleSubtaskClick("subtask3")
+                    handleSubtaskClick("subtask3");
                   }}
                 >
                   Task 3
@@ -498,6 +636,13 @@ const InterviewModule = () => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear mascot"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+                />
+
                 {/* Speech bubble */}
                 <div
                   key="bear-speech"
@@ -507,13 +652,6 @@ const InterviewModule = () => {
                     {bearMessage}
                   </div>
                 </div>
-
-                <img
-                  ref={bearRef}
-                  src={Bear}
-                  alt="Bear mascot"
-                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
-                />
               </div>
             </div>
           </div>

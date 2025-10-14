@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import { getModuleByName, getLevelByNumber, getSubtasksByLevel } from "../../utils/moduleHelpers";
-import { Info } from "lucide-react";
+import { Info, Music } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
 // Subtasks
@@ -27,7 +27,7 @@ import Table from "../../assets/NTable.svg";
 import Bear from "../../assets/Bear.svg";
 
 const COLORS = {
-  bg: "#fff9c7",
+  bg: "#fcf782",
   primary: "#3d86ea",
   primaryHover: "#4f9cf9",
   doorLeft: "#9ca3af",
@@ -126,279 +126,355 @@ const NetworkingModule = () => {
     }
   }, [showSubtask]);
 
-    useEffect(() => {
-        if (animationDone) {
-            gsap.fromTo(
-                ".bear-speech",
-                { opacity: 0, y: 50, scale: 0.8 },
-                { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.7)" }
-            );
-        }
-    }, [currentSpeechIndex, animationDone]);
+  useEffect(() => {
+    if (animationDone) {
+      gsap.fromTo(
+        ".bear-speech",
+        { opacity: 0, y: 50, scale: 0.8 },
+        { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.7)" }
+      );
+    }
+  }, [currentSpeechIndex, animationDone]);
 
-    const handleSubtaskClick = (task) => {
-        setSelectedSubtask(task);
-        if (task == false) {
-            setShowSubtask(false);
-        }
-        else {
-            setShowSubtask(true);
-        }
-    };
+  const handleSubtaskClick = (task) => {
+    setSelectedSubtask(task);
+    if (task == false) {
+      setShowSubtask(false);
+    } else {
+      setShowSubtask(true);
+    }
+  };
 
+  const handleNext = () => {
+    if (currentSpeechIndex < speechForSubtask1.length - 1) {
+      setCurrentSpeechIndex(currentSpeechIndex + 1);
+    }
+  };
 
-    const handleNext = () => {
-        if (currentSpeechIndex < speechForSubtask1.length - 1) {
-            setCurrentSpeechIndex(currentSpeechIndex + 1);
-        }
-    };
+  const handleSkillChange = (e) => {
+    const value = Array.from(e.target.selectedOptions, (option) => option.value);
+    setSelectedSkills(value);
+  };
 
+  // Safely extract attendingEventIds for easier use, ? ensures that if userEvents[0] is null the program won't crash
+  const attendingEventIds = userEvents[0]?.attendingEventIds || [];
 
-    const handleSkillChange = (e) => {
-        const value = Array.from(
-            e.target.selectedOptions,
-            (option) => option.value
+  // Helper function to get the status of a specific event
+  const getEventStatus = (eventId) => {
+    return attendingEventIds.find((ev) => ev.eventId === eventId)?.status || null;
+  };
+
+  const handleAttendance = async (eventId, buttonState) => {
+    if (buttonState == "going") {
+      try {
+        const res = await api.put(
+          "/users/me/networking/events",
+          {
+            attendingEventIds: [
+              {
+                eventId: eventId,
+                status: "attended"
+              }
+            ]
+          },
+          {
+            withCredentials: true
+          }
         );
-        setSelectedSkills(value);
-    };
 
-    // Safely extract attendingEventIds for easier use, ? ensures that if userEvents[0] is null the program won't crash
-    const attendingEventIds = userEvents[0]?.attendingEventIds || [];
+        // Update frontend state immediately by checking its previous / cuurent state hence (prev - the current userEvents state at the moment this update runs)
+        setUserEvents((prev) => {
+          // If the user has no events then create a new Event object
+          if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "attended" }] }];
+          // Creates a shallow copy of the first object in prev.
+          const updated = { ...prev[0] };
+          // Searches in attendingEventIds array to see if this event already exists in the state. Returns index of -1 if teh event does not already exist
+          const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+          if (idx !== -1) {
+            updated.attendingEventIds[idx].status = "attended";
+          } else {
+            updated.attendingEventIds.push({ eventId, status: "attended" });
+          }
+          // Returns a new array with the updated object which updates userEvents state and  triggers a re-render of the component
+          return [updated];
+        });
+      } catch (error) {
+        console.log("Error in updating events: ", events);
+        toast.error("Events were not updated");
+      }
+    } else if (buttonState == "default") {
+      try {
+        const res = await api.put(
+          "/users/me/networking/events",
+          {
+            attendingEventIds: [
+              {
+                eventId: eventId,
+                status: "going"
+              }
+            ]
+          },
+          {
+            withCredentials: true
+          }
+        );
 
-    // Helper function to get the status of a specific event
-    const getEventStatus = (eventId) => {
-        return attendingEventIds.find(ev => ev.eventId === eventId)?.status || null;
-    };
+        setUserEvents((prev) => {
+          if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "going" }] }];
+          const updated = { ...prev[0] };
+          const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
+          if (idx !== -1) {
+            updated.attendingEventIds[idx].status = "going";
+          } else {
+            updated.attendingEventIds.push({ eventId, status: "going" });
+          }
+          return [updated];
+        });
+      } catch (error) {
+        console.log("Error in updating events: ", events);
+        toast.error("Events were not updated");
+      }
+    }
 
-    const handleAttendance = async (eventId, buttonState) => {
-        if (buttonState == 'going') {
-            try {
-                const res = await api.put("/users/me/networking/events", {
-                    attendingEventIds: [{
-                        eventId: eventId,
-                        status: "attended"
-                    }]
-                },
-                    {
-                        withCredentials: true,
-                    });
-
-                // Update frontend state immediately by checking its previous / cuurent state hence (prev - the current userEvents state at the moment this update runs)
-                setUserEvents((prev) => {
-                    // If the user has no events then create a new Event object
-                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "attended" }] }];
-                    // Creates a shallow copy of the first object in prev.
-                    const updated = { ...prev[0] };
-                    // Searches in attendingEventIds array to see if this event already exists in the state. Returns index of -1 if teh event does not already exist
-                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
-                    if (idx !== -1) {
-                        updated.attendingEventIds[idx].status = "attended";
-                    } else {
-                        updated.attendingEventIds.push({ eventId, status: "attended" });
-                    }
-                    // Returns a new array with the updated object which updates userEvents state and  triggers a re-render of the component
-                    return [updated];
-                });
-
-            } catch (error) {
-                console.log("Error in updating events: ", events);
-                toast.error("Events were not updated");
-            }
-        }
-        else if (buttonState == 'default') {
-            try {
-                const res = await api.put("/users/me/networking/events", {
-                    attendingEventIds: [{
-                        eventId: eventId,
-                        status: "going"
-                    }]
-                },
-                    {
-                        withCredentials: true,
-                    });
-
-                setUserEvents((prev) => {
-
-                    if (!prev[0]) return [{ attendingEventIds: [{ eventId, status: "going" }] }];
-                    const updated = { ...prev[0] };
-                    const idx = updated.attendingEventIds.findIndex((ev) => ev.eventId === eventId);
-                    if (idx !== -1) {
-                        updated.attendingEventIds[idx].status = "going";
-                    } else {
-                        updated.attendingEventIds.push({ eventId, status: "going" });
-                    }
-                    return [updated];
-                });
-
-            } catch (error) {
-                console.log("Error in updating events: ", events);
-                toast.error("Events were not updated");
-            }
-        };
-
-        useEffect(() => {
-            if (currentSpeechIndex === 8) {
-                submitLinkedInProfile();
-            }
-        }, [currentSpeechIndex]);
-
-
-
-
-        const submitLinkedInProfile = async () => {
-            try {
-
-            } catch (error) {
-                toast.error("Could not submit linked-inprofile")
-            }
-
-        }
-
-    };
-    
-
-    // Animate elevator opening when CVModule loads
     useEffect(() => {
-        if (!showSubtask && elevatorOpen) {
-            gsap.set(leftDoor.current, { x: "0%" });
-            gsap.set(rightDoor.current, { x: "0%" });
+      if (currentSpeechIndex === 8) {
+        submitLinkedInProfile();
+      }
+    }, [currentSpeechIndex]);
 
-            gsap.to(leftDoor.current, {
-                x: "-100%",
-                duration: 1.5,
-                ease: "power2.inOut",
-                delay: 0.3
-            });
+    const submitLinkedInProfile = async () => {
+      try {
+      } catch (error) {
+        toast.error("Could not submit linked-inprofile");
+      }
+    };
+  };
 
-            gsap.to(rightDoor.current, {
-                x: "100%",
-                duration: 1.5,
-                ease: "power2.inOut",
-                delay: 0.3
-            });
+  // Animate elevator opening when CVModule loads
+  useEffect(() => {
+    if (!showSubtask && elevatorOpen) {
+      gsap.set(leftDoor.current, { x: "0%" });
+      gsap.set(rightDoor.current, { x: "0%" });
 
-            setElevatorOpen(false);
-        }
-    }, [showSubtask]);
+      gsap.to(leftDoor.current, {
+        x: "-100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
 
-    // Sound Effects
-    // Button Click 
-    const playClickSound = () => {
+      gsap.to(rightDoor.current, {
+        x: "100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
+
+      setElevatorOpen(false);
+    }
+  }, [showSubtask]);
+
+  // Related to subtaskIntro popup
+  const [hoveredSubtask, setHoveredSubtask] = useState(null);
+
+  const handleMouseEnter = async (taskNumber) => {
+    try {
+      const module = await getModuleByName("Networking");
+      const level = getLevelByNumber(module, 1);
+      const subtasks = await getSubtasksByLevel(level);
+      const subtask = subtasks.find((st) => st.sequenceNumber === taskNumber);
+      setHoveredSubtask(subtask); // set the hovered subtask info
+    } catch (err) {
+      console.error("Failed to fetch subtask info:", err);
+    }
+  };
+
+  const handleMouseLeave = () => setHoveredSubtask(null);
+
+  // Hide popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (hoveredSubtask) setHoveredSubtask(null);
+    };
+
+    // Add event listener only when popup is visible
+    if (hoveredSubtask) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [hoveredSubtask]);
+
+  // BackgroundMusicBox visibility state
+  const [showMusicBox, setShowMusicBox] = useState(false);
+
+  // Sound Effects
+  // Button Click
+  const playClickSound = () => {
     const audio = new Audio("/sounds/mouse-click-290204.mp3");
     audio.currentTime = 0; // rewind to start for rapid clicks
     audio.play();
-    };
+  };
 
+  return (
+    <>
+      <div className="relative min-h-screen flex flex-col bg-[#fff9c7] overflow-hidden">
+        {/* Elevator Doors Overlay */}
 
-    return (
-        <>
-            <div className="relative min-h-screen flex flex-col bg-[#fff9c7]">
+        {/* Top Navbar */}
+        <div className="fixed top-0 inset-x-0 z-[100]">
+          <TopNavbar
+            showMusicBox={showMusicBox}
+            onToggleMusicBox={() => setShowMusicBox(!showMusicBox)}
+          />
+        </div>
 
-                {/* Elevator Doors Overlay */}
+        {/* Floating music control */}
+        {/* Music Toggle Button */}
+        {/* <button
+          onClick={() => setShowMusicBox(!showMusicBox)}
+          className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
+          aria-label="Toggle music player"
+        >
+          <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+        </button> */}
 
-                {/* Top Navbar */}
-                <div className="fixed top-0 inset-x-0 z-[100]">
-                    <TopNavbar />
-                </div>
+        {/* Conditionally show music box */}
+        {showMusicBox && <BackgroundMusicBox moduleName="NetworkingModule" />}
 
-                {/* Floating music control */}
-                {/* <div className="fixed top-20 right-6 z-30 pointer-events-auto">
-                    <BackgroundMusicBox moduleName="NetworkingModule" />
-                </div> */}
-                <BackgroundMusicBox moduleName="NetworkingModule" />
+        {!showSubtask && (
+          <div>
+            {/* Elevator Doors Overlay */}
+            <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+            <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
+            {/* Background */}
+            <div className="flex">
+              <div className="mt-20 z-10">
+                <SideNavbar />
+              </div>
 
+              <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
+                <img
+                  src={Table}
+                  alt="Unlocked Networking Table"
+                  className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
+                />
 
+                <img
+                  src={Cafe}
+                  alt="Unlocked Networking Cafe"
+                  className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
+                />
 
-                {!showSubtask && (
-                    <div>
+                <img
+                  src={Sign}
+                  alt="Unlocked Networking Sign"
+                  className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto"
+                />
 
-                        {/* Elevator Doors Overlay */}
-                        <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
-                        <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
-
-                        {/* Background */}
-                        <div className="flex"> 
-                            <div className="mt-20 z-40">
-                                <SideNavbar />
-                            </div>
-
-                            <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14"> 
-                                
-                                <img
-                                    src={Cafe}
-                                    alt="Unlocked Networking Cafe"
-                                    className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
-                                />
-                                
-                                <img
-                                    src={Sign}
-                                    alt="Unlocked Networking Sign"
-                                    className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto" />
-                                
-
-                                <img
-                                    src={Table}
-                                    alt="Unlocked Networking Table"
-                                    className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
-                                />
-
-                                <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
-                                    <div className="flex space-x-6">
-
-                                        <button
-                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask1"); setShowSubtask(true); setElevatorOpen(true); '' }}
-                                        >
-                                            Task 1
-                                        </button>
-                                        <button
-                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask2"); setShowSubtask(true); setElevatorOpen(true); }}
-                                        >
-                                            Task 2
-                                        </button>
-                                        <button
-                                            className="bg-blue-400 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
-                                            onClick={() => { playClickSound(); setSelectedSubtask("subtask3"); setShowSubtask(true); setElevatorOpen(true); }}
-                                        >
-                                            Task 3
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Yellow Floor */}
-                        <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+                <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
+                  <div className="flex space-x-6">
+                    <div className="flex space-x-6 relative">
+                      <button
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => {
+                          playClickSound();
+                          setSelectedSubtask("subtask1");
+                          setShowSubtask(true);
+                          setElevatorOpen(true);
+                          ("");
+                        }}
+                      >
+                        Task 1
+                        <Info
+                          className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                          onMouseEnter={() => handleMouseEnter(1)}
+                          onMouseLeave={handleMouseLeave}
+                        />
+                      </button>
+                      <button
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => {
+                          playClickSound();
+                          setSelectedSubtask("subtask2");
+                          setShowSubtask(true);
+                          setElevatorOpen(true);
+                        }}
+                      >
+                        Task 2
+                        <Info
+                          className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                          onMouseEnter={() => handleMouseEnter(2)}
+                          onMouseLeave={handleMouseLeave}
+                        />
+                      </button>
+                      <button
+                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
+                        onClick={() => {
+                          playClickSound();
+                          setSelectedSubtask("subtask3");
+                          setShowSubtask(true);
+                          setElevatorOpen(true);
+                        }}
+                      >
+                        Task 3
+                        <Info
+                          className="w-5 h-5 cursor-pointer text-white hover:text-yellow-300"
+                          onMouseEnter={() => handleMouseEnter(3)}
+                          onMouseLeave={handleMouseLeave}
+                        />
+                      </button>
+                      {/* Subtask Info Popup */}
+                      {hoveredSubtask && (
+                        <SubtaskInfoPopup
+                          subtask={hoveredSubtask}
+                          taskNumber={hoveredSubtask.sequenceNumber}
+                        />
+                      )}
                     </div>
-                    
-                )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Yellow Floor */}
+            <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+          </div>
+        )}
 
-                {showSubtask && selectedSubtask === "subtask1" && (
-                    <NetworkingSubtask1
-                        userInfo={userInfo}
-                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                    />
-                )}
+        {showSubtask && selectedSubtask === "subtask1" && (
+          <NetworkingSubtask1
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
 
-                {showSubtask && selectedSubtask === "subtask2" && (
-                    <NetworkingSubtask2
-                        userInfo={userInfo}
-                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                    />
-                )}
+        {showSubtask && selectedSubtask === "subtask2" && (
+          <NetworkingSubtask2
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
 
-                {showSubtask && selectedSubtask === "subtask3" && (
-                    <NetworkingSubtask3
-                        userInfo={userInfo}
-                        onBack={() => { setShowSubtask(false); setSelectedSubtask(false); }}
-                    />
-                )}
-
-
-            </div >
-        </>
-    )
-}
+        {showSubtask && selectedSubtask === "subtask3" && (
+          <NetworkingSubtask3
+            userInfo={userInfo}
+            onBack={() => {
+              setShowSubtask(false);
+              setSelectedSubtask(false);
+            }}
+          />
+        )}
+      </div>
+    </>
+  );
+};
 
 export default NetworkingModule;
