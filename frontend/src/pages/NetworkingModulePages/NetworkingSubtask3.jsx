@@ -146,6 +146,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       </span>
     </div>
   );
+  
 
 
 
@@ -192,7 +193,7 @@ return (
             {/* Attended events */}
             <div className="mt-5">
               <div className="mb-2 text-sm font-bold text-slate-800">Attended events</div>
-              <div className="max-h-[530px] overflow-y-auto pr-1 space-y-3">
+              <div className="h-[530px] overflow-y-auto pr-1 space-y-3">
                 {userEvents.filter((ue) => ue?.status === "attended").map((ue) => {
                   const evt = events.find((e) => e.id === ue.eventId);
                   if (!evt) return null;
@@ -410,7 +411,7 @@ return (
                         <div className="mt-5 text-sm font-semibold text-[#0f172a]">Attended events</div>
 
                         {/* Reflections list */}
-                        <div className="mt-2 max-h-[520px] overflow-y-auto pr-1">
+                        <div className="mt-2 h-[520px] overflow-y-auto pr-1">
                         {filteredReflections.length === 0 ? (
                             <div className="flex h-32 items-center justify-center rounded-2xl border border-white bg-white/70 text-sm text-slate-600">
                             No reflections match your filters.
@@ -427,26 +428,24 @@ return (
                                 : 0;
 
                                 return (
-                                <button
-                                    key={r._id || idx}
-                                    onClick={() => setSelectedReflection(r)}
-                                    className={[
-                                    "w-full text-left rounded-xl border p-3 transition shadow-sm",
-                                    active
-                                        ? "border-[#e8d96d] bg-[#fff6bf]"
-                                        : "border-white bg-white hover:bg-slate-50",
-                                    ].join(" ")}
-                                >
-                                    <div className="font-semibold">{r.title || "Untitled reflection"}</div>
-                                    <div className="mt-1 text-xs text-slate-500">
-                                    {r.event?.name || "No event"} • {r.event?.date || "No date"}
-                                    {/* Average score with stars */}
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold text-[#7a6a28]"> {score.toFixed(1)}
-                                    </span>
-                                    </div>
-
-
-                                </button>
+                                    <button
+                                        key={r._id || idx}
+                                        onClick={() => setSelectedReflection(r)}
+                                        className={[
+                                        "w-full text-left rounded-xl border p-3 transition shadow-sm",
+                                        active
+                                            ? "border-[#e8d96d] bg-[#fff6bf]"
+                                            : "border-white bg-white hover:bg-slate-50",
+                                        ].join(" ")}
+                                    >
+                                        <div className="font-semibold">{r.title || "Untitled reflection"}</div>
+                                        <div className="mt-1 text-xs text-slate-500">
+                                            {r.event?.name || "No event"} • {r.event?.date || "No date"}
+                                        {/* Average score with stars */}
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold text-[#7a6a28]"> {score.toFixed(1)}
+                                        </span>
+                                        </div>
+                                    </button>
                                 );
                             })}
                             </div>
@@ -541,9 +540,17 @@ return (
 
                         {/* When the reflection was created (optional) */}
                         {selectedReflection.createdAt && (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4e58b] bg-white/80 px-2 py-0.5 text-[#7a6a28]">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4e58b] bg-white/80 px-3 py-0.5 text-[#7a6a28] font-medium">
                             <Clock className="size-3" />
-                            {new Date(selectedReflection.createdAt).toLocaleDateString()}
+                            {new Date(selectedReflection.createdAt).toLocaleString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                            })}
                         </span>
                         )}
                     </div>
