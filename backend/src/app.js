@@ -17,15 +17,21 @@ import "./config/passport.js";
 // import "./models/User.js";
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173", // local dev
+  "https://bearlingo-theta.vercel.app" // deployed frontend
+];
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data into a JavaScript object and store it in req.body
 app.use(cookieParser()); // Parse req.cookies into a JSON object
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-})); // uses cors middleware package,  any frontend on any domain can access your API
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true
+  })
+); // uses cors middleware package,  any frontend on any domain can access your API
 // Logging info with morgan middleware
 app.use(morgan("dev"));
 
@@ -33,8 +39,8 @@ app.use(morgan("dev"));
 app.use(passport.initialize());
 
 // Routes
-app.get('/test', (req, res) => {
-  res.send('Server is working!');
+app.get("/test", (req, res) => {
+  res.send("Server is working!");
 });
 app.use("/api/users", usersRoutes);
 app.use("/api/users/me/cv", cvRoutes);
