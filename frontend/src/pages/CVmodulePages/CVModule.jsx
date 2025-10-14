@@ -432,7 +432,8 @@ const CVModule = () => {
   const popupRef = useRef(null);
 
   // Create a user-specific key for localStorage
-  const confettiKey = `hasPlayedConfetti_${user?.id || user?.email || "guest"}`;
+  const moduleName = "cv"; 
+  const confettiKey = `hasPlayedConfetti_${moduleName}_${user?.id || user?.email || "guest"}`;
 
   // Show confetti only once per user
   useEffect(() => {
