@@ -822,12 +822,14 @@ const JournalRefined = () => {
                                             <div className="text-center mb-8">
                                                 <input
                                                     type="text"
-                                                    value={reflectionTitle === "" ? "Enter title here..." : reflectionTitle}
+                                                    value={reflectionTitle}
+                                                    placeholder="Enter a title here..."
                                                     onChange={(e) => setReflectionTitle(e.target.value)}
                                                     className="text-2xl font-bold text-purple-700 tracking-wide text-center w-full bg-transparent border-b-2 border-purple-300 focus:outline-none focus:border-purple-500"
                                                 />
                                                 <textarea
-                                                    value={about === "" ? "Enter a brief summary here..." : about}
+                                                    value={about}
+                                                    placeholder="Write a short summary of your goal here..."
                                                     onChange={(e) => setAbout(e.target.value)}
                                                     className="text-purple-400 text-sm mt-1 w-full bg-transparent resize-none text-center focus:outline-none"
                                                 />
