@@ -223,6 +223,14 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
     return withDate.slice(0, 3).map((x) => x.e);
   }, [baseFiltered]);
 
+  // Sound Effects
+  // Button Click
+  const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+  };
+
   // -------------------- render --------------------
   return (
     <div
@@ -309,7 +317,9 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
               {selectedDate && (
                 <button
                   className="btn btn-sm"
-                  onClick={() => setSelectedDate(null)}
+                  onClick={() => {
+                          playClickSound(); 
+                          setSelectedDate(null);}}
                   title="Clear date"
                 >
                   <X className="h-4 w-4" />
@@ -325,7 +335,8 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
               return (
                 <button
                   key={t}
-                  onClick={() => setActiveTab(t)}
+                  onClick={() => {
+                          playClickSound(); setActiveTab(t); }}
                   className="w-full px-3 py-2 rounded-lg border text-left"
                   style={{
                     backgroundColor: active ? COLORS.primary : "#ffffff",
@@ -341,7 +352,9 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
           {/* Clear */}
           <button
             className="mt-4 w-full btn btn-sm"
-            onClick={clearFilters}
+            onClick={() => {
+                          playClickSound(); 
+                          clearFilters(); }}
             style={{ borderColor: COLORS.border }}
           >
             Reset filters
