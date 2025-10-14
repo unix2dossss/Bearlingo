@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { ArrowLeftIcon, Search, Calendar, MapPin, Clock, Star } from "lucide-react";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
@@ -146,6 +146,9 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       </span>
     </div>
   );
+
+
+
 return (
   <div className="min-h-screen w-full bg-[#fffef6]">
 
@@ -204,7 +207,7 @@ return (
                       className={[
                         "w-full text-left rounded-2xl border p-4 transition shadow-sm",
                         selected
-                          ? "border-[#0f172a] bg-[#0f172a] text-white"
+                          ? "border-[#fff6bf] bg-[#fff6bf] text-black"
                           : "border-white bg-white hover:bg-slate-50",
                       ].join(" ")}
                     >
@@ -240,7 +243,7 @@ return (
                     : "bg-[#fff6bf] border-[#f4e58b] text-[#111827] hover:bg-[#fbe24f]"
                 ].join(" ")}
             >
-                + New Reflection
+                ➕ New Reflection
             </button>
 
             {/* Past Reflections */}
@@ -361,232 +364,248 @@ return (
       </section>
     )}
 
-{/* PAST Reflections */}
-{activeTab === "past" && (
-  <section className="mx-auto max-w-6xl px-4 pt-28 pb-10">
-    <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
-      {/* LEFT: Blue panel */}
-      <aside
-        className="lg:sticky lg:top-24 self-start rounded-[22px] border border-[#bcd1ea] bg-[#bcd1ea]/70 p-4 shadow-sm flex flex-col"
-        style={{ backdropFilter: "blur(2px)" }}
-      >
-        <h3 className="text-xl font-bold text-[#0f172a]">Search reflections</h3>
+                {/* PAST Reflections */}
+                {activeTab === "past" && (
+                <section className="mx-auto max-w-6xl px-4 pt-28 pb-10">
+                    <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+                    {/* LEFT: Blue panel */}
+                    <aside
+                        className="lg:sticky lg:top-24 self-start rounded-[22px] border border-[#bcd1ea] bg-[#bcd1ea]/70 p-4 shadow-sm flex flex-col"
+                        style={{ backdropFilter: "blur(2px)" }}
+                    >
+                        <h3 className="text-xl font-bold text-[#0f172a]">Search reflections</h3>
 
-        {/* Search box */}
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="search reflections, event or questions…"
-          className="mt-3 w-full rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#9ab6dd]/40"
-        />
+                        {/* Search box */}
+                        <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="search reflections, event or questions…"
+                        className="mt-3 w-full rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#9ab6dd]/40"
+                        />
 
-        {/* Sort pills */}
-        <div className="mt-4 text-sm font-semibold text-[#0f172a]">Sort by</div>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {[
-            { key: "latest", label: "Latest" },
-            { key: "rating", label: "Rating" },
-            { key: "title",  label: "Title"  },
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setSortBy(key)}
-              className={[
-                "rounded-full px-3 py-1.5 text-sm font-medium transition",
-                sortBy === key
-                  ? "bg-white text-[#0f172a] shadow-sm"
-                  : "bg-white/70 text-slate-700 hover:bg-white",
-              ].join(" ")}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* List header */}
-        <div className="mt-5 text-sm font-semibold text-[#0f172a]">Attended events</div>
-
-        {/* Reflections list */}
-        <div className="mt-2 max-h-[520px] overflow-y-auto pr-1">
-          {filteredReflections.length === 0 ? (
-            <div className="flex h-32 items-center justify-center rounded-2xl border border-white bg-white/70 text-sm text-slate-600">
-              No reflections match your filters.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {filteredReflections.map((r, idx) => {
-                const active = selectedReflection?._id === r._id;
-                const score = r.responses?.length
-                  ? Math.round(
-                      (r.responses.reduce((s, x) => s + Number(x.answer || 0), 0) /
-                        r.responses.length) * 10
-                    ) / 10
-                  : 0;
-
-                return (
-                  <button
-                    key={r._id || idx}
-                    onClick={() => setSelectedReflection(r)}
-                    className={[
-                      "w-full text-left rounded-xl border p-3 transition shadow-sm",
-                      active
-                        ? "border-[#e8d96d] bg-[#fff6bf]"
-                        : "border-white bg-white hover:bg-white/90",
-                    ].join(" ")}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="truncate text-[15px] font-semibold text-[#0f172a]">
-                          {r.title || `Reflection ${idx + 1}`}
+                        {/* Sort pills */}
+                        <div className="mt-4 text-sm font-semibold text-[#0f172a]">Sort by</div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                        {[
+                            { key: "latest", label: "Latest" },
+                            { key: "rating", label: "Rating" },
+                            { key: "title",  label: "Title"  },
+                        ].map(({ key, label }) => (
+                            <button
+                            key={key}
+                            onClick={() => setSortBy(key)}
+                            className={[
+                                "rounded-full px-3 py-1.5 text-sm font-medium transition",
+                                sortBy === key
+                                ? "bg-white text-[#0f172a] shadow-sm"
+                                : "bg-white-opacity-50 text-slate-700 hover:bg-white",
+                            ].join(" ")}
+                            >
+                            {label}
+                            </button>
+                        ))}
                         </div>
-                        <p className="mt-1 line-clamp-1 text-[12px] text-slate-600">
-                          {r.responses?.[0]?.question}
-                        </p>
-                      </div>
 
-                      {/* score pill */}
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold text-[#7a6a28]"> {score.toFixed(1)}
-                      </span>
+                        {/* List header */}
+                        <div className="mt-5 text-sm font-semibold text-[#0f172a]">Attended events</div>
+
+                        {/* Reflections list */}
+                        <div className="mt-2 max-h-[520px] overflow-y-auto pr-1">
+                        {filteredReflections.length === 0 ? (
+                            <div className="flex h-32 items-center justify-center rounded-2xl border border-white bg-white/70 text-sm text-slate-600">
+                            No reflections match your filters.
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                            {filteredReflections.map((r, idx) => {
+                                const active = selectedReflection?._id === r._id;
+                                const score = r.responses?.length
+                                ? Math.round(
+                                    (r.responses.reduce((s, x) => s + Number(x.answer || 0), 0) /
+                                        r.responses.length) * 10
+                                    ) / 10
+                                : 0;
+
+                                return (
+                                <button
+                                    key={r._id || idx}
+                                    onClick={() => setSelectedReflection(r)}
+                                    className={[
+                                    "w-full text-left rounded-xl border p-3 transition shadow-sm",
+                                    active
+                                        ? "border-[#e8d96d] bg-[#fff6bf]"
+                                        : "border-white bg-white hover:bg-slate-50",
+                                    ].join(" ")}
+                                >
+                                    <div className="font-semibold">{r.title || "Untitled reflection"}</div>
+                                    <div className="mt-1 text-xs text-slate-500">
+                                    {r.event?.name || "No event"} • {r.event?.date || "No date"}
+                                    {/* Average score with stars */}
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold text-[#7a6a28]"> {score.toFixed(1)}
+                                    </span>
+                                    </div>
+
+
+                                </button>
+                                );
+                            })}
+                            </div>
+                        )}
+                        </div>
+
+                        {/* Footer buttons */}
+                        <div className="mt-4 flex gap-3">
+                            <button
+                                onClick={() => setActiveTab("new")}
+                                aria-pressed={activeTab === "new"}
+                                className={[
+                                "rounded-xl px-3 py-2 text-sm font-medium transition-all",
+                                "border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0",
+                                activeTab === "new"
+                                    // ACTIVE (blue)
+                                    ? "bg-[#fff6bf] border-[#fff6bf] text-black hover:brightness-105"
+                                    // INACTIVE (yellow pill)
+                                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                                ].join(" ")}
+                            >
+                                ➕ New Reflection
+                            </button>
+
+                            {/* Past Reflections */}
+                            <button
+                                onClick={() => setActiveTab("past")}
+                                aria-pressed={activeTab === "past"}
+                                className={[
+                                "rounded-xl px-3 py-2 text-sm font-medium transition-all",
+                                "border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0",
+                                activeTab === "past"
+                                    // ACTIVE (blue)
+                                    ? "bg-[#fff6bf] border-[#fff6bf] text-black hover:brightness-105"
+                                    // INACTIVE (white pill)
+                                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                                ].join(" ")}
+                            >
+                                🎓 Past Reflections
+                            </button>
+                        </div>
+                    </aside>
+
+                {/* RIGHT: Pale-yellow detail panel */}
+                <section className="rounded-[26px] border border-[#f4e58b] bg-[#fff6bf] p-6 shadow-sm">
+                {!selectedReflection ? (
+                    <div className="flex h-40 items-center justify-center text-sm text-slate-600">
+                    Select a reflection to view its details
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Footer buttons */}
-        <div className="mt-4 flex gap-3">
-            <button
-                onClick={() => setActiveTab("new")}
-                aria-pressed={activeTab === "new"}
-                className={[
-                "rounded-xl px-3 py-2 text-sm font-medium transition-all",
-                "border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0",
-                activeTab === "new"
-                    // ACTIVE (blue)
-                    ? "bg-[#fff6bf] border-[#fff6bf] text-black hover:brightness-105"
-                    // INACTIVE (yellow pill)
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                ].join(" ")}
-            >
-                + New Reflection
-            </button>
-
-            {/* Past Reflections */}
-            <button
-                onClick={() => setActiveTab("past")}
-                aria-pressed={activeTab === "past"}
-                className={[
-                "rounded-xl px-3 py-2 text-sm font-medium transition-all",
-                "border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0",
-                activeTab === "past"
-                    // ACTIVE (blue)
-                    ? "bg-[#fff6bf] border-[#fff6bf] text-black hover:brightness-105"
-                    // INACTIVE (white pill)
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                ].join(" ")}
-            >
-                🎓 Past Reflections
-            </button>
-        </div>
-      </aside>
-
-      {/* RIGHT: Pale-yellow detail panel */}
-      <section className="rounded-[26px] border border-[#f4e58b] bg-[#fff6bf] p-6 shadow-sm">
-        {!selectedReflection ? (
-          <div className="flex h-40 items-center justify-center text-sm text-slate-600">
-            Select a reflection to view its details
-          </div>
-        ) : (
-          <>
-            <h3 className="text-2xl text-center font-bold text-[#0f172a]">
-              {selectedReflection.title || "Title"}
-            </h3>
-
-            <div className="mt-5 space-y-5">
-              {selectedReflection.responses?.map((resp, i) => (
-                <div
-                  key={resp._id || i}
-                  className="rounded-2xl border border-[#f7ec9e] bg-white p-5 shadow-sm"
-                >
-                  <p className="text-[15px] font-semibold text-[#0f172a]">
-                    {i + 1}. {resp.question}
-                  </p>
-
-                {/* Hearts (read-only) with 50% opacity on unselected */}
-                <div className="mt-3">
-                <div className="grid grid-cols-5 gap-6 sm:gap-10 place-items-center">
-                    {[1, 2, 3, 4, 5].map((val, idx) => {
-                    const value = Number(resp.answer) || 0;
-                    const selected = value === val;
-                    const colors = [
-                        "bg-red-400",
-                        "bg-orange-400",
-                        "bg-yellow-400",
-                        "bg-lime-400",
-                        "bg-green-400",
-                    ];
-                    const captions = [
-                        "Strongly disagree",
-                        "Disagree",
-                        "Neutral",
-                        "Agree",
-                        "Strongly agree",
-                    ];
-
-                    return (
-                        <div key={val} className="relative flex flex-col items-center gap-2">
-                        {/* numeric chip (keep if you like) */}
-                        <span
-                            className={[
-                            "absolute -top-4 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                            "bg-white text-[#0f172a] shadow border border-slate-200 transition",
-                            selected ? "opacity-100" : "opacity-0 pointer-events-none",
-                            ].join(" ")}
-                        >
-                            {value}/5
+                ) : (
+                    <>
+                    {/* Title + Event meta */}
+                    <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-2xl font-bold text-[#0f172a]">
+                        {selectedReflection.title || "Title"}
+                        </h3>
+                    {/* Average score (number only) */}
+                    <span
+                    className="inline-flex items-center rounded-full border border-[#f4e58b] bg-white px-3 py-1 text-xs font-semibold text-[#7a6a28]"
+                    aria-label="Average score"
+                    title="Average score"
+                    >
+                    {avgScore(selectedReflection?.responses || []).toFixed(1)} / 5.0
+                    </span>
+                    
+                    </div>
+                    {/* Event details for this reflection */}
+                    {selectedReflection?.event && (
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px]">
+                        {/* Event name */}
+                        {selectedReflection.event.name && (
+                        <span className="rounded-full border border-[#f4e58b] bg-white/80 px-2 py-0.5 font-medium text-[#0f172a]">
+                            {selectedReflection.event.name}
                         </span>
+                        )}
 
-                        {/* heart — NO ring, dim when not selected */}
-                        <div className="rating rating-lg">
-                            <input
-                            type="radio"
-                            name={`past-q-${i}`}
-                            className={[
-                                "mask mask-heart",
-                                colors[idx],
-                                selected ? "" : "opacity-50",  // 👈 dim unselected
-                            ].join(" ")}
-                            checked={selected}
-                            readOnly
-                            disabled
-                            aria-label={`${val} of 5`}
-                            />
-                        </div>
-
-                        {/* label — bold for selected, dim for others */}
-                        <span
-                            className={`text-[11px] sm:text-xs text-center ${
-                            selected ? "font-bold text-[#0f172a]" : "font-medium text-[#7a6a28] opacity-70"
-                            }`}
-                        >
-                            {captions[idx]}
+                        {/* Event date */}
+                        {selectedReflection.event.date && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4e58b] bg-white/80 px-2 py-0.5 text-[#7a6a28]">
+                            <Calendar className="size-3" />
+                            {selectedReflection.event.date}
                         </span>
+                        )}
+
+                        {/* Event location */}
+                        {selectedReflection.event.location && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4e58b] bg-white/80 px-2 py-0.5 text-[#7a6a28]">
+                            <MapPin className="size-3" />
+                            {selectedReflection.event.location}
+                        </span>
+                        )}
+
+                        {/* When the reflection was created (optional) */}
+                        {selectedReflection.createdAt && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4e58b] bg-white/80 px-2 py-0.5 text-[#7a6a28]">
+                            <Clock className="size-3" />
+                            {new Date(selectedReflection.createdAt).toLocaleDateString()}
+                        </span>
+                        )}
+                    </div>
+                    )}
+
+
+                    {/* Existing questions list */}
+                    <div className="mt-5 space-y-5">
+                        {selectedReflection.responses?.map((resp, i) => (
+                        <div key={resp._id || i} className="rounded-2xl border border-[#f7ec9e] bg-white p-5 shadow-sm">
+                            <p className="text-[15px] font-semibold text-[#0f172a]">
+                            {i + 1}. {resp.question}
+                            </p>
+
+                            {/* Hearts (read-only) with 50% opacity on unselected) */}
+                            <div className="mt-3">
+                            <div className="grid grid-cols-5 gap-6 sm:gap-10 place-items-center">
+                                {[1, 2, 3, 4, 5].map((val, idx) => {
+                                const value = Number(resp.answer) || 0;
+                                const selected = value === val;
+                                const colors = ["bg-red-400","bg-orange-400","bg-yellow-400","bg-lime-400","bg-green-400"];
+                                const captions = ["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"];
+                                return (
+                                    <div key={val} className="relative flex flex-col items-center gap-2">
+                                    <span
+                                        className={[
+                                        "absolute -top-4 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                                        "bg-white text-[#0f172a] shadow border border-slate-200 transition",
+                                        selected ? "opacity-100" : "opacity-0 pointer-events-none",
+                                        ].join(" ")}
+                                    >
+                                        {value}/5
+                                    </span>
+                                    <div className="rating rating-lg">
+                                        <input
+                                        type="radio"
+                                        name={`past-q-${i}`}
+                                        className={["mask mask-heart", colors[idx], selected ? "" : "opacity-50"].join(" ")}
+                                        checked={selected}
+                                        readOnly
+                                        disabled
+                                        aria-label={`${val} of 5`}
+                                        />
+                                    </div>
+                                    <span className={`text-[11px] sm:text-xs text-center ${selected ? "font-bold text-[#0f172a]" : "font-medium text-[#7a6a28] opacity-70"}`}>
+                                        {captions[idx]}
+                                    </span>
+                                    </div>
+                                );
+                                })}
+                            </div>
+                            </div>
                         </div>
-                    );
-                    })}
-                </div>
-                </div>
-                </div>
-              ))}
+                        ))}
+                    </div>
+                    </>
+                )}
+                </section>
+
             </div>
-          </>
+        </section>
         )}
-      </section>
-    </div>
-  </section>
-)}
 
   </div>
 );
