@@ -309,6 +309,14 @@ const NetworkingModule = () => {
   // BackgroundMusicBox visibility state
   const [showMusicBox, setShowMusicBox] = useState(false);
 
+  // Sound Effects
+  // Button Click
+  const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+  };
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col bg-[#fff9c7] overflow-hidden">
@@ -369,6 +377,7 @@ const NetworkingModule = () => {
                       <button
                         className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
+                          playClickSound();
                           setSelectedSubtask("subtask1");
                           setShowSubtask(true);
                           setElevatorOpen(true);
@@ -385,6 +394,7 @@ const NetworkingModule = () => {
                       <button
                         className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
+                          playClickSound();
                           setSelectedSubtask("subtask2");
                           setShowSubtask(true);
                           setElevatorOpen(true);
@@ -400,6 +410,7 @@ const NetworkingModule = () => {
                       <button
                         className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition"
                         onClick={() => {
+                          playClickSound();
                           setSelectedSubtask("subtask3");
                           setShowSubtask(true);
                           setElevatorOpen(true);
