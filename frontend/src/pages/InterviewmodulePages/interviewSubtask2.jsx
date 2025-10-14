@@ -69,6 +69,12 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
       const audio = new Audio("/sounds/ui-pop-sound-316482.mp3");
       audio.play().catch((err) => console.log("Sound blocked:", err));
 
+      setShowForm(false);
+      setIsSubmitted(true);
+      setEditing(null);
+      setFormDraft(null); // clear draft after saving
+      fetchResearches();
+
       // Get subtaskId by module name, level number and subtask sequence number
       let subtaskId;
       try {
@@ -84,13 +90,8 @@ const InterviewSubtask2 = ({ setIsSubmitted, onClose, onTaskComplete }) => {
         // Check if subtask is completed and display appropriate message
         if (res.data.message === "Well Done! You completed the subtask") {
           toast.success("Task 2 completed!");
-          
-          setShowForm(false);
-          setIsSubmitted(true);
+
           onTaskComplete?.();
-          setEditing(null);
-          setFormDraft(null); // clear draft after saving
-          fetchResearches();
         }
       } catch (err) {
         console.error("Failed to complete task", err);
