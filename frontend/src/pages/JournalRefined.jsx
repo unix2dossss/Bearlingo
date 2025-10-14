@@ -519,6 +519,8 @@ const JournalRefined = () => {
                                             onClick={() => {
                                                 setIsChatOpen(false);
                                                 setAddFile(true);
+                                                setOpenFile(true);
+                                                console.log("Open file", openFile);
                                             }}
                                         >
                                             + Add New File
@@ -532,6 +534,8 @@ const JournalRefined = () => {
                                             className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
                                             onClick={() => {
                                                 setIsChatOpen(true); 
+                                                setAddFile(false);
+                                                setOpenFile(false);
                                             }}
                                         >
                                             <div className="flex gap-2 pl-3">
@@ -770,12 +774,12 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Actual file content of Reflections folder + editable area */}
-                                {openFile && addFile === false && openFolder.name === "Reflections" && (
+                                {openFile && addFile === true && openFolder.name === "Reflections" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
                                             <div className="text-center mb-8">
-                                                <input
+                                                 <input
                                                     type="text"
                                                     value={reflectionTitle}
                                                     onChange={(e) => setReflectionTitle(e.target.value)}
