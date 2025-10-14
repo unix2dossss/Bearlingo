@@ -991,7 +991,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={openFile.goalTitle ? updateGoal : saveGoal}
+                                                    onClick={openFile.title ? updateGoal : saveGoal}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save

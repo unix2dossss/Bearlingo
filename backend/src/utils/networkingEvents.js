@@ -3,6 +3,102 @@ const predefinedNetworkingEvents = [
 
     {
         id: 1,
+        name: "AI Builders Coffee & Walk – Auckland",
+        type: "Meetup",
+        date: "2025-10-20",
+        location: "The Pantry, 99 Halsey Street, Auckland",
+        link: "https://www.meetup.com/ai-driven-coding/events/308338688/",
+        description:
+            "A casual morning meetup for developers and AI enthusiasts. Discuss AI tools, automation, and creative coding while walking and networking with peers.",
+        costType: "Free",
+        time: "8:00AM - 9:30AM"
+    },
+    {
+        id: 2,
+        name: "EXIN BCS Artificial Intelligence Essentials Training",
+        type: "Workshop",
+        date: "2025-11-05",
+        location: "Auckland CBD, New Zealand",
+        link: "https://www.eventbrite.com/e/exin-bcs-artificial-intelligence-essentials-training-in-auckland-tickets-1427923470539",
+        description:
+            "An introductory AI certification training session covering the foundations of artificial intelligence, use cases, and ethical implications.",
+        costType: "Paid",
+        time: "9:00AM - 4:00PM"
+    },
+    {
+        id: 3,
+        name: "EXIN BCS Artificial Intelligence Foundation Training",
+        type: "Workshop",
+        date: "2025-11-12",
+        location: "Auckland CBD, New Zealand",
+        link: "https://www.eventbrite.com/e/exin-bcs-artificial-intelligence-foundation-training-in-auckland-tickets-1431619044099",
+        description:
+            "Gain foundational AI skills and understanding of common algorithms, tools, and data-driven decision making in this certified workshop.",
+        costType: "Paid",
+        time: "9:00AM - 4:00PM"
+    },
+    {
+        id: 4,
+        name: "EXIN BCS Generative Artificial Intelligence Award Training",
+        type: "Workshop",
+        date: "2025-11-20",
+        location: "Auckland CBD, New Zealand",
+        link: "https://www.eventbrite.com/e/exin-bcs-generative-artificial-intelligence-award-training-in-auckland-tickets-1430465513859",
+        description:
+            "Hands-on generative AI certification session covering modern LLMs, prompt design, and AI workflow automation.",
+        costType: "Paid",
+        time: "9:00AM - 4:00PM"
+    },
+    {
+        id: 5,
+        name: "New Zealand AI Summit 2025",
+        type: "Conference",
+        date: "2025-07-03",
+        location: "Aotea Centre, Auckland",
+        link: "https://10times.com/e1r4-p6z5-s2xp",
+        description:
+            "New Zealand’s premier AI event featuring industry leaders, researchers, and companies shaping the future of AI in NZ.",
+        costType: "Paid",
+        time: "9:00AM - 6:00PM"
+    },
+    {
+        id: 6,
+        name: "UiPath Agentic Automation Summit – Auckland",
+        type: "Seminar",
+        date: "2025-08-14",
+        location: "Auckland CBD, New Zealand",
+        link: "https://www.uipath.com/events/agentic-automation-summit/auckland",
+        description:
+            "A professional automation and AI conference exploring next-gen agentic workflows, RPA, and LLM-powered enterprise systems.",
+        costType: "Free",
+        time: "10:00AM - 4:00PM"
+    },
+    {
+        id: 7,
+        name: "The AI Show – Monthly AI Events",
+        type: "Networking / Panel",
+        date: "2025-10-28",
+        location: "Auckland (venue announced monthly)",
+        link: "https://newzealand.ai/ai-show-events",
+        description:
+            "A recurring AI event featuring panels, demos, and networking opportunities for students, researchers, and professionals.",
+        costType: "Free",
+        time: "6:00PM - 8:00PM"
+    },
+    {
+        id: 8,
+        name: "Let's Talk AI – Community Discussion",
+        type: "Public Talk",
+        date: "2025-06-15",
+        location: "Auckland Central Library, 44-46 Lorne Street, Auckland",
+        link: "https://ourauckland.aucklandcouncil.govt.nz/events/2025/06/let-s-talk-ai/",
+        description:
+            "A public discussion hosted by Auckland Council exploring the social and ethical impact of artificial intelligence in communities.",
+        costType: "Free",
+        time: "5:30PM - 7:00PM"
+    },
+    {
+        id: 9,
         name: "Summer of Tech 2025 Info Session",
         type: "Webinar",
         date: "2025-09-10",
@@ -13,7 +109,7 @@ const predefinedNetworkingEvents = [
         time: "12:00PM - 1:00PM"
     },
     {
-        id: 2,
+        id: 10,
         name: "SIRIS APPS AI Innovation Meetup",
         type: "Seminar",
         date: "2025-09-27",
@@ -24,7 +120,7 @@ const predefinedNetworkingEvents = [
         time: "10:00AM - 11:30AM"
     },
     {
-        id: 3,
+        id: 11,
         name: "The Science of Software Engineering",
         type: "Seminar",
         date: "2025-10-2",
@@ -35,7 +131,7 @@ const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
-        id: 4,
+        id: 12,
         name: "JuniorDev Auckland Meet",
         type: "Meetup",
         date: "2025-10-1",
@@ -46,7 +142,7 @@ const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
-        id: 5,
+        id: 13,
         name: "Auckland AI & Machine Learning Meetup",
         type: "Meetup",
         date: "2025-10-05",
@@ -57,7 +153,7 @@ const predefinedNetworkingEvents = [
         time: "5:30PM - 7:30PM"
     },
     {
-        id: 6,
+        id: 14,
         name: "Women in Tech: AI & Innovation",
         type: "Workshop",
         date: "2025-10-10",
@@ -68,7 +164,7 @@ const predefinedNetworkingEvents = [
         time: "6:00PM - 8:00PM"
     },
     {
-        id: 7,
+        id: 15,
         name: "Auckland Tech Innovators Meetup",
         type: "Meetup",
         date: "2025-10-15",
@@ -79,7 +175,7 @@ const predefinedNetworkingEvents = [
         time: "6:00PM - 7:30PM"
     },
     {
-        id: 8,
+        id: 16,
         name: "AI & Data Science Evening",
         type: "Seminar",
         date: "2025-10-20",
@@ -90,7 +186,7 @@ const predefinedNetworkingEvents = [
         time: "5:30PM - 7:00PM"
     },
     {
-        id: 9,
+        id: 17,
         name: "Junior Dev AI Hack Night",
         type: "Hackathon",
         date: "2025-10-25",
