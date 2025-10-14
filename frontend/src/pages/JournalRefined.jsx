@@ -32,6 +32,7 @@ const JournalRefined = () => {
     const navigate = useNavigate();
     const user = useUserStore((state) => state.user);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isNewEntry, setIsNewEntry] = useState(false);
 
     // Auth
     useEffect(() => {
@@ -170,6 +171,44 @@ const JournalRefined = () => {
         } catch (error) {
             console.error("Error obtaining journal items", error);
             toast.error("Error obtaining journal items");
+        }
+    };
+
+    // Update goal
+    const updateGoal = async () => {
+        try {
+            const updated = {
+                title: openFile.title,
+                updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
+                goal,
+                goalIsCompleted
+            };
+            const res = await api.put(`/users/journal/goals`, updated, {
+                withCredentials: true
+            });
+            // Use the actual updated entry returned from backend
+            const updatedGoal = res.data.goalEntry;
+
+            // Update local state
+            setGoals((prev) =>
+                prev.map((g) => (g._id === updatedGoal._id ? updatedGoal : g))
+            );
+            // Force-update openFolder immediately
+            if (openFolder?.name === "Goals") {
+                setOpenFolder((prev) => ({
+                    ...prev,
+                    items: prev.items.map((g) =>
+                        g._id === updatedGoal._id ? { ...updatedGoal } : g
+                    ),
+                }));
+            }
+
+            setOpenFile({ ...updatedGoal });
+            toast.success("Goal updated!");
+            setOpenFile(null);
+        } catch (error) {
+            console.error("error: ", error);
+            toast.error("Error updating goal");
         }
     };
 
@@ -495,18 +534,19 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                      <div className="flex-1 flex flex-col gap-3">
+                                    <div className="flex-1 flex flex-col gap-3">
                                         {openFolder.items.map((file, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                            setOpenFile(file);
-                                            setAddFile(false);
-                                            }}
-                                            className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
-                                        >
-                                            {file.title}
-                                        </button>
+                                            <button
+                                                key={i}
+                                                onClick={() => {
+                                                    setOpenFile(file);
+                                                    setAddFile(false);
+                                                    setIsChatOpen(false);
+                                                }}
+                                                className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
+                                            >
+                                                {file.title}
+                                            </button>
                                         ))}
                                     </div>
 
@@ -518,8 +558,9 @@ const JournalRefined = () => {
                                                         shadow-lg border border-white w-full"
                                             onClick={() => {
                                                 setIsChatOpen(false);
-                                                setAddFile(true);
+                                                setAddFile(false);
                                                 setOpenFile(true);
+                                                setIsNewEntry(true);
                                                 console.log("Open file", openFile);
                                             }}
                                         >
@@ -533,8 +574,8 @@ const JournalRefined = () => {
                                         <button
                                             className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
                                             onClick={() => {
-                                                setIsChatOpen(true); 
-                                                setAddFile(false);
+                                                setIsChatOpen(true);
+                                                setAddFile(true);
                                                 setOpenFile(false);
                                             }}
                                         >
@@ -544,13 +585,13 @@ const JournalRefined = () => {
                                                     Chat with Bear!
 
                                                 </div>
-                                                
+
 
                                             </div>
                                         </button>
 
                                     </div>
-                                    
+
                                 </div>
 
                                 {openFolder && !openFile && !addFile && (
@@ -774,19 +815,19 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Actual file content of Reflections folder + editable area */}
-                                {openFile && addFile === true && openFolder.name === "Reflections" && (
+                                {openFile && addFile === false && openFolder.name === "Reflections" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
                                             <div className="text-center mb-8">
-                                                 <input
+                                                <input
                                                     type="text"
-                                                    value={reflectionTitle}
+                                                    value={reflectionTitle === "" ? "Enter title here..." : reflectionTitle}
                                                     onChange={(e) => setReflectionTitle(e.target.value)}
                                                     className="text-2xl font-bold text-purple-700 tracking-wide text-center w-full bg-transparent border-b-2 border-purple-300 focus:outline-none focus:border-purple-500"
                                                 />
                                                 <textarea
-                                                    value={about}
+                                                    value={about === "" ? "Enter a brief summary here..." : about}
                                                     onChange={(e) => setAbout(e.target.value)}
                                                     className="text-purple-400 text-sm mt-1 w-full bg-transparent resize-none text-center focus:outline-none"
                                                 />
@@ -889,7 +930,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={updateReflection}
+                                                    onClick={isNewEntry ? saveReflection : updateReflection}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save
@@ -948,42 +989,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={async () => {
-                                                        try {
-                                                            const updated = {
-                                                                title: openFile.title,
-                                                                updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
-                                                                goal,
-                                                                goalIsCompleted
-                                                            };
-                                                            const res = await api.put(`/users/journal/goals`, updated, {
-                                                                withCredentials: true
-                                                            });
-                                                            // Use the actual updated entry returned from backend
-                                                            const updatedGoal = res.data.goalEntry;
-
-                                                            // Update local state
-                                                            setGoals((prev) =>
-                                                                prev.map((g) => (g._id === updatedGoal._id ? updatedGoal : g))
-                                                            );
-                                                            // Force-update openFolder immediately
-                                                            if (openFolder?.name === "Goals") {
-                                                                setOpenFolder((prev) => ({
-                                                                    ...prev,
-                                                                    items: prev.items.map((g) =>
-                                                                        g._id === updatedGoal._id ? { ...updatedGoal } : g
-                                                                    ),
-                                                                }));
-                                                            }
-
-                                                            setOpenFile({ ...updatedGoal });
-                                                            toast.success("Goal updated!");
-                                                            setOpenFile(null);
-                                                        } catch (error) {
-                                                            console.error("error: ", error);
-                                                            toast.error("Error updating goal");
-                                                        }
-                                                    }}
+                                                    onClick={openFile.goalTitle ? updateGoal : saveGoal}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save
