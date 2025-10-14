@@ -20,6 +20,7 @@ import {
 
 import { Info } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Assets
 import Floor from "../../assets/CVFloor.svg";
@@ -35,6 +36,9 @@ import Bear from "../../assets/Bear.svg";
 
 // Sound
 import winSound from "/sounds/winner-game-sound-404167.mp3";
+
+// Level Passed Pop up
+import CongratsPage from "./CVLevelPass";
 
 // ⬇️ NEW: Resume uploader
 import ResumeUpload from "../../components/CVModuleComponent/ResumeUpload";
@@ -162,11 +166,14 @@ const CVModule = () => {
   const deskUnlockedRef = useRef(null);
   const bearRef = useRef(null);
 
+  // Track victory sound 
+  const prevTask1 = useRef(false);
+  const prevTask2 = useRef(false);
+  const prevTask3 = useRef(false);
+
+
   useEffect(() => {
     if (task1Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(windowLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -200,9 +207,6 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task2Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(drawersLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -245,9 +249,6 @@ const CVModule = () => {
 
   useEffect(() => {
     if (task3Complete) {
-      // 🔊 Play victory sound when unlocked
-      const audio = new Audio(winSound);
-      audio.play();
       gsap.to(deskLockedRef.current, {
         opacity: 0,
         duration: 0.5,
@@ -426,21 +427,59 @@ const CVModule = () => {
 
   const handleMouseLeave = () => setHoveredSubtask(null);
 
-  // Hide popup when clicking outside
+  const [showLottie, setShowLottie] = useState(false);
+  const [showCongratsPage, setShowCongratsPage] = useState(false);
+  const popupRef = useRef(null);
+
+  // Create a user-specific key for localStorage
+  const confettiKey = `hasPlayedConfetti_${user?.id || user?.email || "guest"}`;
+
+  // Show confetti only once per user
   useEffect(() => {
-    const handleClickOutside = () => {
-      if (hoveredSubtask) setHoveredSubtask(null);
-    };
+    const hasPlayedConfetti = localStorage.getItem(confettiKey);
 
-    // Add event listener only when popup is visible
-    if (hoveredSubtask) {
-      document.addEventListener("click", handleClickOutside);
+    if (task1Complete && task2Complete && task3Complete && !hasPlayedConfetti) {
+      setShowLottie(true);
+      localStorage.setItem(confettiKey, "true"); // store per-user flag
     }
+  }, [task1Complete, task2Complete, task3Complete, confettiKey]);
 
-    // Cleanup
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [hoveredSubtask]);
+  // After Lottie finishes, show popup
+  const handleLottieComplete = () => {
+    console.log("🎉 Lottie finished, showing popup!");
+  setShowLottie(false);
+  setShowCongratsPage(true);
+};
 
+// Timeout fallback (in case onComplete doesn’t fire)
+useEffect(() => {
+  if (showLottie) {
+    const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
+    return () => clearTimeout(timer);
+  }
+}, [showLottie]);
+
+// Animate popup
+useEffect(() => {
+  if (showCongratsPage && popupRef.current) {
+    const popup = popupRef.current.querySelector("#popup-card");
+
+    // Animate backdrop fade-in
+    gsap.fromTo(
+      popupRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.6, ease: "power2.out" }
+    );
+
+    // Animate popup scale and fade
+    gsap.fromTo(
+      popup,
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
+    );
+  }
+}, [showCongratsPage]);
+  
   // BackgroundMusicBox visibility state
   const [showMusicBox, setShowMusicBox] = useState(false);
 
@@ -458,6 +497,44 @@ const CVModule = () => {
       <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
       <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
 
+      {/* 🎊 Lottie Confetti */}
+      {showLottie && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-transparent">
+          <DotLottieReact
+            src="https://lottie.host/1099ed2e-a10f-41d3-9eb8-69559ac869bf/PyIymGiJIa.lottie"
+            autoplay
+            loop={false}
+            onComplete={handleLottieComplete}
+            style={{
+                width: "100vw",
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                pointerEvents: "none", // so user can still click underlying buttons
+                zIndex: 9999,
+            }}
+                  />
+        </div>
+      )}
+
+      {/* 🏆 Congrats Popup */}
+      {showCongratsPage && (
+        <div
+          ref={popupRef}
+          className="fixed inset-0 z-[10000] flex items-center justify-center 
+                    bg-black/30 backdrop-blur-sm transition-opacity duration-700 ease-out"
+        >
+          <div
+            id="popup-card"
+            className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-[90%] 
+                      transform scale-90 opacity-0 transition-all duration-700 ease-out"
+          >
+            <CongratsPage onClose={() => setShowCongratsPage(false)} />
+          </div>
+        </div>
+      )}
+
       {/* Background */}
       <div className="flex-1 relative bg-cover bg-center bg-[#DBBBFB]">
         {/* Top Navbar */}
@@ -467,6 +544,7 @@ const CVModule = () => {
             onToggleMusicBox={() => setShowMusicBox(!showMusicBox)}
           />
         </div>
+
 
         <div>
           <div>
@@ -498,14 +576,13 @@ const CVModule = () => {
                     ref={deskLockedRef}
                     src={DeskLocked}
                     alt="Locked CV Desk"
-                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
-                    style={{ opacity: 0.4 }}
+                    className="absolute top-[34vh] w-[30vw] max-w-[600px] h-auto z-30"
                   />
                   <img
                     ref={deskUnlockedRef}
                     src={Desk}
                     alt="Unlocked CV Desk"
-                    className="absolute top-[30vh] w-[30vw] max-w-[600px] h-auto z-30"
+                    className="absolute top-[34vh] w-[30vw] max-w-[600px] h-auto z-30"
                   />
                 </div>
 
@@ -515,25 +592,25 @@ const CVModule = () => {
                     ref={drawersLockedRef}
                     src={DrawersLocked}
                     alt="Locked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-30 pointer-events-none "
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[800px] h-auto z-20 pointer-events-none "
                   />
                   <img
                     ref={drawersUnlockedRef}
                     src={Drawers}
                     alt="Unlocked CV Drawers"
-                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-30 pointer-events-none"
+                    className="absolute top-[20vh] right-0 w-[35vw] max-w-[900px] h-auto z-20 pointer-events-none"
                   />
                   <img
                     ref={bookcaseLockedRef}
                     src={BookcaseLocked}
                     alt="Locked CV Bookcase"
-                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30 transition-opacity duration-500"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-20 transition-opacity duration-500"
                   />
                   <img
                     ref={bookcaseUnlockedRef}
                     src={Bookcase}
                     alt="Unlocked CV Bookcase"
-                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-30"
+                    className="absolute top-[10vh] left-0 w-[35vw] max-w-[800px] h-auto z-20"
                   />
                 </div>
 
@@ -555,6 +632,7 @@ const CVModule = () => {
                 </div>
               </div>
             </div>
+            
           </div>
 
           {/* Bottom Button Container */}
@@ -626,6 +704,15 @@ const CVModule = () => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                
+
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear mascot"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+                />
+
                 {/* Speech bubble */}
                 <div
                   key="bear-speech"
@@ -635,17 +722,9 @@ const CVModule = () => {
                     {bearMessage}
                   </div>
                 </div>
-
-                <img
-                  ref={bearRef}
-                  src={Bear}
-                  alt="Bear mascot"
-                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
-                />
               </div>
             </div>
           </div>
-
           {/* ⬇️ NEW: Resume Upload Landing Modal */}
           {showResumeModal && (
             <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50">

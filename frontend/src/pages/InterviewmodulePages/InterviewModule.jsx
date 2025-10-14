@@ -538,6 +538,13 @@ const InterviewModule = () => {
 
               {/* Bear + Speech Bubble */}
               <div className="absolute -bottom-[20vh] right-16 flex flex-col items-end z-40">
+                <img
+                  ref={bearRef}
+                  src={Bear}
+                  alt="Bear mascot"
+                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
+                />
+
                 {/* Speech bubble */}
                 <div
                   key="bear-speech"
@@ -547,13 +554,6 @@ const InterviewModule = () => {
                     {bearMessage}
                   </div>
                 </div>
-
-                <img
-                  ref={bearRef}
-                  src={Bear}
-                  alt="Bear mascot"
-                  className="w-[40vw] max-w-[300px] sm:w-[30vw] sm:max-w-[250px] md:w-[20vw] md:max-w-[240px] lg:w-[18vw] lg:max-w-[220px] h-auto"
-                />
               </div>
             </div>
           </div>
