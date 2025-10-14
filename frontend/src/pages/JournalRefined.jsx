@@ -13,6 +13,7 @@ import Logo from "../assets/Logo1.svg";
 import toast from "react-hot-toast";
 import { useUserStore } from "../store/user";
 import { useNavigate } from "react-router-dom";
+import BearFace from "../assets/bear-logo.svg";
 
 const JournalRefined = () => {
     const [reflections, setReflections] = useState([]);
@@ -492,31 +493,62 @@ const JournalRefined = () => {
                             {/* Main thing */}
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
-                                <div className="w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    {openFolder.items.map((file, i) => (
+                                <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
+                                      <div className="flex-1 flex flex-col gap-3">
+                                        {openFolder.items.map((file, i) => (
                                         <button
                                             key={i}
                                             onClick={() => {
-                                                setOpenFile(file);
-                                                setAddFile(false);
+                                            setOpenFile(file);
+                                            setAddFile(false);
                                             }}
                                             className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                         >
                                             {file.title}
                                         </button>
-                                    ))}
-                                    <button
-                                        className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl hover:bg-purple-500 transition-colors border border-white"
-                                        onClick={() => {
-                                            setAddFile(true);
-                                        }}
-                                    >
-                                        + Add New File
-                                    </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Cat div */}
+                                    <div className="mt-auto w-full">
+                                        <button
+                                            className="flex justify-center px-3 py-5 bg-purple-400 text-white rounded-xl 
+                                                        hover:bg-purple-500 transition-transform transform hover:scale-105 
+                                                        shadow-lg border border-white w-full"
+                                            onClick={() => {
+                                                setAddFile(true);
+                                            }}
+                                        >
+                                            + Add New File
+                                        </button>
+
+                                        <div className="p-2 text-center text-white">
+                                            or
+                                        </div>
+
+                                        <button
+                                            className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
+                                            onClick={() => {
+                                                setAddFile(true);
+                                            }}
+                                        >
+                                            <div className="flex gap-2 pl-3">
+                                                <img src={BearFace} alt="" className="w-[20%] h-auto rotate-[-8deg]" />
+                                                <div className="">
+                                                    Chat with Bear!
+
+                                                </div>
+                                                
+
+                                            </div>
+                                        </button>
+
+                                    </div>
+                                    
                                 </div>
 
                                 {openFolder && !openFile && !addFile && (
-                                    <div className="flex flex-col justify-center items-center bg-purple-50 text-purple-400 w-[100%] text-2xl">
+                                    <div className="flex flex-col justify-center items-center bg-purple-50 text-purple-400 w-[80%] text-2xl">
                                         <div>
                                             {" "}
                                             <img src={Logo} className="h-32 w-52"></img>
