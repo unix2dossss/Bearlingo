@@ -69,10 +69,12 @@ router.put("/journals/:id", authenticate, usersController.updateJournalEntry);
 
 // -- New Journal - Goals Routes --
 router.post("/journal/goals", authenticate, usersController.createGoal);
+router.put("/journal/goals", authenticate, usersController.updateGoal);
 router.get("/journal/goals", authenticate, usersController.getGoals);
 
 // -- New Journal - Reflections Routes --
 router.post("/journal/reflections", authenticate, usersController.createReflection);
+router.put("/journal/reflections", authenticate, usersController.updateReflection);
 router.get("/journal/reflections", authenticate, usersController.getReflections);
 
 // -- New Journal - Notes Routes --
