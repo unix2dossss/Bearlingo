@@ -11,8 +11,7 @@ const SideNavbar = () => {
     { id: 2, label: "Interview", path: "/InterviewModule" },
     { id: 3, label: "Networking", path: "/NetworkingModule" },
     { id: 4, label: "Journal", path: "/Journal" },
-    { id: 5, label: "Journal2", path: '/Journal2' },
-    { id: 6, label: "Leaderboard", path: "/Leaderboard" },
+    { id: 5, label: "Leaderboard", path: "/Leaderboard" },
   ];
 
   return (
