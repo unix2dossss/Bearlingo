@@ -534,18 +534,19 @@ const JournalRefined = () => {
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
                                 <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                      <div className="flex-1 flex flex-col gap-3">
+                                    <div className="flex-1 flex flex-col gap-3">
                                         {openFolder.items.map((file, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                            setOpenFile(file);
-                                            setAddFile(false);
-                                            }}
-                                            className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
-                                        >
-                                            {file.title}
-                                        </button>
+                                            <button
+                                                key={i}
+                                                onClick={() => {
+                                                    setOpenFile(file);
+                                                    setAddFile(false);
+                                                    setIsChatOpen(false);
+                                                }}
+                                                className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
+                                            >
+                                                {file.title}
+                                            </button>
                                         ))}
                                     </div>
 
@@ -573,7 +574,7 @@ const JournalRefined = () => {
                                         <button
                                             className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
                                             onClick={() => {
-                                                setIsChatOpen(true); 
+                                                setIsChatOpen(true);
                                                 setAddFile(true);
                                                 setOpenFile(false);
                                             }}
@@ -584,13 +585,13 @@ const JournalRefined = () => {
                                                     Chat with Bear!
 
                                                 </div>
-                                                
+
 
                                             </div>
                                         </button>
 
                                     </div>
-                                    
+
                                 </div>
 
                                 {openFolder && !openFile && !addFile && (
@@ -819,7 +820,7 @@ const JournalRefined = () => {
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
                                             <div className="text-center mb-8">
-                                                 <input
+                                                <input
                                                     type="text"
                                                     value={reflectionTitle}
                                                     onChange={(e) => setReflectionTitle(e.target.value)}
