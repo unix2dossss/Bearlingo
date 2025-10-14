@@ -484,20 +484,23 @@ const InterviewModule = () => {
       <div className="flex-1 relative bg-cover bg-center bg-[#deffbd]">
         {/* Top Navbar */}
         <div className="relative z-[100]">
-          <TopNavbar />
+          <TopNavbar
+            showMusicBox={showMusicBox}
+            onToggleMusicBox={() => setShowMusicBox(!showMusicBox)}
+          />
         </div>
 
         <div>
           <div>
             {/* Floating music control */}
             {/* Music Toggle Button */}
-            <button
+            {/* <button
               onClick={() => setShowMusicBox(!showMusicBox)}
               className="fixed top-24 right-6 z-50 bg-white rounded-full p-3 shadow-md hover:bg-blue-100 transition"
               aria-label="Toggle music player"
             >
               <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
-            </button>
+            </button> */}
 
             {/* Conditionally show music box */}
             {showMusicBox && <BackgroundMusicBox moduleName="InterviewModule" />}
