@@ -533,8 +533,8 @@ const JournalRefined = () => {
                             {/* Main thing */}
                             <div className="flex flex-1 overflow-hidden">
                                 {/* sidebar thingy with buttons */}
-                                <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3 overflow-y-auto">
-                                    <div className="flex-1 flex flex-col gap-3">
+                                <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3">
+                                    <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
                                         {openFolder.items.map((file, i) => (
                                             <button
                                                 key={i}
