@@ -7,14 +7,17 @@ import Calendar from "../../components/NetworkingModuleComponents/NetworkingSubt
 import { useUserStore } from "../../store/user";
 
 const COLORS = {
-  primary: "#fcf782",
-  primaryHover: "#fbe24f",
-  border: "#f4e58b",
-  text: "#111827",
-  muted: "#767687",
-  bg: "#fff9c7",
-  panel: "#fffdf0",
+  primary: "#f9e532",        // brighter yellow for buttons
+  primaryHover: "#e9ca0a",   // deeper golden hover
+  border: "#d6b941",         // stronger outline
+  text: "#1a1a1a",           // near black (for true contrast)
+  muted: "#595959",          // darker muted text
+  bg: "#fffceb",             // slightly warmer but not washed out
+  panel: "#fff7b8",          // richer cream panel
+  accent: "#c08200",         // amber-brown accent
 };
+
+
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
   // -------------------- state --------------------

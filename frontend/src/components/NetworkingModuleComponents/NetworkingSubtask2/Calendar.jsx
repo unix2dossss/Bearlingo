@@ -1,7 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 export default function Calendar({ value, onChange, events = [] }) {
   const [viewDate, setViewDate] = useState(value ?? new Date());
+
+  // Sync viewDate with value prop
+  useEffect(() => {
+    if (value) setViewDate(value);
+  }, [value]);
 
   const monthLabel = useMemo(
     () => viewDate.toLocaleString(undefined, { month: "long", year: "numeric" }),
@@ -21,7 +26,8 @@ export default function Calendar({ value, onChange, events = [] }) {
   while (cells.length % 7 !== 0) cells.push(null);
 
   const isSameDate = (a, b) =>
-    a && b &&
+    a &&
+    b &&
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
@@ -38,10 +44,14 @@ export default function Calendar({ value, onChange, events = [] }) {
           <select
             className="select select-xs select-bordered"
             value={viewDate.getMonth()}
-            onChange={(e) => setViewDate(new Date(viewDate.getFullYear(), Number(e.target.value), 1))}
+            onChange={(e) =>
+              setViewDate(new Date(viewDate.getFullYear(), Number(e.target.value), 1))
+            }
           >
             {Array.from({ length: 12 }).map((_, m) => (
-              <option key={m} value={m}>{new Date(2000, m, 1).toLocaleString(undefined, { month: "long" })}</option>
+              <option key={m} value={m}>
+                {new Date(2000, m, 1).toLocaleString(undefined, { month: "long" })}
+              </option>
             ))}
           </select>
           <span className="text-xs text-slate-500 hidden sm:inline">{monthLabel}</span>
