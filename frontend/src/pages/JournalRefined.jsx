@@ -50,7 +50,7 @@ const JournalRefined = () => {
 
     const reflectionQuestions = [
         "Let's create a reflection together!",
-        "Ready to get started?",
+        "Ready to get started??",
         "What would you like to title this reflection?",
         "Which event or experience are you reflecting on?",
         "Nice! How did that make you feel? Choose an emoji to express it.",
