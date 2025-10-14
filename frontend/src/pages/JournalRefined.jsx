@@ -31,6 +31,7 @@ const JournalRefined = () => {
     const [userInfo, setUserInfo] = useState(null);
     const navigate = useNavigate();
     const user = useUserStore((state) => state.user);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Auth
     useEffect(() => {
@@ -516,6 +517,7 @@ const JournalRefined = () => {
                                                         hover:bg-purple-500 transition-transform transform hover:scale-105 
                                                         shadow-lg border border-white w-full"
                                             onClick={() => {
+                                                setIsChatOpen(false);
                                                 setAddFile(true);
                                             }}
                                         >
@@ -529,7 +531,7 @@ const JournalRefined = () => {
                                         <button
                                             className="flex justify-center px-3 py-5 bg-white text-black rounded-xl hover:bg-purple-100 hover:text-black transition-transform transform hover:scale-105 shadow-lg w-full"
                                             onClick={() => {
-                                                setAddFile(true);
+                                                setIsChatOpen(true); 
                                             }}
                                         >
                                             <div className="flex gap-2 pl-3">
@@ -558,7 +560,7 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Creating a new file and adding it to the reflections folder */}
-                                {addFile && openFolder.name == "Reflections" && (
+                                {isChatOpen && openFolder.name == "Reflections" && (
                                     <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
                                         <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
                                             <div className="h-[95%] overflow-y-auto pb-20 ">
