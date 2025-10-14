@@ -24,11 +24,11 @@ const moduleColors = {
     select: "bg-amber-500"
   },
   Journal: {
-    border: "border-blue-500",
-    bgMain: "bg-blue-500 hover:bg-blue-400",
-    bgAlt: "bg-blue-600 hover:bg-blue-500",
-    text: "text-blue-300",
-    select: "bg-blue-500"
+    border: "border-blue-500",        
+    bgMain: "bg-blue-300 hover:bg-blue-200", 
+    bgAlt: "bg-blue-400 hover:bg-blue-300",  
+    text: "text-blue-400",            
+    select: "bg-blue-400"              
   }
 };
 

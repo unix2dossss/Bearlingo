@@ -424,34 +424,39 @@ const JournalRefined = () => {
                         <SideNavbar />
                     </div>
 
-                    <div className="flex justify-center items-center h-[calc(100vh-65px)]">
-                        <div className="flex justify-center items-center">
-                            <div className="relative w-3/4">
-                                {/* Monitor here */}
-                                <img src={MonitorImage} alt="Monitor" className="w-full h-auto" />
+                    <div className="flex justify-start items-center h-[calc(100vh-65px)]">
+                        <div className="relative w-3/4 ml-28">
+                            {/* Monitor here */}
+                            <img
+                                src={MonitorImage}
+                                alt="Monitor"
+                                className="w-full h-auto"
+                            />
 
-                                <div
-                                    className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
-                                    style={{ backgroundColor: "rgba(67,109,133,0.30)" }}
-                                >
-                                    {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
-                                    {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
-                                </div>
+                            <div className="absolute top-[9%] left-[5.25%] w-[88.85%] h-10 flex items-center px-4"
+                                style={{ backgroundColor: 'rgba(67,109,133,0.30)' }}>
+                                {/*<img src={AddFolderImage} alt="icon" className="h-7 w-auto ml-1" /> - removing this for now*/}
+                                {/*<p className="text-white font-bold">Its Goal Setting Time User!</p>*/}
+                            </div>
 
-                                <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
-                                    {folders.map((folder, index) => (
-                                        <div key={index} className="flex flex-col items-center cursor-pointer">
-                                            <button onClick={() => setOpenFolder(folder)}>
-                                                <img src={folder.image} alt={folder.name} className="w-16 h-auto" />
-                                            </button>
-                                            <span className="text-black text-sm mt-1">{folder.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="absolute top-[20%] right-[9%] flex flex-col items-center gap-8">
+                                {folders.map((folder, index) => (
+                                    <div key={index} className="flex flex-col items-center cursor-pointer">
+                                        <button onClick={() => setOpenFolder(folder)}>
+                                            <img
+                                                src={folder.image}
+                                                alt={folder.name}
+                                                className="w-16 h-auto"
+                                            />
+                                        </button>
+                                        <span className="text-black text-sm mt-1">{folder.name}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
+
 
                 {openFolder && (
                     <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/30">
