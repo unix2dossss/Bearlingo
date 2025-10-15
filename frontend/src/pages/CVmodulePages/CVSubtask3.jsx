@@ -81,6 +81,7 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
       // const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
       // if (!win) throw new Error("Popup blocked");
       window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
+      // Subtask get completed when preview is opened
       await handleComplete();
     } catch (err) {
       console.error(err);
