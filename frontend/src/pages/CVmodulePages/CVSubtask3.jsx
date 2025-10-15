@@ -76,11 +76,12 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
     onClose(false, true); // force-close, bypass confirm
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
     try {
       // const win = window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
       // if (!win) throw new Error("Popup blocked");
       window.open(ENDPOINTS.preview, "_blank", "noopener,noreferrer");
+      await handleComplete();
     } catch (err) {
       console.error(err);
       toast.error("Failed to open preview");
