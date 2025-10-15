@@ -221,11 +221,25 @@ const JournalRefined = () => {
                 {
                     title: goalTitle,
                     goal: goal,
-                    isCompleted: false
+                    isCompleted: false,
                 },
                 { withCredentials: true }
             );
+
+            // Update main goals state
             setGoals((prevGoals) => [...prevGoals, goalSaved.data]);
+
+            // Update openFolder immediately if it's showing "Goals"
+            if (openFolder?.name === "Goals") {
+                setOpenFolder((prev) => ({
+                    ...prev,
+                    items: [...prev.items, goalSaved.data],
+                }));
+            }
+
+            // Optionally open the new goal
+            setOpenFile(goalSaved.data);
+
             setMessages([]);
             setCurrentIndex(0);
             toast.success("Goal saved!");
@@ -337,6 +351,15 @@ const JournalRefined = () => {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    useEffect(() => {
+    if (openFolder?.name === "Goals") {
+        setOpenFolder(prev => ({
+        ...prev,
+        items: goals,
+        }));
+    }
+    }, [goals, openFolder?.name]);
 
     // For temporarily saving data to the messages array
     useEffect(() => {

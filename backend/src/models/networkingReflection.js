@@ -17,11 +17,14 @@ const NetworkingReflectionSchema = new mongoose.Schema(
             question: { type: String, required: true },
             answer: { type: Number, required: true, min: 1, max: 5 }
         }],
-        event: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Event",
-            required: true
-        }
+        // event: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: "Events",
+        //     required: true
+        // }
+
+        // Save the eventId
+        event: { type: Number, required: true }
     },
     {
         timestamps: true

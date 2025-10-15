@@ -7,14 +7,17 @@ import Calendar from "../../components/NetworkingModuleComponents/NetworkingSubt
 import { useUserStore } from "../../store/user";
 
 const COLORS = {
-  primary: "#fcf782",
-  primaryHover: "#fbe24f",
-  border: "#f4e58b",
-  text: "#111827",
-  muted: "#767687",
-  bg: "#fff9c7",
-  panel: "#fffdf0",
+  primary: "#f9e532",        // brighter yellow for buttons
+  primaryHover: "#e9ca0a",   // deeper golden hover
+  border: "#d6b941",         // stronger outline
+  text: "#1a1a1a",           // near black (for true contrast)
+  muted: "#595959",          // darker muted text
+  bg: "#fffceb",             // slightly warmer but not washed out
+  panel: "#fff7b8",          // richer cream panel
+  accent: "#c08200",         // amber-brown accent
 };
+
+
 
 export default function NetworkingSubtask2({ userInfo, onBack }) {
   // -------------------- state --------------------
@@ -28,6 +31,36 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
   const [favourites, setFavourites] = useState(() => new Set());
 
   const { completeTask } = useUserStore();
+    //  --- add these helpers near the top ---
+    const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+
+    function makeLocalNoon(y, m, d) {
+      const dt = new Date(y, m, d);
+      dt.setHours(12, 0, 0, 0);
+      return dt;
+    }
+
+    // format a Date as local YYYY-MM-DD (NO toISOString)
+    function formatLocalYMD(d) {
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
+    // parse an <input type="date"> value as a local-noon Date
+    function parseLocalDate(value) {
+      // value is "YYYY-MM-DD"
+      const [y, m, d] = value.split("-").map(Number);
+      return makeLocalNoon(y, m - 1, d);
+    }
+
+    // normalise an event's date to LOCAL YYYY-MM-DD (treat date-only strings as-is)
+    function normaliseEventLocalYMD(e) {
+      const raw = e?.dateISO || e?.date || e?.start || e?.startTime || e?.time || null;
+      if (!raw) return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // already date-only
+      const dt = new Date(raw);
+      if (Number.isNaN(dt.getTime())) return null;
+      return formatLocalYMD(dt);
+    }
 
   // -------------------- helpers --------------------
   const getEventId = (e) => e?.id ?? e?._id ?? e?.eventId;
@@ -175,7 +208,8 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
 
   const baseFiltered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const selectedISO = selectedDate ? selectedDate.toISOString().slice(0, 10) : null;
+    const selectedYMD = selectedDate ? formatLocalYMD(selectedDate) : null;
+
 
     return allEvents.filter((e) => {
       const id = getEventId(e);
@@ -188,11 +222,10 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
       const matchesType = typeFilter === "All" || e.type === typeFilter;
       const matchesCost = costFilter === "All" || e.costType === costFilter;
 
-      const iso = normaliseDateISO(e);
-      const matchesDate = !selectedISO || (iso && iso === selectedISO);
-
+      const ymd = normaliseEventLocalYMD(e);
+      const matchesDate = !selectedYMD || (ymd && ymd === selectedYMD);
       return matchesQ && matchesType && matchesCost && matchesDate;
-    });
+          });
   }, [allEvents, query, typeFilter, costFilter, selectedDate]);
 
   const filteredEvents = useMemo(() => {
@@ -217,10 +250,12 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
   const upcoming3 = useMemo(() => {
     // naive sort by ISO date/time if available
     const withDate = baseFiltered
-      .map((e) => ({ e, iso: normaliseDateISO(e) }))
-      .filter((x) => x.iso);
-    withDate.sort((a, b) => (a.iso < b.iso ? -1 : a.iso > b.iso ? 1 : 0));
-    return withDate.slice(0, 3).map((x) => x.e);
+        .map((e) => ({ e, ymd: normaliseEventLocalYMD(e) }))
+        .filter((x) => x.ymd);
+
+      withDate.sort((a, b) => (a.ymd < b.ymd ? -1 : a.ymd > b.ymd ? 1 : 0));
+      return withDate.slice(0, 3).map((x) => x.e);
+
   }, [baseFiltered]);
 
   // Sound Effects
@@ -305,15 +340,14 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
           <div className="mb-4">
             <div className="text-sm font-semibold mb-1">Filter by date</div>
             <div className="flex items-center gap-2">
-              <input
-                type="date"
-                className="input input-sm bg-white w-full"
-                value={selectedDate ? selectedDate.toISOString().slice(0, 10) : ""}
-                onChange={(e) =>
-                  setSelectedDate(e.target.value ? new Date(e.target.value) : null)
-                }
-                style={{ borderColor: COLORS.border, color: COLORS.text }}
-              />
+                <input
+                  type="date"
+                  className="input input-sm bg-white w-full"
+                  value={selectedDate ? formatLocalYMD(selectedDate) : ""}
+                  onChange={(e) => setSelectedDate(e.target.value ? parseLocalDate(e.target.value) : null)}
+                  style={{ borderColor: COLORS.border, color: COLORS.text }}
+                />
+
               {selectedDate && (
                 <button
                   className="btn btn-sm"
@@ -440,7 +474,7 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
                         {e.name ?? e.title}
                       </div>
                       <div style={{ color: COLORS.muted }}>
-                        {e.date ?? normaliseDateISO(e)} · {e.time || "TBC"}
+                        {e.date ?? normaliseEventLocalYMD(e)} · {e.time || "TBC"}
                       </div>
                     </div>
                     <a
