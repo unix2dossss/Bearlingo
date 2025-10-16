@@ -57,7 +57,7 @@ const Register = () => {
     }
 
     if (!emailRegex.test(email)) {
-      toast.error("Please use a valid Gmail address.");
+      toast.error("Please use a valid email address.");
       return false;
     }
 

@@ -50,10 +50,10 @@ const emailValidator = body("email")
   .normalizeEmail()
   .custom(async (value, { req }) => {
     // Restrict to gmail.com
-    const domain = value.split("@")[1];
-    if (domain.toLowerCase() !== "gmail.com") {
-      throw new Error("Please use a Gmail account.");
-    }
+    // const domain = value.split("@")[1];
+    // if (domain.toLowerCase() !== "gmail.com") {
+    //   throw new Error("Please use a Gmail account.");
+    // }
 
     // Check if email already exists in the database
     const emailExists = await User.findOne({ email: value });
