@@ -1,6 +1,6 @@
 import { React, useEffect } from "react";
 import messyFloor from "../../assets/MessyFloor.svg";
-import word from "../../assets/Welcome to Bearlingo.svg";
+import word from "../../assets/WelcomeToBearlingo.svg";
 import bear from "../../assets/Bear.svg";
 import { useNavigate } from "react-router-dom";
 import TopNavbar from "../../components/TopNavbar";

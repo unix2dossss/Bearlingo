@@ -1,17 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useUserStore } from "../store/user";
-import { Flame, Star, User } from "lucide-react";
+import { Flame, Star, User, Music } from "lucide-react";
 import Logo from "../assets/Logo1.svg";
 import api from "../lib/axios";
 import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
-const TopNavbar = () => {
+const TopNavbar = ({ onToggleMusicBox, showMusicBox }) => {
   // const { user, fetchUser } = useUserStore();
   const { user } = useUserStore();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Show the Music icon only on these routes:
+  const showMusicIcon = ["/cvmodule", "/interviewmodule", "/networkingmodule", "/journal", "/journal2"].includes(location.pathname.toLowerCase());
 
   // useEffect(() => {
   //   if (!user) fetchUser();
@@ -59,7 +64,7 @@ const TopNavbar = () => {
       </Link>
 
       {/* right: stats + profile */}
-      <div className="flex-none flex items-center gap-3 mr-6">
+      <div className="flex-none flex items-center gap-3 mr-3">
         {/* streak + xp pill */}
         <div className="flex items-center bg-white rounded-full px-5 py-2 shadow">
           <div className="flex items-center space-x-2 mr-2">
@@ -115,6 +120,16 @@ const TopNavbar = () => {
             </li>
           </ul>
         </div>
+        {/* Conditionally show the music icon */}
+        {showMusicIcon && (
+          <button
+            onClick={onToggleMusicBox}
+            className="cursor-pointer rounded-full p-2 bg-white shadow hover:bg-blue-100 transition"
+            aria-label="Toggle music player"
+          >
+            <Music className={`w-6 h-6 ${showMusicBox ? "text-blue-500" : "text-gray-600"}`} />
+          </button>
+        )}
       </div>
     </nav>
   );

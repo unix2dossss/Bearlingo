@@ -31,7 +31,7 @@ const App = () => {
         <Route path="/First Level" element={<FirstTimePg3 />} />
         <Route path="/Leaderboard" element={<Leaderboard />} />
         <Route path="/Profile" element={<Profile />} />
-        <Route path="/Journal" element={<Journal />} />
+        <Route path="/Journal" element={<JournalRefined />} />
         <Route path="/Journal2" element={<JournalRefined />} />
         <Route path="/test" element={<Test1 />} />
         <Route path="/NetworkingModule" element={<NetworkingModule />} />

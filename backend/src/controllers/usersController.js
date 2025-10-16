@@ -517,6 +517,26 @@ export const createGoal = async (req, res) => {
   }
 };
 
+
+export const updateGoal = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    let { title, updatedTitle, goal, isCompleted } = req.body || {};
+    const goalEntry = await Goal.findOne({
+      user: userId,
+      title: title
+    });
+    goalEntry.title = updatedTitle ?? goalEntry.title;
+    goalEntry.goal = goal ?? goalEntry.goal;
+    goalEntry.isCompleted = isCompleted ?? goalEntry.isCompleted;
+    await goalEntry.save();
+    return res.status(201).json({ message: "Goal entry updated succesfully!", goalEntry: goalEntry });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Get all goals of a user
 export const getGoals = async (req, res) => {
   const userId = req.user._id;
@@ -569,6 +589,45 @@ export const createReflection = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+export const updateReflection = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    // Destructure the fields from req.body
+    let { title, updatedTitle, about, feeling, whatWentWell, improvement, rating } = req.body || {};
+
+    // Find the existing reflection entry by user and original title
+    const reflectionEntry = await Reflection.findOne({
+      user: userId,
+      title: title
+    });
+
+    if (!reflectionEntry) {
+      return res.status(404).json({ message: "Reflection not found" });
+    }
+
+    // Only update fields if a new value is provided
+    if (updatedTitle && updatedTitle.trim() !== "") reflectionEntry.title = updatedTitle;
+    if (about !== undefined) reflectionEntry.about = about;
+    if (feeling !== undefined) reflectionEntry.feeling = feeling;
+    if (whatWentWell !== undefined) reflectionEntry.whatWentWell = whatWentWell;
+    if (improvement !== undefined) reflectionEntry.improvement = improvement;
+    if (rating !== undefined) reflectionEntry.rating = rating;
+
+    // Save updated entry
+    await reflectionEntry.save();
+
+    return res.status(201).json({
+      message: "Reflection entry updated successfully!",
+      reflectionEntry
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 
 // Obtaining all reflections of a user
 export const getReflections = async (req, res) => {

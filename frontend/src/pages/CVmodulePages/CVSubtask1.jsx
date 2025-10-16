@@ -366,6 +366,7 @@ const CVSubtask1 = ({
         const done = await completeTask(subtaskId);
         if (done?.data?.message === "Well Done! You completed the subtask") {
           toast.success("Task 1 completed!");
+          
         }
       } catch (err) {
         console.error("Failed to complete task", err);
@@ -435,6 +436,15 @@ const CVSubtask1 = ({
         return <p>All done 🎉</p>;
     }
   };
+
+
+  // Sound Effect
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
+  
   // UI
   return (
     <div className="flex flex-col h-full">
@@ -546,7 +556,10 @@ const CVSubtask1 = ({
               hover:bg-[#4f9cf9]/5
               focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
               min-w-[200px]"
-                onClick={handleClear}
+                onClick={() => {
+                playClickSound();
+                handleClear();
+              }}
               >
                 Clear
               </button>
@@ -560,7 +573,15 @@ const CVSubtask1 = ({
                 shadow-sm hover:bg-[#4f9cf9]/90
                 focus:outline-none focus:ring-2 focus:ring-[#4f9cf9]
                 min-w-[200px] ${!isStepValid() ? "opacity-60 cursor-not-allowed" : ""}`}
-                  onClick={handleSaveAndContinue}
+                onClick={() => {
+                    if (!isStepValid()) return; // prevent sound if disabled
+
+                    // Play click sound
+                    playClickSound();
+
+                    // Call your original function
+                    handleSaveAndContinue();
+                  }}
                   disabled={!isStepValid()}
                 >
                   Save & Continue

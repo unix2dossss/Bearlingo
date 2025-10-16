@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
-import Bear from "../../assets/Bear.svg";
+import Bear from "../../assets/NetworkBear.svg";
 import api from "../../lib/axios";
 import { useUserStore } from "../../store/user";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
+import Floor from "../../assets/NFloor.svg";
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";
@@ -242,10 +243,16 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
   };
 
 
-
+// Sound Effects
+  // Button Click
+  const playClickSound = () => {
+    const audio = new Audio("/sounds/mouse-click-290204.mp3");
+    audio.currentTime = 0; // rewind to start for rapid clicks
+    audio.play();
+  };
 
   return (
-    <div className='pt-16 bg-[#fcf782] relative min-h-screen flex flex-row min-w-0 gap-4 p-4' >
+    <div className='pt-16 bg-[#fff9c7] relative min-h-screen flex flex-row min-w-0 gap-4 p-4' >
       {/* Go back */}
       < button
         className="btn btn-ghost absolute top-20 left-6 z-10"
@@ -255,9 +262,13 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
         Back to subtasks
       </button >
 
+      {/* Yellow Floor */}
+      <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
+      
+
       {/* Left: Bear + Speech */}
       < div className="flex flex-1 items-center justify-center" >
-        <div className="relative w-full max-w-[500px] aspect-square">
+        <div className="relative w-full max-w-[700px] aspect-square">
           <img
             src={Bear}
             alt="Bear Mascot"
@@ -294,12 +305,14 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
             {/* Next & back buttons */}
             <div>
               {animationDone && userHasProfile === false && (
-                <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex gap-4">
+                <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 flex gap-4">
                   {/* Back button */}
                   {currentSpeechIndex > 0 && (
                     <button
                       className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 shadow-lg"
-                      onClick={handleBack}
+                      onClick={() => {
+                          playClickSound();
+                          handleBack();}}
                     >
                       Back
                     </button>
@@ -310,8 +323,11 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                     currentSpeechIndex < speechForSubtask1.length - 1 && (
                       <button
                         className={`px-6 py-2 rounded-lg shadow-lg text-white
-              ${nextButtonValid ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'}`}
-                        onClick={handleNext}
+              ${nextButtonValid ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                        onClick={() => {
+                          playClickSound();
+                          handleNext();
+                        }}
                         disabled={!nextButtonValid}
                       >
                         Next
@@ -331,7 +347,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
       < div className="flex-1" >
 
         {userHasProfile == true && (
-          <div className="flex flex-col items-center mt-32">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
             <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
               <div className="card-body space-y-6">
                 <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -424,7 +440,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
         {/* Headline pick (index 4) */}
         {
           currentSpeechIndex === 4 && !userHasProfile && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48 ">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4 translate-x-48">
               {/* Headline component */}
               <Headline
                 value={selectedHeadline}
@@ -460,6 +476,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                   <button
                     className="btn"
                     onClick={() => {
+                          playClickSound();
                       if (university.trim() !== "") toast.success("University saved!");
                     }}
                   >
@@ -534,6 +551,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                     <button
                       className="btn bg-pink-400 hover:bg-pink-500 text-white border-none rounded-xl px-4"
                       onClick={() => {
+                          playClickSound();
                         if (careerGoal.trim() !== "") {
                           toast.success("Career goal saved!");
                         }
@@ -551,7 +569,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
         {/* Final preview (index 8) */}
         {
           currentSpeechIndex === 8 && userHasProfile == false && (
-            <div className="absolute w-full max-w-md top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/2 translate-x-48">
               <div className="card w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
                 <div className="card-body space-y-6">
                   <div className="flex flex-col items-center text-center border-b border-gray-200 pb-4">
@@ -593,7 +611,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
 
               <button
                 className="btn btn-white mt-8 align-right"
-                onClick={saveProfile}
+                onClick={() => {
+                          playClickSound();
+                          saveProfile();}}
               >
                 Save Profile
               </button>

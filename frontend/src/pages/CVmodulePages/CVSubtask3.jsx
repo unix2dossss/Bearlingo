@@ -109,6 +109,12 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
     }
   };
 
+  // Sound Effect
+  const playClickSound = () => {
+  const audio = new Audio("/sounds/mouse-click-290204.mp3");
+  audio.currentTime = 0; // rewind to start for rapid clicks
+  audio.play();
+  };
   return (
     <div className="flex flex-col h-full overflow-y-auto relative">
       {/* Sticky header with Close */}
@@ -147,13 +153,13 @@ const CVSubtask3 = ({ onClose = () => {}, setIsSubmitted = () => {}, onTaskCompl
       {/* Actions */}
       <div className="px-6 pb-6 pt-4">
         <div className="mx-auto max-w-[680px] grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ActionButton variant="outline" onClick={handlePreview}>
+          <ActionButton variant="outline" onClick={() => { playClickSound(); handlePreview();}}>
             Preview my CV
           </ActionButton>
 
           <ActionButton
             variant="solid"
-            onClick={handleDownload}
+            onClick={() => { playClickSound(); handleDownload(); }}
             disabled={downloading}
             ariaBusy={downloading}
           >
