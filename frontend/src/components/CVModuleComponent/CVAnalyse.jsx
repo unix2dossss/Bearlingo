@@ -68,12 +68,26 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
   const [cvFile, setCvFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [availableSources, setAvailableSources] = useState([]); // ['uploaded', 'generated']
+  const [selectedSource, setSelectedSource] = useState("auto"); // default
+  const [analyzedSource, setAnalyzedSource] = useState(null);
 
   // Fetch analysis if it exists in DB
   useEffect(() => {
     const fetchCV = async () => {
       try {
         const res = await api.get("/users/me/cv", { withCredentials: true });
+        const data = res.data;
+        console.log("data: ", data);
+        // Stores if CV was uploaded or generated
+        const sources = [];
+        if (data?.cvFile && Object.keys(data.cvFile).length > 0) {
+          sources.push("uploaded");
+        }
+        sources.push("generated"); // always possible
+        console.log("Sources:", sources);
+        setAvailableSources(sources);
+
         const analysis = res.data?.analysis;
 
         if (analysis) {
@@ -89,6 +103,13 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
           if (!isEmpty) {
             setAnalysisResult(analysis);
             setCvFile(res.data.cvFile || null); // save CV file info
+
+            // Infer which source was analyzed last
+            if (data.cvFile && Object.keys(data.cvFile).length > 0) {
+              setAnalyzedSource("uploaded");
+            } else {
+              setAnalyzedSource("generated");
+            }
           }
         }
       } catch (err) {
@@ -105,11 +126,15 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
     setAnalysisResult(null);
 
     try {
-      const response = await api.get("/users/me/cv/analyze-cv", { withCredentials: true });
+      const response = await api.get(`/users/me/cv/analyze-cv?source=${selectedSource}`, {
+        withCredentials: true
+      });
 
+      setAnalyzedSource(selectedSource);
       // Parse JSON string returned from backend
       // const feedbackJson = JSON.parse(response.data.feedback);
       setAnalysisResult(response.data.feedback);
+      toast.success(`Analyzed ${selectedSource === "uploaded" ? "uploaded CV" : "form CV"}!`);
 
       // Mark Task 3 as complete
       const subtaskId = await getSubtaskBySequenceNumber("CV Builder", 1, 3);
@@ -147,13 +172,32 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
 
         {!analysisResult && (
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+            {/* CV version Selector */}
+            {availableSources.length > 1 && (
+              <div className="mb-6">
+                <label className="block text-gray-700 font-semibold mb-2">
+                  Choose which CV version you’d like to analyze.
+                </label>
+                <select
+                  value={selectedSource}
+                  onChange={(e) => setSelectedSource(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                >
+                  <option value="uploaded">Uploaded CV</option>
+                  <option value="generated">Form-built CV</option>
+                </select>
+              </div>
+            )}
+
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <button
               onClick={handleAnalyze}
               disabled={isLoading}
               className="w-full bg-purple-500 text-white font-bold py-3 px-4 rounded-3xl hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              {isLoading ? "Analyzing..." : "Analyze My Resume"}
+              {isLoading
+                ? "Analyzing..."
+                : `Analyze ${selectedSource === "uploaded" ? "Uploaded CV" : "Form-built CV"}`}
             </button>
           </div>
         )}
@@ -163,11 +207,11 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
             <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <h2 className="text-2xl font-bold text-gray-800">Your Results are In!</h2>
-                {/* Display CV file info */}
-                {cvFile && (
+                {/* Display CV info based on selected source */}
+                {analyzedSource === "uploaded" && cvFile && Object.keys(cvFile).length > 0 ? (
                   <div className="mt-3 inline-block bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm">
                     <p className="text-gray-700">
-                      <span className="font-medium text-gray-800">Analyzed CV:</span>{" "}
+                      <span className="font-medium text-gray-800">Analyzed Uploaded CV:</span>{" "}
                       <span className="font-semibold text-blue-600">{cvFile.filename}</span>{" "}
                       <span className="text-gray-500">
                         ({(cvFile.size / 1024).toFixed(1)} KB, uploaded{" "}
@@ -178,6 +222,16 @@ export default function CVAnalyse({ setIsSubmitted, onTaskComplete }) {
                       </span>
                     </p>
                   </div>
+                ) : (
+                  analyzedSource === "generated" ||
+                  (analyzedSource === "auto" && (
+                    <div className="mt-3 inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-sm">
+                      <p className="text-gray-700">
+                        <span className="font-medium text-gray-800">Analyzed:</span>{" "}
+                        <span className="font-semibold text-green-600">Form-built CV</span>
+                      </p>
+                    </div>
+                  ))
                 )}
 
                 <button

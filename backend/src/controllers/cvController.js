@@ -485,6 +485,7 @@ console.log("OpenAI key: ", process.env.OPENAI_KEY);
 
 export const analyzeCV = async (req, res) => {
   const userId = req.user._id;
+  const source = req.query.source || "auto"; // auto = pick automatically like before
   try {
     const cv = await CV.findOne({ userId });
     if (!cv) {
@@ -497,15 +498,15 @@ export const analyzeCV = async (req, res) => {
     let filename = "resume.pdf";
 
     // Case 1: If user uploaded a CV file
-    if (cv.cvFile && cv.cvFile.data) {
+    if (source === "uploaded" && cv.cvFile && cv.cvFile.data) {
       pdfBuffer = cv.cvFile.data;
       // If a filename exists on the uploaded file, use it
       filename = cv.cvFile.filename || "resume.pdf"; // use the uploaded filename
       if (!filename.toLowerCase().endsWith(".pdf")) {
         filename += ".pdf"; // make sure it ends with .pdf
       }
-    } else {
-      // Case 2: If user filled the form → build PDF
+    } // Case 2: If user filled the form → build PDF
+    else if (source === "generated" || !cv.cvFile?.data) {
       const html = buildCVHtml(cv);
       const browser = await puppeteer.launch();
       const page = await browser.newPage();

@@ -102,11 +102,10 @@ export default function ResumeUpload({
     if (!fileMeta) return;
     try {
       if (onRemove) {
-        await onRemove();
-      } else {
         await defaultRemove();
-      }
-      setFileMeta(null);
+        setFileMeta(null);
+        await onRemove();
+      } 
       toast.success("Resume removed.");
     } catch (e) {
       console.error(e);
