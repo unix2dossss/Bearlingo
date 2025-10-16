@@ -7,7 +7,7 @@ export const dailyRequestLimiter = rateLimit({
   },
   // Window of time to track requests (1 day = 24 * 60 * 60 * 1000 ms)
   windowMs: 24 * 60 * 60 * 1000,
-  max: 2,
+  max: 5,
   // Message to send when the limit is exceeded
   message: (req, res) => {
     return res.status(429).json({
