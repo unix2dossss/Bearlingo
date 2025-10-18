@@ -19,7 +19,7 @@ const COLORS = {
 
 
 
-export default function NetworkingSubtask2({ userInfo, onBack }) {
+export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete }) {
   // -------------------- state --------------------
   const [allEvents, setAllEvents] = useState([]);
   const [userEvents, setUserEvents] = useState([]); // [{attendingEventIds:[{eventId,status}]}]
@@ -168,6 +168,12 @@ export default function NetworkingSubtask2({ userInfo, onBack }) {
       return [updated];
     });
 
+     // Trigger task complete only when event is marked attended
+    if (nextStatus === "attended") {
+      onTaskComplete?.(); // optional chaining in case prop not passed
+    }
+
+    
     try {
       await api.put(
         "/users/me/networking/events",

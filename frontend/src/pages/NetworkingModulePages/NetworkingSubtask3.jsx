@@ -8,7 +8,7 @@ import { Draggable } from "gsap/Draggable";
 import events from "../../../../backend/src/utils/networkingEvents";
 import { FaStar } from "react-icons/fa";
 
-export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
+export default function NetworkingSubtask3({ userInfo = {}, onBack, onTaskComplete }) {
   const [userReflections, setUserReflections] = useState([]);
   const [selectedReflection, setSelectedReflection] = useState(null);
   const [userEvents, setUserEvents] = useState([]);
@@ -121,6 +121,7 @@ export default function NetworkingSubtask3({ userInfo = {}, onBack }) {
       setEventSelected(null);
       setEventClicked(null);
       toast.success("Reflection saved!");
+      onTaskComplete?.(); 
     } catch (error) {
       console.log("Error in saving reflection", error);
       toast.error("Error in saving reflection!");
