@@ -29,7 +29,7 @@ export default function Headline({
   };
 
   return (
-    <div className={`w-full max-w-md mx-auto space-y-4  ${className}`}>
+    <div className={`w-full max-w-md space-y-4  ${className}`}>
 
       <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-2xl p-5 shadow-md flex flex-col gap-4">
         {/* Pick a Headline */}
