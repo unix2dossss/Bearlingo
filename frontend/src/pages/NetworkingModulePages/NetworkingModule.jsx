@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
-import { getModuleByName, getLevelByNumber, getSubtasksByLevel } from "../../utils/moduleHelpers";
+import { getModuleByName, getLevelByNumber, getSubtasksByLevel, isSubtaskCompleted } from "../../utils/moduleHelpers";
 import { Info, Music } from "lucide-react";
 import SubtaskInfoPopup from "../../components/SubtaskInfoPopup";
 
@@ -25,6 +25,9 @@ import Cafe from "../../assets/NCafe.svg";
 import Sign from "../../assets/NSign.svg";
 import Table from "../../assets/NTable.svg";
 import Bear from "../../assets/Bear.svg";
+import CafeLocked from "../../assets/NCafeB.svg";
+import TableLocked from "../../assets/NTableB.svg";
+import SignLocked from "../../assets/NSignB.svg";
 
 const COLORS = {
   bg: "#fcf782",
@@ -317,6 +320,151 @@ const NetworkingModule = () => {
     audio.play();
   };
 
+  // Complete subtask logic
+  const [task1Complete, setTask1Complete] = useState(false);
+  const [task2Complete, setTask2Complete] = useState(false);
+  const [task3Complete, setTask3Complete] = useState(false);
+  // Check if subtasks are already completed before
+    useEffect(() => {
+      const fetchTaskCompletion = async () => {
+        try {
+          const task1Done = await isSubtaskCompleted("Networking Hub", 1, 1);
+          const task2Done = await isSubtaskCompleted("Networking Hub", 1, 2);
+          const task3Done = await isSubtaskCompleted("Networking Hub", 1, 3);
+  
+          setTask1Complete(task1Done);
+          setTask2Complete(task2Done);
+          setTask3Complete(task3Done);
+        } catch (err) {
+          console.error("Failed to fetch Networking task completion:", err);
+        }
+      };
+  
+      fetchTaskCompletion();
+    }, [setTask1Complete, setTask2Complete, setTask3Complete]);
+
+    const cafeLockedRef = useRef(null);
+  const cafeUnlockedRef = useRef(null);
+  
+    useEffect(() => {
+      if (task1Complete) {
+        // Fade out locked desk
+        gsap.to(cafeLockedRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            // Bounce in unlocked drawers
+            gsap.set(cafeUnlockedRef.current, {
+              opacity: 0,
+              scale: 0.5,
+              rotation: -30,
+              y: -300
+            });
+            gsap.to(cafeUnlockedRef.current, {
+              opacity: 1,
+              scale: 1,
+              rotation: 0,
+              y: 0,
+              duration: 1.5,
+              ease: "bounce.out"
+            });
+          }
+        });
+      } else {
+        // Fade in locked desk
+        gsap.set(cafeUnlockedRef.current, { opacity: 0 });
+        gsap.to(cafeLockedRef.current, {
+          opacity: 0.7,
+          duration: 0.6,
+          ease: "power2.out"
+        });
+      }
+    }, [task1Complete]);
+
+
+  const tableLockedRef = useRef(null);
+  const tableUnlockedRef = useRef(null);
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    if (!tableLockedRef.current || !tableUnlockedRef.current) return;
+
+    if (task2Complete) {
+      // Fade out locked table
+      gsap.to(tableLockedRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          // Bounce in unlocked table
+          gsap.set(tableUnlockedRef.current, {
+            opacity: 0,
+            scale: 0.5,
+            rotation: -30,
+            y: -300,
+          });
+          gsap.to(tableUnlockedRef.current, {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "bounce.out",
+          });
+        },
+      });
+    } else {
+      // Fade in locked table
+      gsap.set(tableUnlockedRef.current, { opacity: 0 });
+      gsap.to(tableLockedRef.current, {
+        opacity: 0.7,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+    }
+  }, 200); // ← small delay to ensure DOM is ready
+
+  return () => clearTimeout(timer);
+}, [task2Complete]);
+
+
+
+  const signLockedRef = useRef(null);
+  const signUnlockedRef = useRef(null);
+  
+  useEffect(() => {
+      if (task3Complete) {
+        // Fade out locked desk
+        gsap.to(signLockedRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            // Bounce in unlocked drawers
+            gsap.set(signUnlockedRef.current, {
+              opacity: 0,
+              scale: 0.5,
+              rotation: -30,
+              y: -300
+            });
+            gsap.to(signUnlockedRef.current, {
+              opacity: 1,
+              scale: 1,
+              rotation: 0,
+              y: 0,
+              duration: 1.5,
+              ease: "bounce.out"
+            });
+          }
+        });
+      } else {
+        // Fade in locked desk
+        gsap.set(signUnlockedRef.current, { opacity: 0 });
+        gsap.to(signLockedRef.current, {
+          opacity: 0.7,
+          duration: 0.6,
+          ease: "power2.out"
+        });
+      }
+    }, [task3Complete]);
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col bg-[#fff9c7] overflow-hidden">
@@ -356,23 +504,51 @@ const NetworkingModule = () => {
               </div>
 
               <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
-                <img
-                  src={Table}
-                  alt="Unlocked Networking Table"
-                  className="absolute top-[45vh] right-[12vw] w-[34vw] max-w-[800px] h-auto"
-                />
+                <div className="relative w-full flex justify-center">
+                  <img
+                    ref={signLockedRef}
+                    src={SignLocked}
+                    alt="Unlocked Networking Sign"
+                    className="absolute bottom-[30vh] right-[9vw] w-[20vw] max-w-[900px] h-auto"
+                  />
+                  <img
+                    ref={signUnlockedRef}
+                    src={Sign}
+                    alt="Unlocked Networking Sign"
+                    className="absolute bottom-[30vh] right-[9vw] w-[20vw] max-w-[900px] h-auto"
+                  />
+                </div>
 
-                <img
-                  src={Cafe}
-                  alt="Unlocked Networking Cafe"
-                  className="absolute top-[18vh] left-28 w-[49vw] max-w-[800px] h-auto"
-                />
+                <div className="relative w-full flex justify-center">
+                  <img
+                    ref={cafeLockedRef}
+                    src={CafeLocked}
+                    alt="Locked Networking Cafe"
+                    className="absolute -bottom-[2vh] left-[3vw] w-[49vw] max-w-[900px] h-auto"
+                  />
+                  <img
+                    ref={cafeUnlockedRef}
+                    src={Cafe}
+                    alt="Unlocked Networking Cafe"
+                    className="absolute -bottom-[2vh] left-[3vw] w-[49vw] max-w-[900px] h-auto"
+                  />
+                </div>
+                
+                 <div className="relative w-full flex justify-center">
+                  <img
+                    ref={tableLockedRef}
+                    src={TableLocked}
+                    alt="Unlocked Networking Table"
+                    className="absolute -bottom-[2vh] right-[3vw] w-[32vw] max-w-[900px] h-auto"
+                  />
+                  <img
+                    ref={tableUnlockedRef}
+                    src={Table}
+                    alt="Unlocked Networking Table"
+                    className="absolute -bottom-[2vh] right-[3vw] w-[32vw] max-w-[900px] h-auto"
+                  />
+                  </div>
 
-                <img
-                  src={Sign}
-                  alt="Unlocked Networking Sign"
-                  className="absolute top-[10vh] right-64 w-[20vw] max-w-[800px] h-auto"
-                />
 
                 <div className="w-full bg-white shadow-md p-4 fixed bottom-10 left-0 flex justify-center z-20">
                   <div className="flex space-x-6">
@@ -450,6 +626,7 @@ const NetworkingModule = () => {
               setShowSubtask(false);
               setSelectedSubtask(false);
             }}
+             onTaskComplete={() => setTask1Complete(true)}
           />
         )}
 
@@ -460,6 +637,7 @@ const NetworkingModule = () => {
               setShowSubtask(false);
               setSelectedSubtask(false);
             }}
+            onTaskComplete={() => setTask2Complete(true)}
           />
         )}
 
