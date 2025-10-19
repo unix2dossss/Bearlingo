@@ -384,53 +384,51 @@ const NetworkingModule = () => {
 
   const tableLockedRef = useRef(null);
   const tableUnlockedRef = useRef(null);
+
   useEffect(() => {
-  const timer = setTimeout(() => {
-    if (!tableLockedRef.current || !tableUnlockedRef.current) return;
-
-    if (task2Complete) {
-      // Fade out locked table
-      gsap.to(tableLockedRef.current, {
-        opacity: 0,
-        duration: 0.5,
-        onComplete: () => {
-          // Bounce in unlocked table
-          gsap.set(tableUnlockedRef.current, {
-            opacity: 0,
-            scale: 0.5,
-            rotation: -30,
-            y: -300,
-          });
-          gsap.to(tableUnlockedRef.current, {
-            opacity: 1,
-            scale: 1,
-            rotation: 0,
-            y: 0,
-            duration: 1.5,
-            ease: "bounce.out",
-          });
-        },
-      });
-    } else {
-      // Fade in locked table
-      gsap.set(tableUnlockedRef.current, { opacity: 0 });
-      gsap.to(tableLockedRef.current, {
-        opacity: 0.7,
-        duration: 0.6,
-        ease: "power2.out",
-      });
-    }
-  }, 200); // ← small delay to ensure DOM is ready
-
-  return () => clearTimeout(timer);
-}, [task2Complete]);
+  if (selectedSubtask === "subtask2") return; // skip animating if subtask view is open
+  if (!tableLockedRef.current || !tableUnlockedRef.current) return;
 
 
+  if (task2Complete) {
+    gsap.to(tableLockedRef.current, {
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => {
+        gsap.set(tableUnlockedRef.current, {
+          opacity: 0,
+          scale: 0.5,
+          rotation: -30,
+          y: -300,
+        });
+        gsap.to(tableUnlockedRef.current, {
+          opacity: 1,
+          scale: 1,
+          rotation: 0,
+          y: 0,
+          duration: 1.5,
+          ease: "bounce.out",
+        });
+      },
+    });
+  } else {
+    gsap.set(tableUnlockedRef.current, { opacity: 0 });
+    gsap.to(tableLockedRef.current, {
+      opacity: 0.7,
+      duration: 0.6,
+      ease: "power2.out",
+    });
+  }
+}, [task2Complete, selectedSubtask] );
 
   const signLockedRef = useRef(null);
   const signUnlockedRef = useRef(null);
   
   useEffect(() => {
+            if (selectedSubtask === "subtask3") return; // skip animating if subtask view is open
+
+      if (!signLockedRef.current || !signUnlockedRef.current) return;
+
       if (task3Complete) {
         // Fade out locked desk
         gsap.to(signLockedRef.current, {
@@ -463,7 +461,7 @@ const NetworkingModule = () => {
           ease: "power2.out"
         });
       }
-    }, [task3Complete]);
+    }, [task3Complete, selectedSubtask]);
 
   return (
     <>
@@ -504,6 +502,7 @@ const NetworkingModule = () => {
               </div>
 
               <div className="relative z-10 flex-1 flex flex-col justify-end items-center pb-14">
+                
                 <div className="relative w-full flex justify-center">
                   <img
                     ref={signLockedRef}
@@ -540,6 +539,7 @@ const NetworkingModule = () => {
                     src={TableLocked}
                     alt="Unlocked Networking Table"
                     className="absolute -bottom-[2vh] right-[3vw] w-[32vw] max-w-[900px] h-auto"
+                    
                   />
                   <img
                     ref={tableUnlockedRef}
@@ -648,6 +648,7 @@ const NetworkingModule = () => {
               setShowSubtask(false);
               setSelectedSubtask(false);
             }}
+            onTaskComplete={() => setTask3Complete(true)}
           />
         )}
       </div>

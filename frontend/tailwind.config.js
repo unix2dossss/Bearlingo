@@ -13,6 +13,7 @@ export default {
     extend: {
       backgroundImage: {
         'register-bg': "url('/src/assets/login-page1.jpg')",
+        'leaderboard-bg' : "url('/src/assets/Leaderboardbg.png')",
       },
 
     },

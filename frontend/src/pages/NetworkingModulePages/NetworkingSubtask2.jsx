@@ -173,7 +173,6 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
       onTaskComplete?.(); // optional chaining in case prop not passed
     }
 
-    
     try {
       await api.put(
         "/users/me/networking/events",
