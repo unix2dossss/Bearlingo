@@ -243,7 +243,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
   };
 
 
-// Sound Effects
+  // Sound Effects
   // Button Click
   const playClickSound = () => {
     const audio = new Audio("/sounds/mouse-click-290204.mp3");
@@ -264,7 +264,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
 
       {/* Yellow Floor */}
       <img src={Floor} alt="Welcome" className="absolute bottom-0 left-0 w-full h-auto" />
-      
+
 
       {/* Left: Bear + Speech */}
       < div className="flex flex-1 items-center justify-center" >
@@ -311,8 +311,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                     <button
                       className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 shadow-lg"
                       onClick={() => {
-                          playClickSound();
-                          handleBack();}}
+                        playClickSound();
+                        handleBack();
+                      }}
                     >
                       Back
                     </button>
@@ -465,25 +466,34 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                   style={{ width: "100%", height: "250px", maxHeight: "40vh" }}
                 />
 
-                <div className="flex w-full gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter university here"
-                    className="flex-1 input text-lg px-4 py-2"
-                    value={university}
-                    onChange={(e) => setUniversity(e.target.value)}
-                  />
-                  <button
-                    className="btn"
-                    onClick={() => {
-                          playClickSound();
-                      if (university.trim() !== "") toast.success("University saved!");
-                    }}
-                  >
-                    Submit
-                  </button>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-2xl p-5 shadow-md flex flex-col gap-4 w-full">
+                  {/* Header */}
+                  <h3 className="text-purple-700 font-semibold text-lg">
+                    🎓 Enter Your University
+                  </h3>
+
+                  {/* Input and Button */}
+                  <div className="flex w-full gap-3">
+                    <input
+                      type="text"
+                      placeholder="Type your university name..."
+                      className="flex-1 px-4 py-2 text-gray-700 bg-white border border-purple-200 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+                      value={university}
+                      onChange={(e) => setUniversity(e.target.value)}
+                    />
+                    <button
+                      className="px-6 py-2 text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 rounded-lg shadow-sm transition active:scale-95"
+                      onClick={() => {
+                        playClickSound();
+                        if (university.trim() !== "") toast.success("University saved!");
+                      }}
+                    >
+                      Submit
+                    </button>
+                  </div>
                 </div>
               </div>
+
             </div>
           )
         }
@@ -551,7 +561,7 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
                     <button
                       className="btn bg-pink-400 hover:bg-pink-500 text-white border-none rounded-xl px-4"
                       onClick={() => {
-                          playClickSound();
+                        playClickSound();
                         if (careerGoal.trim() !== "") {
                           toast.success("Career goal saved!");
                         }
@@ -612,8 +622,9 @@ export default function NetworkingSubtask1({ userInfo = {}, onBack, onTaskComple
               <button
                 className="btn btn-white mt-8 align-right"
                 onClick={() => {
-                          playClickSound();
-                          saveProfile();}}
+                  playClickSound();
+                  saveProfile();
+                }}
               >
                 Save Profile
               </button>
