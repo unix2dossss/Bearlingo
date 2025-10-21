@@ -14,6 +14,9 @@ router.post("/events", authenticate, networkingController.createEventsToAttend);
 router.put("/events", authenticate, networkingController.updateEventsToAttend);
 router.get("/events", authenticate, networkingController.getEventsToAttend);
 router.get("/all-events", authenticate, networkingController.getAllEvents);
+router.post("/events/favourite/:eventId", authenticate, networkingController.addEventToFavorites);
+router.get("/events/favourite", authenticate, networkingController.getFavoriteEvents);
+router.delete("/events/favourite/:eventId", authenticate, networkingController.removeEventFromFavorites);
 
 // ---------- Reflection Routes ----------
 router.post("/reflections", authenticate, networkingController.createReflection);

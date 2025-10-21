@@ -7,17 +7,15 @@ import Calendar from "../../components/NetworkingModuleComponents/NetworkingSubt
 import { useUserStore } from "../../store/user";
 
 const COLORS = {
-  primary: "#f9e532",        // brighter yellow for buttons
-  primaryHover: "#e9ca0a",   // deeper golden hover
-  border: "#d6b941",         // stronger outline
-  text: "#1a1a1a",           // near black (for true contrast)
-  muted: "#595959",          // darker muted text
-  bg: "#fffceb",             // slightly warmer but not washed out
-  panel: "#fff7b8",          // richer cream panel
-  accent: "#c08200",         // amber-brown accent
+  primary: "#f9e532", // brighter yellow for buttons
+  primaryHover: "#e9ca0a", // deeper golden hover
+  border: "#d6b941", // stronger outline
+  text: "#1a1a1a", // near black (for true contrast)
+  muted: "#595959", // darker muted text
+  bg: "#fffceb", // slightly warmer but not washed out
+  panel: "#fff7b8", // richer cream panel
+  accent: "#c08200" // amber-brown accent
 };
-
-
 
 export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete }) {
   // -------------------- state --------------------
@@ -31,48 +29,42 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
   const [favourites, setFavourites] = useState(() => new Set());
 
   const { completeTask } = useUserStore();
-    //  --- add these helpers near the top ---
-    const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+  //  --- add these helpers near the top ---
+  const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
 
-    function makeLocalNoon(y, m, d) {
-      const dt = new Date(y, m, d);
-      dt.setHours(12, 0, 0, 0);
-      return dt;
-    }
+  function makeLocalNoon(y, m, d) {
+    const dt = new Date(y, m, d);
+    dt.setHours(12, 0, 0, 0);
+    return dt;
+  }
 
-    // format a Date as local YYYY-MM-DD (NO toISOString)
-    function formatLocalYMD(d) {
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    }
+  // format a Date as local YYYY-MM-DD (NO toISOString)
+  function formatLocalYMD(d) {
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
 
-    // parse an <input type="date"> value as a local-noon Date
-    function parseLocalDate(value) {
-      // value is "YYYY-MM-DD"
-      const [y, m, d] = value.split("-").map(Number);
-      return makeLocalNoon(y, m - 1, d);
-    }
+  // parse an <input type="date"> value as a local-noon Date
+  function parseLocalDate(value) {
+    // value is "YYYY-MM-DD"
+    const [y, m, d] = value.split("-").map(Number);
+    return makeLocalNoon(y, m - 1, d);
+  }
 
-    // normalise an event's date to LOCAL YYYY-MM-DD (treat date-only strings as-is)
-    function normaliseEventLocalYMD(e) {
-      const raw = e?.dateISO || e?.date || e?.start || e?.startTime || e?.time || null;
-      if (!raw) return null;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // already date-only
-      const dt = new Date(raw);
-      if (Number.isNaN(dt.getTime())) return null;
-      return formatLocalYMD(dt);
-    }
+  // normalise an event's date to LOCAL YYYY-MM-DD (treat date-only strings as-is)
+  function normaliseEventLocalYMD(e) {
+    const raw = e?.dateISO || e?.date || e?.start || e?.startTime || e?.time || null;
+    if (!raw) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // already date-only
+    const dt = new Date(raw);
+    if (Number.isNaN(dt.getTime())) return null;
+    return formatLocalYMD(dt);
+  }
 
   // -------------------- helpers --------------------
   const getEventId = (e) => e?.id ?? e?._id ?? e?.eventId;
   const normaliseDateISO = (e) => {
     // Accept e.dateISO, e.date, or e.start as ISO; fallback to null
-    const raw =
-      e?.dateISO ||
-      e?.date ||
-      e?.start ||
-      e?.startTime ||
-      e?.time ||
-      null;
+    const raw = e?.dateISO || e?.date || e?.start || e?.startTime || e?.time || null;
     try {
       if (!raw) return null;
       const d = new Date(raw);
@@ -83,14 +75,45 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
     }
   };
 
-  const toggleFavourite = (id, next) => {
+  const toggleFavourite = async (eventId, next) => {
+    const key = String(eventId);
+    const isCurrentlyFav = favourites.has(key);
+    const isNowFav = next ?? !isCurrentlyFav;
+
+    // optimistic update
     setFavourites((prev) => {
       const s = new Set(prev);
-      const key = String(id);
-      if (next ?? !s.has(key)) s.add(key);
+      if (isNowFav) s.add(key);
       else s.delete(key);
       return s;
     });
+
+    try {
+      if (isNowFav) {
+        // Add to favourites
+        await api.post(
+          `/users/me/networking/events/favourite/${eventId}`,
+          {},
+          { withCredentials: true }
+        );
+      } else {
+        // Remove from favourites
+        await api.delete(`/users/me/networking/events/favourite/${eventId}`, {
+          withCredentials: true
+        });
+      }
+    } catch (err) {
+      console.error("Error updating favourite:", err);
+      toast.error("Couldn’t update favourites");
+
+      // rollback on failure
+      setFavourites((prev) => {
+        const s = new Set(prev);
+        if (isNowFav) s.delete(key);
+        else s.add(key);
+        return s;
+      });
+    }
   };
 
   const attendingEventIds = userEvents[0]?.attendingEventIds || [];
@@ -108,9 +131,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
     try {
       const res = await api.get("/users/me/networking/all-events", {
         withCredentials: true,
-        headers: userInfo?.token
-          ? { Authorization: `Bearer ${userInfo.token}` }
-          : undefined,
+        headers: userInfo?.token ? { Authorization: `Bearer ${userInfo.token}` } : undefined
       });
       const arr = Array.isArray(res?.data?.allEventsFromBackend)
         ? res.data.allEventsFromBackend
@@ -125,7 +146,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
   const fetchEventsOfUser = async () => {
     try {
       const res = await api.get("/users/me/networking/events", {
-        withCredentials: true,
+        withCredentials: true
       });
 
       // Expect shape: { eventsToAttend: [{ attendingEventIds: [{eventId,status}] }] }
@@ -143,9 +164,29 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
   }, []);
 
   useEffect(() => {
-    if (allEvents.length > 0) fetchEventsOfUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (allEvents.length > 0) {
+      fetchEventsOfUser();
+      fetchFavourites(); // 👈 add this
+    }
   }, [allEvents]);
+
+  // Fetch favourite events for the user
+  const fetchFavourites = async () => {
+    try {
+      const res = await api.get("/users/me/networking/events/favourite", {
+        withCredentials: true
+      });
+      const favArr = res?.data?.favourites || [];
+
+      // Extract event IDs
+      const favIds = favArr.map((e) => String(e.id || e.eventId));
+
+      // Save as a Set for fast lookup
+      setFavourites(new Set(favIds));
+    } catch (error) {
+      console.error("Error fetching favourites", error);
+    }
+  };
 
   // -------------------- actions --------------------
   const handleAttendance = async (eventId, currentStatus) => {
@@ -162,13 +203,13 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
       if (idx !== -1)
         updated.attendingEventIds[idx] = {
           ...updated.attendingEventIds[idx],
-          status: nextStatus,
+          status: nextStatus
         };
       else updated.attendingEventIds.push({ eventId, status: nextStatus });
       return [updated];
     });
 
-     // Trigger task complete only when event is marked attended
+    // Trigger task complete only when event is marked attended
     if (nextStatus === "attended") {
       onTaskComplete?.(); // optional chaining in case prop not passed
     }
@@ -191,7 +232,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
         if (idx !== -1)
           updated.attendingEventIds[idx] = {
             ...updated.attendingEventIds[idx],
-            status: prevStatus,
+            status: prevStatus
           };
         else updated.attendingEventIds.push({ eventId, status: prevStatus });
         return [updated];
@@ -215,12 +256,13 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
     const q = query.trim().toLowerCase();
     const selectedYMD = selectedDate ? formatLocalYMD(selectedDate) : null;
 
-
     return allEvents.filter((e) => {
       const id = getEventId(e);
       const matchesQ =
         !q ||
-        `${e.name ?? e.title ?? ""} ${e.description ?? ""} ${e.location ?? ""} ${e.type ?? ""} ${e.costType ?? ""}`
+        `${e.name ?? e.title ?? ""} ${e.description ?? ""} ${e.location ?? ""} ${e.type ?? ""} ${
+          e.costType ?? ""
+        }`
           .toLowerCase()
           .includes(q);
 
@@ -230,7 +272,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
       const ymd = normaliseEventLocalYMD(e);
       const matchesDate = !selectedYMD || (ymd && ymd === selectedYMD);
       return matchesQ && matchesType && matchesCost && matchesDate;
-          });
+    });
   }, [allEvents, query, typeFilter, costFilter, selectedDate]);
 
   const filteredEvents = useMemo(() => {
@@ -255,12 +297,11 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
   const upcoming3 = useMemo(() => {
     // naive sort by ISO date/time if available
     const withDate = baseFiltered
-        .map((e) => ({ e, ymd: normaliseEventLocalYMD(e) }))
-        .filter((x) => x.ymd);
+      .map((e) => ({ e, ymd: normaliseEventLocalYMD(e) }))
+      .filter((x) => x.ymd);
 
-      withDate.sort((a, b) => (a.ymd < b.ymd ? -1 : a.ymd > b.ymd ? 1 : 0));
-      return withDate.slice(0, 3).map((x) => x.e);
-
+    withDate.sort((a, b) => (a.ymd < b.ymd ? -1 : a.ymd > b.ymd ? 1 : 0));
+    return withDate.slice(0, 3).map((x) => x.e);
   }, [baseFiltered]);
 
   // Sound Effects
@@ -345,20 +386,23 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
           <div className="mb-4">
             <div className="text-sm font-semibold mb-1">Filter by date</div>
             <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  className="input input-sm bg-white w-full"
-                  value={selectedDate ? formatLocalYMD(selectedDate) : ""}
-                  onChange={(e) => setSelectedDate(e.target.value ? parseLocalDate(e.target.value) : null)}
-                  style={{ borderColor: COLORS.border, color: COLORS.text }}
-                />
+              <input
+                type="date"
+                className="input input-sm bg-white w-full"
+                value={selectedDate ? formatLocalYMD(selectedDate) : ""}
+                onChange={(e) =>
+                  setSelectedDate(e.target.value ? parseLocalDate(e.target.value) : null)
+                }
+                style={{ borderColor: COLORS.border, color: COLORS.text }}
+              />
 
               {selectedDate && (
                 <button
                   className="btn btn-sm"
                   onClick={() => {
-                          playClickSound(); 
-                          setSelectedDate(null);}}
+                    playClickSound();
+                    setSelectedDate(null);
+                  }}
                   title="Clear date"
                 >
                   <X className="h-4 w-4" />
@@ -375,11 +419,13 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
                 <button
                   key={t}
                   onClick={() => {
-                          playClickSound(); setActiveTab(t); }}
+                    playClickSound();
+                    setActiveTab(t);
+                  }}
                   className="w-full px-3 py-2 rounded-lg border text-left"
                   style={{
                     backgroundColor: active ? COLORS.primary : "#ffffff",
-                    borderColor: COLORS.border,
+                    borderColor: COLORS.border
                   }}
                 >
                   {t}
@@ -392,8 +438,9 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
           <button
             className="mt-4 w-full btn btn-sm"
             onClick={() => {
-                          playClickSound(); 
-                          clearFilters(); }}
+              playClickSound();
+              clearFilters();
+            }}
             style={{ borderColor: COLORS.border }}
           >
             Reset filters
@@ -408,7 +455,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
             style={{
               backgroundColor: COLORS.panel,
               borderColor: COLORS.border,
-              WebkitOverflowScrolling: "touch",
+              WebkitOverflowScrolling: "touch"
             }}
           >
             <div className="mb-3 text-sm" style={{ color: COLORS.muted }}>
@@ -416,10 +463,7 @@ export default function NetworkingSubtask2({ userInfo, onBack, onTaskComplete })
               {selectedDate && (
                 <>
                   {" "}
-                  on{" "}
-                  <span className="font-medium">
-                    {selectedDate.toLocaleDateString()}
-                  </span>
+                  on <span className="font-medium">{selectedDate.toLocaleDateString()}</span>
                 </>
               )}
             </div>

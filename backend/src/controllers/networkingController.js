@@ -173,7 +173,89 @@ export const updateEventsToAttend = async (req, res) => {
     await userEvents.save();
     return res.status(201).json({ message: "Your events are updated!" });
   } catch (error) {
+    console.error("Error adding event to favourites:", error);
     return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Adding an favourite event to AttendedEvent record
+export const addEventToFavorites = async (req, res) => {
+  const userId = req.user._id;
+  const eventId = req.params.eventId;
+  try {
+    // Find or create the user's AttendEvent document
+    let userEvents = await events.findOne({ user: userId });
+
+    if (!userEvents) {
+      userEvents = new events({ user: userId });
+    }
+
+    userEvents.favouriteEventIds.push({ eventId: Number(eventId) });
+    await userEvents.save();
+
+    res.status(200).json({
+      message: "Event added to favourites successfully.",
+      favourites: userEvents.favouriteEventIds
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Getting favorite events for a user
+export const getFavoriteEvents = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const userEvents = await events.findOne({ user: userId });
+
+    if (!userEvents || userEvents.favouriteEventIds.length === 0) {
+      return res.status(200).json({ favourites: [] });
+    }
+
+    // Extract event IDs from user's favourites
+    const favIds = userEvents.favouriteEventIds.map((fav) => fav.eventId);
+
+    // Match them with predefined events
+    const favouriteEvents = allEvents.filter((event) => favIds.includes(event.id));
+
+    return res.status(200).json({ favourites: favouriteEvents });
+  } catch (error) {
+    console.error("Error fetching favourite events:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Removing an event from favourites
+export const removeEventFromFavorites = async (req, res) => {
+  const userId = req.user._id;
+  const { eventId } = req.params;
+
+  try {
+    const userEvents = await events.findOne({ user: userId });
+    if (!userEvents) {
+      return res.status(404).json({ message: "User events not found" });
+    }
+
+    // Filter out the event from favourites
+    const initialLength = userEvents.favouriteEventIds.length;
+    userEvents.favouriteEventIds = userEvents.favouriteEventIds.filter(
+      (fav) => fav.eventId !== Number(eventId)
+    );
+
+    // Check if anything was removed
+    if (userEvents.favouriteEventIds.length === initialLength) {
+      return res.status(404).json({ message: "Event not found in favourites" });
+    }
+
+    await userEvents.save();
+
+    res.status(200).json({
+      message: "Event removed from favourites successfully",
+      favourites: userEvents.favouriteEventIds
+    });
+  } catch {
+    console.error("Error removing event from favourites:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
