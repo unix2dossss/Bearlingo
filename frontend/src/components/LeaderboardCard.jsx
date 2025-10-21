@@ -1,5 +1,6 @@
 import React from "react";
 import { toast } from "react-hot-toast";
+import LinkedInIconBlack from "../assets/linkedin-black.png";
 
 const LeaderboardCard = ({
   user,
@@ -56,7 +57,7 @@ const LeaderboardCard = ({
           <img
             height="35"
             width="35"
-            src={linkedInIcon}
+            src={user.linkedIn ? linkedInIcon : LinkedInIconBlack}
             alt="LinkedIn Icon"
             onClick={handleLinkedInClick}
           />
