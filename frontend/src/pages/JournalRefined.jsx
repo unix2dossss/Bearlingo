@@ -33,6 +33,7 @@ const JournalRefined = () => {
     const user = useUserStore((state) => state.user);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isNewEntry, setIsNewEntry] = useState(false);
+    const [viewOrAddFile, setViewOrAddFile] = useState(false);
 
     // Auth
     useEffect(() => {
@@ -125,6 +126,16 @@ const JournalRefined = () => {
         { id: 3, name: "Notes", image: BlueFolder, items: notes }
     ]);
 
+    const clearReflection = () => {
+        setReflectionTitle("");
+        setAbout("");
+        setFeeling({ emoji: 5, text: "" }); // default neutral emoji
+        setWhatWentWell("");
+        setImprovement("");
+        setRating("");
+    };
+
+
     useEffect(() => {
         setFolders([
             { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
@@ -135,7 +146,7 @@ const JournalRefined = () => {
 
     const handleUpdateGoal = {};
 
-    // Initialize state from openFile when it changes
+    // Initialize state from openFile when it changes (when users click on previous files)
     useEffect(() => {
         if (openFile && openFolder?.name === "Reflections") {
             setReflectionTitle(openFile.title || "");
@@ -205,7 +216,6 @@ const JournalRefined = () => {
 
             setOpenFile({ ...updatedGoal });
             toast.success("Goal updated!");
-            setOpenFile(null);
         } catch (error) {
             console.error("error: ", error);
             toast.error("Error updating goal");
@@ -252,6 +262,17 @@ const JournalRefined = () => {
     // Save reflection to backend
     const saveReflection = async () => {
         try {
+
+            if (
+                !reflectionTitle.trim() ||
+                !about.trim() ||
+                !feeling.emoji || // assuming 0 means "not selected"
+                !whatWentWell.trim() ||
+                !improvement.trim() ||
+                !rating
+            ) {
+                return toast.error("Please enter responses to all fields");
+            }
             const reflectionSaved = await api.post(
                 "/users/journal/reflections",
                 {
@@ -264,9 +285,18 @@ const JournalRefined = () => {
                 },
                 { withCredentials: true }
             );
-            setReflections((prev) => [...prev, reflectionSaved.data]);
+            setReflections((prev) => [...prev, reflectionSaved.data.reflection]);
+            if (openFolder?.name === "Reflections") {
+                setOpenFolder((prev) => ({
+                    ...prev,
+                    items: [...prev.items, reflectionSaved.data.reflection],
+                }));
+            }
+
             setMessages([]);
             setCurrentIndex(0);
+            clearReflection();
+
             toast.success("Reflection saved!");
         } catch (error) {
             console.error("Error in saving reflection", error);
@@ -278,6 +308,16 @@ const JournalRefined = () => {
     // Function to update a reflection
     const updateReflection = async () => {
         try {
+            if (
+                !reflectionTitle.trim() &&
+                !about.trim() &&
+                !feeling.emoji && // assuming 0 means "not selected"
+                !whatWentWell.trim() &&
+                !improvement.trim() &&
+                !rating
+            ) {
+                return toast.error("Please update at least one field");
+            }
             // Prepare the updated data
             const updated = {
                 title: reflectionTitle?.trim() ? reflectionTitle.trim() : openFile.title,
@@ -314,7 +354,6 @@ const JournalRefined = () => {
             setOpenFile({ ...updatedReflection });
 
             toast.success("Reflection updated!");
-            setOpenFile(null);
         } catch (error) {
             console.error("Error updating reflection: ", error);
             toast.error("Error updating reflection");
@@ -353,12 +392,12 @@ const JournalRefined = () => {
     }, [messages]);
 
     useEffect(() => {
-    if (openFolder?.name === "Goals") {
-        setOpenFolder(prev => ({
-        ...prev,
-        items: goals,
-        }));
-    }
+        if (openFolder?.name === "Goals") {
+            setOpenFolder(prev => ({
+                ...prev,
+                items: goals,
+            }));
+        }
     }, [goals, openFolder?.name]);
 
     // For temporarily saving data to the messages array
@@ -431,6 +470,17 @@ const JournalRefined = () => {
             setRating(input);
         }
     };
+
+    useEffect(() => {
+        console.log("STATE UPDATE:", {
+            isChatOpen,
+            addFile,
+            openFile,
+            viewOrAddFile,
+            isNewEntry
+        });
+    }, [isChatOpen, addFile, openFile, viewOrAddFile, isNewEntry]);
+
 
     const handleGoalSend = () => {
         if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
@@ -536,6 +586,8 @@ const JournalRefined = () => {
                                             setAddFile(false);
                                             setMessages([]);
                                             setInput("");
+                                            setViewOrAddFile(false);
+                                            setIsChatOpen(false);
                                         }}
                                         className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
                                         aria-label="Close"
@@ -555,7 +607,7 @@ const JournalRefined = () => {
 
                             {/* Main thing */}
                             <div className="flex flex-1 overflow-hidden">
-                                {/* sidebar thingy with buttons */}
+                                {/* sidebar thingy with buttons and shows files */}
                                 <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3">
                                     <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
                                         {openFolder.items.map((file, i) => (
@@ -565,6 +617,8 @@ const JournalRefined = () => {
                                                     setOpenFile(file);
                                                     setAddFile(false);
                                                     setIsChatOpen(false);
+                                                    setViewOrAddFile(true);
+                                                    setIsNewEntry(false);
                                                 }}
                                                 className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                             >
@@ -581,10 +635,12 @@ const JournalRefined = () => {
                                                         shadow-lg border border-white w-full"
                                             onClick={() => {
                                                 setIsChatOpen(false);
-                                                setAddFile(false);
-                                                setOpenFile(true);
+                                                setAddFile(true);
+                                                setOpenFile(null);
                                                 setIsNewEntry(true);
+                                                setViewOrAddFile(true);
                                                 console.log("Open file", openFile);
+
                                             }}
                                         >
                                             + Add New File
@@ -599,7 +655,14 @@ const JournalRefined = () => {
                                             onClick={() => {
                                                 setIsChatOpen(true);
                                                 setAddFile(true);
-                                                setOpenFile(false);
+                                                setOpenFile(null);
+                                                setViewOrAddFile(false);
+                                                setIsNewEntry(false);
+                                                console.log("isChatOpen: ", isChatOpen);
+                                                console.log("addFile: ", addFile);
+                                                console.log("openFile: ", openFile);
+                                                console.log("viewOrAddFile: ", viewOrAddFile);
+                                                console.log("isNewEntry ", isNewEntry);
                                             }}
                                         >
                                             <div className="flex gap-2 pl-3">
@@ -623,11 +686,11 @@ const JournalRefined = () => {
                                             {" "}
                                             <img src={Logo} className="h-32 w-52"></img>
                                         </div>
-                                        <div>Click a file to get started...</div>
+                                        <div>Click or add a file to get started...</div>
                                     </div>
                                 )}
 
-                                {/* Creating a new file and adding it to the reflections folder */}
+                                {/* Creating a new file through chat and adding it to the reflections folder */}
                                 {isChatOpen && openFolder.name == "Reflections" && (
                                     <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
                                         <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
@@ -784,7 +847,7 @@ const JournalRefined = () => {
                                                                 active:scale-95 focus:outline-none mt-7 mb-4"
                                                             onClick={() => {
                                                                 saveReflection();
-                                                                setAddFile(false);
+
                                                             }}
                                                         >
                                                             💾 Save
@@ -838,7 +901,7 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Actual file content of Reflections folder + editable area */}
-                                {openFile && addFile === false && openFolder.name === "Reflections" && (
+                                {viewOrAddFile && openFolder.name === "Reflections" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
@@ -958,12 +1021,16 @@ const JournalRefined = () => {
                                                     onClick={isNewEntry ? saveReflection : updateReflection}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
-                                                    Save
+                                                    {isNewEntry ? "Save" : "Update"}
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 )}
+
+
+
+                                {/* ==================== GOALS SECTION  ====================  */}
 
                                 {/* Actual file contents of Goals + editable area */}
                                 {openFile && !addFile && openFolder?.name === "Goals" && (
