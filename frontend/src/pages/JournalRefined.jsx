@@ -640,6 +640,7 @@ const JournalRefined = () => {
                                                 setIsNewEntry(true);
                                                 setViewOrAddFile(true);
                                                 console.log("Open file", openFile);
+                                                clearReflection();
 
                                             }}
                                         >
