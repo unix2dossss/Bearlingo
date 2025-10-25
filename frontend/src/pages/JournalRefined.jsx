@@ -192,11 +192,12 @@ const JournalRefined = () => {
     // Update goal
     const updateGoal = async () => {
         try {
+
             const updated = {
                 title: openFile.title,
                 updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
                 goal,
-                goalIsCompleted
+                goalIsCompleted: openFile.isCompleted ? true : goalIsCompleted
             };
             const res = await api.put(`/users/journal/goals`, updated, {
                 withCredentials: true
@@ -1038,7 +1039,13 @@ const JournalRefined = () => {
                                             {/* Action Buttons */}
                                             <div className="mt-10 flex justify-center gap-4">
                                                 <button
-                                                    onClick={() => setOpenFile(null)}
+                                                    onClick={() => {
+                                                        setOpenFile(null);
+                                                        setViewOrAddFile(false);
+                                                        setAddFile(false);
+                                                        setIsChatOpen(false);
+                                                        setIsNewEntry(false);
+                                                    }}
                                                     className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     ← Back
@@ -1089,7 +1096,10 @@ const JournalRefined = () => {
                                                 <input
                                                     type="checkbox"
                                                     checked={goalIsCompleted}
-                                                    onChange={(e) => setGoalIsCompleted(e.target.checked)}
+                                                    onChange={(e) => {
+                                                        console.log("e.target.checked: ", (e.target.checked));
+                                                        setGoalIsCompleted((e.target.checked));
+                                                    }}
                                                     className="w-6 h-6 accent-purple-500"
                                                 />
                                                 <label className="text-purple-700 font-medium">Completed</label>
