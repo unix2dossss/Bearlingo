@@ -2,6 +2,7 @@
 
 ### Project Description:
 **BearLingo** is a gamified web platform designed to make job hunting engaging, structured, and stress-free for university students and recent graduates. Using principles from behavioral design and habit formation, BearLingo breaks career preparation into bite-sized lessons and interactive tasks, turning overwhelming job search challenges into achievable daily goals. Users track progress, earn badges, and stay motivated with streaks, leaderboards, and a career journal, building confidence and consistency along the way.
+[Add a link to the final report]
 
 ### Key features:
 - **Gamified Career Pathways:** CV Builder, Interview Skills Tower, Networking Hub, and a Holistic Career Pathway combining all three.
@@ -23,6 +24,9 @@
 
 ### Tech stack:
 The project is developed using the **MERN stack** (MongoDB, Express.js, React.js, Node.js) to deliver a full-stack, modern web experience. **MongoDB** manages all user data and progress tracking, while **Express.js** and **Node.js** power the backend logic and handle API interactions. On the frontend, **React.js** creates a responsive and interactive interface, complemented by **Tailwind CSS** for sleek styling and **Framer Motion** and **LottieFiles** for smooth, engaging animations that bring the gamified experience to life.
+
+### Project management tool (Jira):
+https://bearlingo-399.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZWMyZGRhZTBkYjk4NDU5YmE0Mjg2NTlkNzczNzY5YzIiLCJwIjoiaiJ9
 
 ---
 ## 🚀 Daily Workflow & Git guide
