@@ -2,6 +2,7 @@
 
 ### Project Description:
 **BearLingo** is a gamified web platform designed to make job hunting engaging, structured, and stress-free for university students and recent graduates. Using principles from behavioral design and habit formation, BearLingo breaks career preparation into bite-sized lessons and interactive tasks, turning overwhelming job search challenges into achievable daily goals. Users track progress, earn badges, and stay motivated with streaks, leaderboards, and a career journal, building confidence and consistency along the way.
+[Add a link to the final report]
 
 ### Key features:
 - **Gamified Career Pathways:** CV Builder, Interview Skills Tower, Networking Hub, and a Holistic Career Pathway combining all three.
@@ -20,91 +21,250 @@
 | Venus | Full-stack developer | 
 | Thamasha | Full-stack developer | 
 
-
-### Tech stack:
-The project is developed using the **MERN stack** (MongoDB, Express.js, React.js, Node.js) to deliver a full-stack, modern web experience. **MongoDB** manages all user data and progress tracking, while **Express.js** and **Node.js** power the backend logic and handle API interactions. On the frontend, **React.js** creates a responsive and interactive interface, complemented by **Tailwind CSS** for sleek styling and **Framer Motion** and **LottieFiles** for smooth, engaging animations that bring the gamified experience to life.
+#### 🚀 Deployed Website
+You can access the live website here: [https://bearlingo-theta.vercel.app/](https://bearlingo-theta.vercel.app/)
+ 
 
 ---
-## 🚀 Daily Workflow & Git guide
 
-This guide explains how we collaborate on this project using Git.  
-Follow these steps to keep your local code up to date and avoid conflicts.
+### Tools & Technologies
+
+Our project is built using a **modern web application stack** designed for performance, scalability, and an engaging gamified user experience. It supports **user tracking**, **responsive design**, and **interactive learning features**.
+
+#### Languages
+- **JavaScript (ES6+)** – Used for both frontend and backend development  
+- **HTML5 & CSS3** – For building and styling the user interface  
 
 
-#### 🌱 Creating Your Own Branch (for new features)
 
-Before start working on a new feature (_e.g., login page_), create your own branch **based on `develop`**:
+#### Design & Prototyping
+- **Figma** – Used to design gamified, cartoon-style interfaces, create interactive prototypes, and collaborate on visual layouts.  
+- **Canva** – For creating simple yet effective visual assets such as logos, icons, banners, and achievement badges.  
+
+
+
+#### Frontend Technologies
+
+##### ⚡ Framework / Build Tool
+- **Vite** `^7.1.2` – Fast and lightweight development environment for modern web apps  
+
+##### ⚛️ Frontend Library
+- **React.js** `^19.1.1` – Component-based library for building modular, dynamic UI elements (e.g., progress bars, leaderboards, goal trackers)
+
+##### 🎨 Styling
+- **Tailwind CSS** `^3.4.17` – Utility-first CSS framework for rapid, responsive design  
+- **DaisyUI** `^4.12.24` – Tailwind CSS component library  
+- **Flowbite React** `^0.12.9` – Prebuilt Tailwind-based components  
+- **Tailwind Scrollbar** `^1.3.1` – Custom scrollbar styling  
+
+##### ✨ Animation & UI Enhancements
+- **Framer Motion** – For smooth, engaging animations and transitions  
+- **@lottiefiles/dotlottie-react** `^0.17.4` – Lightweight animated illustrations (e.g., confetti effects for achievements)  
+- **GSAP** `^3.13.0` – Advanced timeline-based animations  
+- **Lucide React** `^0.542.0` – Icon library  
+- **React Hot Toast** `^2.6.0` – Toast notifications  
+- **React Draggable** `^4.5.0` – Draggable UI components  
+
+##### 🔁 State Management
+- **Zustand** `^5.0.8` – Lightweight global state management  
+
+##### 🧭 Routing
+- **React Router DOM** `^7.8.2` – Client-side routing  
+
+##### 🌐 Networking
+- **Axios** `^1.11.0` – HTTP requests between frontend and backend  
+
+##### ⚙️ Development Tools
+- **ESLint** `^9.33.0` – Linting and code quality  
+- **Prettier** – Code formatting  
+- **PostCSS** `^8.5.6` – CSS transformations  
+
+
+
+#### Backend Technologies
+
+##### 🧩 Runtime & Framework
+- **Node.js** – JavaScript runtime for scalable backend development  
+- **Express.js** `^5.1.0` – Web framework to manage API routes, authentication, and server-side logic  
+
+##### 🗄️ Database & ORM
+- **MongoDB** – NoSQL database for flexible, scalable data storage (user profiles, progress, leaderboards)  
+- **Mongoose** `^8.17.2` – ODM library to model and manage MongoDB data  
+
+##### 🔐 Authentication & Security
+- **jsonwebtoken** `^9.0.2` – Token-based authentication  
+- **bcryptjs** `^3.0.2` – Password hashing  
+- **passport** `^0.7.0` & **passport-google-oauth20** `^2.0.0` – Google OAuth login  
+- **cors** `^2.8.5` – Cross-origin request handling  
+- **express-rate-limit** `^8.1.0` – Prevents excessive API calls  
+- **cookie-parser** `^1.4.7` – Parses cookies for session handling  
+
+##### 📂 File Handling & Parsing
+- **multer** `^2.0.2` – File uploads  
+- **pdf-parse** `^1.1.1`, **pdfkit** `^0.17.2` – PDF processing and generation  
+
+##### ☁️ Cloud & AI Integration
+- **openai** `^5.23.1` – AI-powered features and content generation  
+- **@xenova/transformers** `^2.17.2` – Local AI model inference  
+
+##### 🧰 Utilities & Logging
+- **dotenv** `^17.2.1` – Environment variable management  
+- **uuid** `^13.0.0` – Unique ID generation  
+- **morgan** `^1.10.0` – HTTP request logging  
+
+##### 🧑‍💻 Development Tools
+- **nodemon** `^3.1.10` – Automatically restarts the server on file changes  
+- **prettier** `^3.6.2` – Consistent code formatting  
+
+
+
+*This combination of technologies ensures the project is efficient, visually engaging, and scalable — ideal for a gamified learning experience.*
+
+---
+
+#### Project management tool (Jira):
+https://bearlingo-399.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZWMyZGRhZTBkYjk4NDU5YmE0Mjg2NTlkNzczNzY5YzIiLCJwIjoiaiJ9
+
+
+---
+
+### Installation & Setup Instructions
+
+Follow the steps below to install and run the project locally.
+
+#### 🧩 Prerequisites
+
+Ensure the following are installed on your system:
+
+- **Node.js** (v18 or higher)  
+- **npm** (comes with Node.js)  
+- **MongoDB** (local installation or MongoDB Atlas)  
+- **Git** *(optional but recommended)*
+
+#### Step 1: Clone the Repository
 
 ```bash
-git checkout develop     # switch to base branch
-git pull                 # make sure develop is up to date on local repository
-git checkout -b login-page
+git clone https://github.com/uoa-compsci399-s2-2025/capstone-project-s2-2025-team-37.git
+cd <project_folder>
 ```
 
-### 🛠 Starting Work Each Day
+#### Step 2: Setup the Backend
+```bash
+cd backend
+```
+**Install backend dependencies:**
+```bash
+npm install
+```
 
-1. Check which branch you’re on: `git branch`
+- This will install all required dependencies, including:
+express, mongoose, jsonwebtoken, bcryptjs, cors, dotenv, and more. 
+- Development tools such as nodemon and prettier
 
-   - The active branch will be highlighted with \*
+**Create a `.env` file in the `/backend` directory:**
+```bash
+PORT=your-port-number
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/BearLingoDB>
+JWT_SECRET=your-jwt-secret
+NODE_ENV=development
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+REDIRECT_URI=your-redirect-uri
+CLIENT_URL=http://localhost:5173
+OPENAI_KEY=your-openai-key
+```
 
-2. Switch to the develop branch (_if not already on it_): `git checkout develop`
-3. Pull the latest changes from remote: `git pull`
-4. Switch back to your feature branch: `git checkout your-branch-name`
-5. (_Optional but recommended_) Merge latest develop into your branch: `git merge develop`
+**Initialize the database:**
+```bash
+npm run init-db
+```
 
-   - If no conflicts → merge succeeds automatically.
-   - If conflicts appear → solve them, or ask a teammate for help.
+**Run the backend server:**
+```bash
+npm run dev
+```
 
-6. Go to the frontend/backend directory: `cd frontend` or `cd backend`
-7. Install frontend/backend dependencies (_only needed if package.json in frontend/backend directory changed_): `npm install`
-8. Start the development server: `npm run dev`
-9. Open the app in the browser:
-   - Copy the `URL` shown in the terminal & Paste it into your browser.
-10. To stop the server:
-    - Press `Ctrl + C` in the terminal
+Backend will start on: http://localhost:3000 or `http://localhost:<PORT>`
 
-#### 💾 After Making Changes
+#### Step 3: Setup the Frontend
+```bash
+cd frontend
+```
 
-9. Stage your changes: `git add .`
-10. Commit your changes with a message: `git commit -m "Your commit message here"`
-11. Push changes to the remote repository: `git push`
-    - **Note:** If you are pushing a branch for the first time, use: `git push -u origin your-branch-name`
-12. Finally, create a `Pull Request (PR)` on GitHub
-    - Go to the repo on GitHub → create a PR from your branch → into develop.
-    - Wait for teammates to review your code.
-      - If approved and no conflicts → merge the PR.
-      - If there are conflicts → resolve them (_ask for help if unsure_).
+**Install frontend dependencies:**
+```bash
+npm install
+```
 
-**📌 Remember**:
+This installs:
+- React, Vite, and React Router DOM
+- Tailwind CSS, DaisyUI, Flowbite React
+- Zustand, Axios, and UI animation libraries
 
-- Always pull the latest develop branch using `git checkout develop` and `git pull` before starting work.
-- Always work on your own branch, never directly on develop or main.
-- Keep branches small and focused (_one feature at a time_).
+**Run the frontend development server:**
+```bash
+npm run dev
+```
+Frontend will start on: http://localhost:5173
 
-#### Helpful Git Commands
 
-- To get changes from develop branch into your branch (might be needed for testing purposes):
-  ```bash
-  git checkout your-branch-name
-  git merge develop
-  ```
-  - If no conflicts, should be able to merge
-  - Else, have to solve the conflicts before merging
-- Check status of your changes: `git status`
-- To see your past commits: `git log`
-- To just check what’s new on remote repo without changing your code: `git fetch`
+#### Step 4: Connect Frontend & Backend
+- Ensure both servers are running:
+   - Frontend → http://localhost:5173
+   - Backend → http://localhost:5000
+- API requests from the frontend (via Axios) should target the backend URL.
+- Adjust API base URLs in the frontend code if necessary.
 
 ---
 
+### 🔮 Future Plan
 
-# Original notes: 
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=19992657)
+Here are some ideas and directions for future releases of the app:
 
-## Run and set up react app locally
+- **Enhanced Subtasks**  
+  - Make subtasks more useful and less work for users.  
+  - Example: In the CV module, after a user uploads a CV, provide advanced analysis including spelling and grammar checks.  
 
-1. Switch to develop branch using this command: `git checkout develop`
-2. Navigate to the frontend directory: `cd frontend`
-3. Install dependencies: `npm install`
-4. Start the development server: `npm run dev`
+- **Gamification Improvements**  
+  - Add mini-games that users can play between tasks to earn points.  
+  - Users can spend points to **decorate their room/department**, making the app feel like a game rather than a stressful career journey.  
+  - Include **escape-room style challenges** for added engagement.  
+  - Add animated characters (e.g., a talking bear moving around the room) to make the interface more engaging.
 
-After step (4) a localhost link would be provided, just copy and paste it into your browser of choice and you will see the app up and running!
+- **AI Integration for Task Assistance**  
+  - Automatically provide company details when users search for a company instead of filling forms manually.  
+  - Reduce repetitive tasks and increase helpful guidance.
+
+- **Responsive Design**  
+  - Ensure the app looks great on all screen sizes (desktop, tablet, mobile).
+
+- **Additional Visual & Interactive Elements**  
+  - Add animations for feedback and achievements (e.g., confetti, streak counters, animated badges).  
+  - Show illustrative examples of game-like UI for inspiration.
+
+---
+
+### 🎓 Acknowledgements
+
+We would like to thank the following resources and people for their guidance and tutorials:
+
+#### 📚 Tutorials & Guides:
+- **GSAP Cheatsheet** – [https://gsap.com/cheatsheet](https://gsap.com/cheatsheet)  
+- **Animations with GSAP** – [YouTube Tutorial 1](https://www.youtube.com/watch?v=F9gB5b4jgOI&t=376s), [YouTube Tutorial 2](https://www.youtube.com/watch?v=c2M-rlkkT5o)  
+- **Node.js Getting Started** – [https://www.w3schools.com/nodejs/nodejs_get_started.asp](https://www.w3schools.com/nodejs/nodejs_get_started.asp)  
+- **Express.js Setup** – [https://expressjs.com/en/starter/installing.html](https://expressjs.com/en/starter/installing.html)  
+- **Mongoose & MongoDB Docs** – [Mongoose](https://www.mongodb.com/docs/drivers/node/current/integrations/mongoose-get-started/), [CRUD](https://www.mongodb.com/docs/manual/crud/?utm_source=Iterable&utm_medium=email&utm_campaign=campaign_7716150)  
+- **Tailwind CSS Documentation** – [Tailwind v2 Docs](https://v2.tailwindcss.com/docs), [Margin Utilities](https://tailwindcss.com/docs/margin)  
+- **DaisyUI Documentation** – [https://daisyui.com/docs/themes/](https://daisyui.com/docs/themes/)  
+- **React Hot Toast** – [https://react-hot-toast.com/](https://react-hot-toast.com/)  
+- **Email & Password Validator (Frontend)** – [DaisyUI Validator Component](https://daisyui.com/components/validator/)
+
+#### 💻 Projects Referred:
+- **WDCC Node.js + Express.js Workshop** – [GitHub Repo](https://github.com/UoaWDCC/workshop-js-node-apis-2025)  
+- **WDCC MongoDB Workshop Starter** – [GitHub Repo](https://github.com/UoaWDCC/mongo-workshop-starter-2025)
+
+#### 👥 People Consulted:
+- **Tutor:** Brenda San Germán  
+  - Email: bsan361@auckland.ac.nz
+
+
