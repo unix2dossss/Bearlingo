@@ -8,6 +8,7 @@ import { useUserStore } from "../../store/user";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { getSubtaskBySequenceNumber } from "../../utils/moduleHelpers";
 import Floor from "../../assets/NFloor.svg";
+// ATTRIBUTE - <a href="https://www.flaticon.com/free-icons/linkedin" title="linkedin icons">Linkedin icons created by riajulislam - Flaticon</a>
 
 //Import Components
 import SkillList from "../../components/NetworkingModuleComponents/NetworkingSubtask1/SkillList";

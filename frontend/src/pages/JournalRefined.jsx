@@ -33,6 +33,7 @@ const JournalRefined = () => {
     const user = useUserStore((state) => state.user);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isNewEntry, setIsNewEntry] = useState(false);
+    const [viewOrAddFile, setViewOrAddFile] = useState(false);
 
     // Auth
     useEffect(() => {
@@ -125,6 +126,21 @@ const JournalRefined = () => {
         { id: 3, name: "Notes", image: BlueFolder, items: notes }
     ]);
 
+    const clearReflection = () => {
+        setReflectionTitle("");
+        setAbout("");
+        setFeeling({ emoji: 5, text: "" }); // default neutral emoji
+        setWhatWentWell("");
+        setImprovement("");
+        setRating("");
+    };
+
+    const clearGoal = () => {
+        setGoalTitle("");
+        setGoal("");
+    };
+
+
     useEffect(() => {
         setFolders([
             { id: 1, name: "Reflections", image: PinkFolder, items: reflections },
@@ -135,7 +151,7 @@ const JournalRefined = () => {
 
     const handleUpdateGoal = {};
 
-    // Initialize state from openFile when it changes
+    // Initialize state from openFile when it changes (when users click on previous files)
     useEffect(() => {
         if (openFile && openFolder?.name === "Reflections") {
             setReflectionTitle(openFile.title || "");
@@ -147,8 +163,7 @@ const JournalRefined = () => {
         }
 
         if (openFile && openFolder?.name === "Goals") {
-            console.log("goalTitle: ", goalTitle);
-            setGoalTitle(goalTitle.title || "");
+            setGoalTitle(openFile.title || "");
             setGoal(openFile.goal || "");
             setGoalIsCompleted(openFile.goalIsCompleted || "");
         }
@@ -177,11 +192,12 @@ const JournalRefined = () => {
     // Update goal
     const updateGoal = async () => {
         try {
+
             const updated = {
                 title: openFile.title,
                 updatedTitle: goalTitle?.trim() ? goalTitle.trim() : openFile.titles,
                 goal,
-                goalIsCompleted
+                goalIsCompleted: openFile.isCompleted ? true : goalIsCompleted
             };
             const res = await api.put(`/users/journal/goals`, updated, {
                 withCredentials: true
@@ -205,7 +221,6 @@ const JournalRefined = () => {
 
             setOpenFile({ ...updatedGoal });
             toast.success("Goal updated!");
-            setOpenFile(null);
         } catch (error) {
             console.error("error: ", error);
             toast.error("Error updating goal");
@@ -227,31 +242,49 @@ const JournalRefined = () => {
             );
 
             // Update main goals state
-            setGoals((prevGoals) => [...prevGoals, goalSaved.data]);
+            setGoals((prevGoals) => [...prevGoals, goalSaved.data.savedEntry]);
 
             // Update openFolder immediately if it's showing "Goals"
             if (openFolder?.name === "Goals") {
                 setOpenFolder((prev) => ({
                     ...prev,
-                    items: [...prev.items, goalSaved.data],
+                    items: [...prev.items, goalSaved.data.savedEntry],
                 }));
             }
 
-            // Optionally open the new goal
-            setOpenFile(goalSaved.data);
-
-            setMessages([]);
-            setCurrentIndex(0);
+            if (isChatOpen) {
+                setMessages([]);
+                setCurrentIndex(0);
+            }
+            clearGoal();
             toast.success("Goal saved!");
+
         } catch (error) {
-            console.error("Error in saving goal", error);
-            toast.error("Error in saving goal");
+            console.log("error.response.data.message: ", error.response.data.message);
+            if (error.response.data.message == "You already have a journal with this title. Try another one.") {
+                toast.error("You already have a journal with this title. Try another one.")
+            } else {
+                console.error("Error in saving goal", error
+                );
+                toast.error("Error in saving goal");
+            }
         }
     };
 
     // Save reflection to backend
     const saveReflection = async () => {
         try {
+
+            if (
+                !reflectionTitle.trim() ||
+                !about.trim() ||
+                !feeling.emoji || // assuming 0 means "not selected"
+                !whatWentWell.trim() ||
+                !improvement.trim() ||
+                !rating
+            ) {
+                return toast.error("Please enter responses to all fields");
+            }
             const reflectionSaved = await api.post(
                 "/users/journal/reflections",
                 {
@@ -264,9 +297,15 @@ const JournalRefined = () => {
                 },
                 { withCredentials: true }
             );
-            setReflections((prev) => [...prev, reflectionSaved.data]);
-            setMessages([]);
-            setCurrentIndex(0);
+            setReflections((prev) => [...prev, reflectionSaved.data.reflection]);
+            if (openFolder?.name === "Reflections") {
+                setOpenFolder((prev) => ({
+                    ...prev,
+                    items: [...prev.items, reflectionSaved.data.reflection],
+                }));
+            }
+            clearReflection();
+
             toast.success("Reflection saved!");
         } catch (error) {
             console.error("Error in saving reflection", error);
@@ -278,6 +317,16 @@ const JournalRefined = () => {
     // Function to update a reflection
     const updateReflection = async () => {
         try {
+            if (
+                !reflectionTitle.trim() &&
+                !about.trim() &&
+                !feeling.emoji && // assuming 0 means "not selected"
+                !whatWentWell.trim() &&
+                !improvement.trim() &&
+                !rating
+            ) {
+                return toast.error("Please update at least one field");
+            }
             // Prepare the updated data
             const updated = {
                 title: reflectionTitle?.trim() ? reflectionTitle.trim() : openFile.title,
@@ -314,7 +363,6 @@ const JournalRefined = () => {
             setOpenFile({ ...updatedReflection });
 
             toast.success("Reflection updated!");
-            setOpenFile(null);
         } catch (error) {
             console.error("Error updating reflection: ", error);
             toast.error("Error updating reflection");
@@ -353,12 +401,12 @@ const JournalRefined = () => {
     }, [messages]);
 
     useEffect(() => {
-    if (openFolder?.name === "Goals") {
-        setOpenFolder(prev => ({
-        ...prev,
-        items: goals,
-        }));
-    }
+        if (openFolder?.name === "Goals") {
+            setOpenFolder(prev => ({
+                ...prev,
+                items: goals,
+            }));
+        }
     }, [goals, openFolder?.name]);
 
     // For temporarily saving data to the messages array
@@ -366,16 +414,24 @@ const JournalRefined = () => {
         let timer;
         let questions = [];
 
-        if (openFolder.name === "Reflections") {
+        if (openFolder.name === "Reflections" && isChatOpen) {
             questions = reflectionQuestions;
-        } else if (openFolder.name === "Goals") {
+        } else if (openFolder.name === "Goals" && isChatOpen) {
             questions = goalQuestions;
         }
+
+        if (!isChatOpen) {
+            setMessages([]);
+            setCurrentIndex(0);
+        }
+
 
         if (questions.length > 0 && currentIndex < questions.length) {
             setIsTyping(true);
 
             timer = setTimeout(() => {
+                console.log("setMessages called with: useEffect link 424");
+
                 setMessages((prev) => {
                     const currentQ = questions[currentIndex];
 
@@ -396,7 +452,7 @@ const JournalRefined = () => {
         }
 
         return () => clearTimeout(timer);
-    }, [currentIndex, openFolder.name]);
+    }, [currentIndex, openFolder.name, isChatOpen]);
 
     const handleSend = () => {
         if (currentIndex == 4 || currentIndex == 7) {
@@ -404,7 +460,7 @@ const JournalRefined = () => {
             return;
         }
         if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
-
+        console.log("setMessages called with: handleSend - 448");
         setMessages((prev) => [...prev, { sender: "user", text: input }]);
         setInput("");
         setCurrentIndex((prev) => prev + 1);
@@ -432,14 +488,29 @@ const JournalRefined = () => {
         }
     };
 
+    useEffect(() => {
+        console.log("STATE UPDATE:", {
+            isChatOpen,
+            addFile,
+            openFile,
+            viewOrAddFile,
+            isNewEntry,
+            messages,
+            currentIndex
+        });
+    }, [isChatOpen, addFile, openFile, viewOrAddFile, isNewEntry, messages]);
+
+
     const handleGoalSend = () => {
         if (isTyping || input.trim() === "") return; // prevent sending while "typing" animation
+        console.log("setMessages called with: handleGoalSend - line 496");
         setMessages((prev) => [...prev, { sender: "user", text: input }]);
         if ([2, 3, 4, 5, 6].includes(currentIndex) && !(input == "Y" || input == "N")) {
             setInput("");
             setIsTyping(true);
 
             timer = setTimeout(() => {
+                console.log("setMessages called with: handleGoalSend - line 503");
                 setMessages((prev) => [...prev, { sender: "bear", text: "Please type Y or N!" }]);
                 setIsTyping(false);
             }, 1000);
@@ -450,6 +521,7 @@ const JournalRefined = () => {
             setIsTyping(true);
 
             timer = setTimeout(() => {
+                console.log("setMessages called with: handleGoalSend - line 514");
                 setMessages((prev) => [
                     ...prev,
                     { sender: "bear", text: "Please rewrite your goal to adhere to the SMART principles!" }
@@ -534,8 +606,10 @@ const JournalRefined = () => {
                                             setOpenFolder(false);
                                             setOpenFile(null);
                                             setAddFile(false);
-                                            setMessages([]);
+
                                             setInput("");
+                                            setViewOrAddFile(false);
+                                            setIsChatOpen(false);
                                         }}
                                         className="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-gray text-xs"
                                         aria-label="Close"
@@ -555,7 +629,7 @@ const JournalRefined = () => {
 
                             {/* Main thing */}
                             <div className="flex flex-1 overflow-hidden">
-                                {/* sidebar thingy with buttons */}
+                                {/* sidebar thingy with buttons and shows files */}
                                 <div className="relative w-[20%] bg-purple-400 p-4 flex flex-col gap-3">
                                     <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
                                         {openFolder.items.map((file, i) => (
@@ -565,6 +639,9 @@ const JournalRefined = () => {
                                                     setOpenFile(file);
                                                     setAddFile(false);
                                                     setIsChatOpen(false);
+                                                    setViewOrAddFile(true);
+                                                    setIsNewEntry(false);
+
                                                 }}
                                                 className="flex justify-center px-3 py-5 bg-purple-300 text-purple-800 rounded-xl hover:bg-purple-200 transition-colors cursor-pointer border border-gray-400"
                                             >
@@ -581,10 +658,15 @@ const JournalRefined = () => {
                                                         shadow-lg border border-white w-full"
                                             onClick={() => {
                                                 setIsChatOpen(false);
-                                                setAddFile(false);
-                                                setOpenFile(true);
+                                                setAddFile(true);
+                                                setOpenFile(null);
                                                 setIsNewEntry(true);
+                                                setViewOrAddFile(true);
                                                 console.log("Open file", openFile);
+                                                clearReflection();
+                                                clearGoal();
+
+
                                             }}
                                         >
                                             + Add New File
@@ -599,7 +681,14 @@ const JournalRefined = () => {
                                             onClick={() => {
                                                 setIsChatOpen(true);
                                                 setAddFile(true);
-                                                setOpenFile(false);
+                                                setOpenFile(null);
+                                                setViewOrAddFile(false);
+                                                setIsNewEntry(false);
+                                                console.log("isChatOpen: ", isChatOpen);
+                                                console.log("addFile: ", addFile);
+                                                console.log("openFile: ", openFile);
+                                                console.log("viewOrAddFile: ", viewOrAddFile);
+                                                console.log("isNewEntry ", isNewEntry);
                                             }}
                                         >
                                             <div className="flex gap-2 pl-3">
@@ -623,11 +712,11 @@ const JournalRefined = () => {
                                             {" "}
                                             <img src={Logo} className="h-32 w-52"></img>
                                         </div>
-                                        <div>Click a file to get started...</div>
+                                        <div>Click or add a file to get started...</div>
                                     </div>
                                 )}
 
-                                {/* Creating a new file and adding it to the reflections folder */}
+                                {/* Creating a new file through chat and adding it to the reflections folder */}
                                 {isChatOpen && openFolder.name == "Reflections" && (
                                     <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
                                         <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
@@ -679,6 +768,7 @@ const JournalRefined = () => {
                                                             onClick={() => {
                                                                 {
                                                                     const selectedEmoji = emojiOptions[feeling.emoji - 1];
+
                                                                     setMessages((prev) => [
                                                                         ...prev,
                                                                         { sender: "user", text: selectedEmoji }
@@ -748,6 +838,7 @@ const JournalRefined = () => {
                                                             <button
                                                                 onClick={() => {
                                                                     if (rating) {
+
                                                                         setMessages((prev) => [
                                                                             ...prev,
                                                                             { sender: "user", text: rating }
@@ -784,7 +875,7 @@ const JournalRefined = () => {
                                                                 active:scale-95 focus:outline-none mt-7 mb-4"
                                                             onClick={() => {
                                                                 saveReflection();
-                                                                setAddFile(false);
+
                                                             }}
                                                         >
                                                             💾 Save
@@ -838,7 +929,7 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Actual file content of Reflections folder + editable area */}
-                                {openFile && addFile === false && openFolder.name === "Reflections" && (
+                                {viewOrAddFile && openFolder.name === "Reflections" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Header */}
@@ -948,7 +1039,13 @@ const JournalRefined = () => {
                                             {/* Action Buttons */}
                                             <div className="mt-10 flex justify-center gap-4">
                                                 <button
-                                                    onClick={() => setOpenFile(null)}
+                                                    onClick={() => {
+                                                        setOpenFile(null);
+                                                        setViewOrAddFile(false);
+                                                        setAddFile(false);
+                                                        setIsChatOpen(false);
+                                                        setIsNewEntry(false);
+                                                    }}
                                                     className="px-8 py-2 rounded-full border border-purple-500 text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     ← Back
@@ -958,27 +1055,28 @@ const JournalRefined = () => {
                                                     onClick={isNewEntry ? saveReflection : updateReflection}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
-                                                    Save
+                                                    {isNewEntry ? "Save" : "Update"}
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 )}
 
+
+
+                                {/* ==================== GOALS SECTION  ====================  */}
+
                                 {/* Actual file contents of Goals + editable area */}
-                                {openFile && !addFile && openFolder?.name === "Goals" && (
+                                {viewOrAddFile && openFolder.name === "Goals" && (
                                     <div className="flex-1 bg-gradient-to-br from-purple-100 via-white to-purple-50 p-8 rounded-2xl shadow-[0_0_20px_rgba(167,139,250,0.25)] border border-purple-200">
                                         <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col h-full overflow-y-auto">
                                             {/* Goal Title at Top */}
-                                            <h1 className="text-3xl font-bold text-purple-700 mb-8 text-center">
-                                                {openFile.title || "Untitled Goal"}
-                                            </h1>
                                             <input
                                                 type="text"
                                                 value={goalTitle}
                                                 onChange={(e) => setGoalTitle(e.target.value)}
-                                                placeholder="Edit goal title..."
-                                                className="w-full mb-6 p-3 rounded-xl border border-purple-200 focus:outline-none focus:border-purple-400 bg-purple-50 text-lg font-semibold text-center"
+                                                placeholder="Untitled Goal"
+                                                className="text-3xl font-bold text-purple-700 mb-8 text-center"
                                             />
 
                                             {/* Goal Description */}
@@ -998,7 +1096,10 @@ const JournalRefined = () => {
                                                 <input
                                                     type="checkbox"
                                                     checked={goalIsCompleted}
-                                                    onChange={(e) => setGoalIsCompleted(e.target.checked)}
+                                                    onChange={(e) => {
+                                                        console.log("e.target.checked: ", (e.target.checked));
+                                                        setGoalIsCompleted((e.target.checked));
+                                                    }}
                                                     className="w-6 h-6 accent-purple-500"
                                                 />
                                                 <label className="text-purple-700 font-medium">Completed</label>
@@ -1014,7 +1115,7 @@ const JournalRefined = () => {
                                                 </button>
 
                                                 <button
-                                                    onClick={openFile.title ? updateGoal : saveGoal}
+                                                    onClick={openFile?.title ? updateGoal : saveGoal}
                                                     className="px-8 py-2 rounded-full bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-sm"
                                                 >
                                                     Save
@@ -1025,10 +1126,12 @@ const JournalRefined = () => {
                                 )}
 
                                 {/* Creating a new file and adding it to the goals folder */}
-                                {addFile && openFolder.name == "Goals" && (
+                                {isChatOpen && openFolder.name === "Goals" && (
                                     <div className="border border-purple-300 flex-1 bg-purple-50 p-6 overflow-y-auto flex flex-col rounded-lg shadow-sm">
                                         <div className="bg-white w-[100%] h-[95%] p-6 rounded-xl shadow-lg flex flex-col gap-3">
                                             <div className="h-[95%] overflow-y-auto pb-20 ">
+                                                {console.log("inchatisopen conditon !!!!!!!!!!")}
+                                                {console.log("messages: ", messages)}
                                                 {messages.map((msg, i) => (
                                                     <div
                                                         key={i}
@@ -1084,7 +1187,6 @@ const JournalRefined = () => {
                                                                 active:scale-95 focus:outline-none mt-7 mb-4"
                                                             onClick={() => {
                                                                 saveGoal();
-                                                                setAddFile(false);
                                                             }}
                                                         >
                                                             💾 Save
