@@ -19,6 +19,30 @@ const Leaderboard = () => {
 
   const bearRef = useRef(null);
 
+  // Elevator doors
+    const leftDoor = useRef(null);
+    const rightDoor = useRef(null);
+  
+    // Animate elevator opening when CVModule loads
+    useEffect(() => {
+      gsap.set(leftDoor.current, { x: "0%" });
+      gsap.set(rightDoor.current, { x: "0%" });
+  
+      gsap.to(leftDoor.current, {
+        x: "-100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
+  
+      gsap.to(rightDoor.current, {
+        x: "100%",
+        duration: 1.5,
+        ease: "power2.inOut",
+        delay: 0.3
+      });
+    }, []);
+
   useEffect(() => {
     gsap.fromTo(
       bearRef.current,
@@ -42,17 +66,28 @@ const Leaderboard = () => {
     fetchLeaderboardData();
   }, []);
 
- useEffect(() => {
+useEffect(() => {
   gsap.fromTo(
     bearRef.current,
     { y: 100, opacity: 0 }, // start 100px below and invisible
-    { y: 0, opacity: 1, duration: 1.5, ease: "bounce.out" } // move to normal position
+    { 
+      y: 0, 
+      opacity: 1, 
+      duration: 1.5, 
+      delay: 1, 
+      ease: "bounce.out" 
+    }
   );
 }, []);
 
 
+
   return (
     <div className="relative bg-leaderboard-bg bg-cover bg-center min-h-screen">
+      {/* Elevator Doors Overlay */}
+      <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
+      <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+
       <div className="absolute" style={{ left: 'calc(70% - 35%)' }}>
         <img src={title} alt="Leaderboard" className="w-[70%] h-auto" />
       </div>
