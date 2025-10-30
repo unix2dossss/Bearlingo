@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import StarBear from "../../assets/StarBear.svg";
-import main from "../../assets/Networking Module Passed.svg";
+import main from "../../assets/NetworkingModulePassed.svg";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 
