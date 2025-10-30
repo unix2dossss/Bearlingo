@@ -18,6 +18,7 @@ import NetworkingSubtask3 from "./NetworkingSubtask3";
 // UI bits
 import BackgroundMusicBox from "../../components/BackgroundMusicBox";
 import SideNavbar from "../../components/SideNavbar";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Assets
 import Floor from "../../assets/NFloor.svg";
@@ -28,6 +29,9 @@ import Bear from "../../assets/Bear.svg";
 import CafeLocked from "../../assets/NCafeB.svg";
 import TableLocked from "../../assets/NTableB.svg";
 import SignLocked from "../../assets/NSignB.svg";
+
+// Level Passed Pop up
+import CongratsPage from "./NetworkingLevelPass";
 
 const COLORS = {
   bg: "#fcf782",
@@ -463,6 +467,61 @@ const NetworkingModule = () => {
       }
     }, [task3Complete, selectedSubtask]);
 
+      const [showLottie, setShowLottie] = useState(false);
+      const [showCongratsPage, setShowCongratsPage] = useState(false);
+      const popupRef = useRef(null);
+    
+      // Create a user-specific key for localStorage
+      const moduleName = "networking"; 
+      const confettiKey = `hasPlayedConfetti_${moduleName}_${user?.id || user?.email || "guest"}`;
+  
+    
+      // Show confetti only once per user
+      useEffect(() => {
+        const hasPlayedConfetti = localStorage.getItem(confettiKey);
+    
+        if (task1Complete && task2Complete && task3Complete && !hasPlayedConfetti) {
+          setShowLottie(true);
+          localStorage.setItem(confettiKey, "true"); // store per-user flag
+        }
+      }, [task1Complete, task2Complete, task3Complete, confettiKey]);
+    
+      // After Lottie finishes, show popup
+      const handleLottieComplete = () => {
+        console.log("🎉 Lottie finished, showing popup!");
+      setShowLottie(false);
+      setShowCongratsPage(true);
+    };
+    
+    // Timeout fallback (in case onComplete doesn’t fire)
+    useEffect(() => {
+      if (showLottie) {
+        const timer = setTimeout(() => handleLottieComplete(), 4000); // adjust to match your Lottie duration
+        return () => clearTimeout(timer);
+      }
+    }, [showLottie]);
+    
+    // Animate popup
+    useEffect(() => {
+      if (showCongratsPage && popupRef.current) {
+        const popup = popupRef.current.querySelector("#popup-card");
+    
+        // Animate backdrop fade-in
+        gsap.fromTo(
+          popupRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.6, ease: "power2.out" }
+        );
+    
+        // Animate popup scale and fade
+        gsap.fromTo(
+          popup,
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)", delay: 0.1 }
+        );
+      }
+    }, [showCongratsPage]);
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col bg-[#fff9c7] overflow-hidden">
@@ -494,6 +553,44 @@ const NetworkingModule = () => {
             {/* Elevator Doors Overlay */}
             <div ref={leftDoor} className="absolute top-0 left-0 w-1/2 h-full bg-gray-400 z-50" />
             <div ref={rightDoor} className="absolute top-0 right-0 w-1/2 h-full bg-gray-500 z-50" />
+
+            {/* 🎊 Lottie Confetti */}
+      {showLottie && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-transparent">
+          <DotLottieReact
+            src="https://lottie.host/1099ed2e-a10f-41d3-9eb8-69559ac869bf/PyIymGiJIa.lottie"
+            autoplay
+            loop={false}
+            onComplete={handleLottieComplete}
+            style={{
+                width: "100vw",
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                pointerEvents: "none", // so user can still click underlying buttons
+                zIndex: 9999,
+            }}
+                  />
+        </div>
+      )}
+
+      {/* 🏆 Congrats Popup */}
+      {showCongratsPage && (
+        <div
+          ref={popupRef}
+          className="fixed inset-0 z-[10000] flex items-center justify-center 
+                    bg-black/30 backdrop-blur-sm transition-opacity duration-700 ease-out"
+        >
+          <div
+            id="popup-card"
+            className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-[90%] 
+                      transform scale-90 opacity-0 transition-all duration-700 ease-out"
+          >
+            <CongratsPage onClose={() => setShowCongratsPage(false)} />
+          </div>
+        </div>
+      )}
 
             {/* Background */}
             <div className="flex">
