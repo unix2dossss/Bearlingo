@@ -201,7 +201,7 @@ const CompanyResearchForm = ({ onSave, onCancel, initialData, onDraftChange }) =
         shadow-sm focus:outline-none focus:ring-2
         min-w-[200px] ${
           isValid
-            ? "bg-[#43a047] hover:bg-[#388e3c] focus:ring-[#43a047]"
+            ? "bg-[#4f9cf9] hover:bg-[#3d86ea] focus:ring-[#3d86ea]"
             : "bg-gray-400 opacity-65 cursor-not-allowed"
         }`}
           >
